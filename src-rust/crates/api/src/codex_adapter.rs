@@ -6,7 +6,7 @@
 
 use serde_json::{json, Value};
 use super::types::{CreateMessageRequest, CreateMessageResponse, SystemPrompt};
-use claurst_core::types::UsageInfo;
+use simon_core::types::UsageInfo;
 
 /// OpenAI Codex API endpoint for responses
 pub const CODEX_RESPONSES_ENDPOINT: &str = "https://chatgpt.com/backend-api/codex/responses";

@@ -11,7 +11,7 @@ use std::collections::HashMap;
 use std::path::PathBuf;
 use std::time::{Duration, Instant};
 
-use claurst_core::provider_id::{ModelId, ProviderId};
+use simon_core::provider_id::{ModelId, ProviderId};
 
 use crate::provider::ModelInfo;
 
@@ -595,7 +595,7 @@ impl Default for ModelRegistry {
 ///     (scored by flagship priority -> "latest" preference -> ID desc).
 ///  3. Fall back to the hardcoded table in [`Config::effective_model()`].
 pub fn effective_model_for_config(
-    config: &claurst_core::Config,
+    config: &simon_core::Config,
     registry: &ModelRegistry,
 ) -> String {
     // Explicit user override — always wins.

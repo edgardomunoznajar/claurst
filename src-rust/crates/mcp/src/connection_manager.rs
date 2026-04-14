@@ -8,7 +8,7 @@
 
 use crate::client::McpClient;
 use crate::expand_server_config;
-use claurst_core::config::McpServerConfig;
+use simon_core::config::McpServerConfig;
 use dashmap::DashMap;
 use std::collections::HashMap;
 use std::sync::Arc;

@@ -17,13 +17,13 @@ use std::time::SystemTime;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum MemoryScope {
-    /// `~/.claurst/rules/*.md` — global managed policy.
+    /// `~/.simon/rules/*.md` — global managed policy.
     Managed,
-    /// `~/.claurst/AGENTS.md` — user-level memory.
+    /// `~/.simon/AGENTS.md` — user-level memory.
     User,
     /// `{project_root}/AGENTS.md` — project-level memory.
     Project,
-    /// `{project_root}/.claurst/AGENTS.md` — local override.
+    /// `{project_root}/.simon/AGENTS.md` — local override.
     Local,
 }
 
@@ -227,9 +227,9 @@ fn load_scope_files(dir: &Path, scope: MemoryScope, files: &mut Vec<MemoryFileIn
 pub fn load_all_memory_files(project_root: &Path) -> Vec<MemoryFileInfo> {
     let mut files = Vec::new();
 
-    // 1. Managed: ~/.claurst/rules/*.md
+    // 1. Managed: ~/.simon/rules/*.md
     if let Some(home) = dirs::home_dir() {
-        let rules_dir = home.join(".claurst/rules");
+        let rules_dir = home.join(".simon/rules");
         if let Ok(entries) = std::fs::read_dir(&rules_dir) {
             let mut paths: Vec<PathBuf> = entries
                 .flatten()
@@ -246,15 +246,15 @@ pub fn load_all_memory_files(project_root: &Path) -> Vec<MemoryFileInfo> {
             }
         }
 
-        // 2. User: ~/.claurst/AGENTS.md then ~/.claurst/CLAUDE.md
-        load_scope_files(&home.join(".claurst"), MemoryScope::User, &mut files);
+        // 2. User: ~/.simon/AGENTS.md then ~/.simon/CLAUDE.md
+        load_scope_files(&home.join(".simon"), MemoryScope::User, &mut files);
     }
 
     // 3. Project: {project_root}/AGENTS.md then {project_root}/CLAUDE.md
     load_scope_files(project_root, MemoryScope::Project, &mut files);
 
-    // 4. Local: {project_root}/.claurst/AGENTS.md then {project_root}/.claurst/CLAUDE.md
-    load_scope_files(&project_root.join(".claurst"), MemoryScope::Local, &mut files);
+    // 4. Local: {project_root}/.simon/AGENTS.md then {project_root}/.simon/CLAUDE.md
+    load_scope_files(&project_root.join(".simon"), MemoryScope::Local, &mut files);
 
     files
 }

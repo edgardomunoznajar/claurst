@@ -38,7 +38,7 @@ use crate::messages::{
 use crate::notifications::render_notification_banner;
 use crate::overlays::{
     render_global_search, render_help_overlay, render_history_search_overlay, render_rewind_flow,
-    CLAURST_ACCENT,
+    SIMON_ACCENT,
 };
 use crate::plugin_views::render_plugin_hints;
 use crate::privacy_screen::render_privacy_screen;
@@ -48,8 +48,8 @@ use crate::stats_dialog::render_stats_dialog;
 use crate::theme_screen::render_theme_screen;
 use crate::transcript_turn::{build_transcript_turns, TranscriptTurn};
 use crate::virtual_list::{VirtualItem, VirtualList};
-use claurst_core::constants::APP_VERSION;
-use claurst_core::types::Role;
+use simon_core::constants::APP_VERSION;
+use simon_core::types::Role;
 use ratatui::buffer::Buffer;
 use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
 use ratatui::style::{Color, Modifier, Style};
@@ -778,7 +778,7 @@ fn render_context_menu(frame: &mut Frame, app: &App) {
             .borders(Borders::ALL)
             .border_type(BorderType::Rounded)
             .style(Style::default().fg(Color::White).bg(Color::Rgb(24, 24, 30)))
-            .border_style(Style::default().fg(CLAURST_ACCENT));
+            .border_style(Style::default().fg(SIMON_ACCENT));
         menu_block.render(menu_area, frame.buffer_mut());
 
         // Render menu items
@@ -804,7 +804,7 @@ fn render_context_menu(frame: &mut Frame, app: &App) {
             };
 
             let bg_color = if is_selected {
-                if *enabled { CLAURST_ACCENT } else { Color::Rgb(24, 24, 30) }
+                if *enabled { SIMON_ACCENT } else { Color::Rgb(24, 24, 30) }
             } else {
                 Color::Rgb(24, 24, 30)
             };
@@ -1307,7 +1307,7 @@ fn render_welcome_box(frame: &mut Frame, app: &App, area: Rect) {
     if area.height < box_height || box_width < 30 {
         // Too small: fall back to a single line
         let line = Line::from(vec![
-            Span::styled("Claurst ", Style::default().fg(CLAUDE_ORANGE).add_modifier(Modifier::BOLD)),
+            Span::styled("Simon ", Style::default().fg(CLAUDE_ORANGE).add_modifier(Modifier::BOLD)),
             Span::styled(format!("v{}", APP_VERSION), Style::default().fg(Color::DarkGray)),
         ]);
         frame.render_widget(Paragraph::new(vec![line]), area);
@@ -1315,14 +1315,14 @@ fn render_welcome_box(frame: &mut Frame, app: &App, area: Rect) {
     }
     let box_area = Rect { x: area.x, y: area.y, width: box_width, height: box_height };
 
-    // Outer border with title "Claurst vX.Y"
+    // Outer border with title "Simon vX.Y"
     let accent = app.accent_color;
     let outer_block = Block::default()
         .borders(Borders::ALL)
         .border_type(BorderType::Rounded)
         .border_style(Style::default().fg(accent))
         .title(Line::from(vec![
-            Span::styled(" Claurst ", Style::default().fg(accent).add_modifier(Modifier::BOLD)),
+            Span::styled(" Simon ", Style::default().fg(accent).add_modifier(Modifier::BOLD)),
             Span::styled(format!("v{} ", APP_VERSION), Style::default().fg(Color::DarkGray)),
         ]));
     frame.render_widget(outer_block, box_area);
@@ -1404,9 +1404,9 @@ fn render_welcome_box(frame: &mut Frame, app: &App, area: Rect) {
     frame.render_widget(Paragraph::new(left_lines).wrap(Wrap { trim: false }), h_chunks[0]);
 
     // --- Right column ---
-    let tip_text = claurst_core::tips::select_tip(0)
+    let tip_text = simon_core::tips::select_tip(0)
         .map(|t| t.content.to_string())
-        .unwrap_or_else(|| "Edit AGENTS.md to add instructions for Claurst".to_string());
+        .unwrap_or_else(|| "Edit AGENTS.md to add instructions for Simon".to_string());
 
     let mut right_lines: Vec<Line> = Vec::new();
     right_lines.push(Line::from(Span::styled(
@@ -1435,11 +1435,11 @@ fn render_welcome_box(frame: &mut Frame, app: &App, area: Rect) {
 
 /// Build a tool_use_id → tool_name lookup from all messages in the transcript.
 /// This allows ToolResult blocks to dispatch to tool-specific renderers.
-fn build_tool_names(messages: &[claurst_core::types::Message]) -> std::collections::HashMap<String, String> {
+fn build_tool_names(messages: &[simon_core::types::Message]) -> std::collections::HashMap<String, String> {
     let mut map = std::collections::HashMap::new();
     for msg in messages {
         for block in msg.content_blocks() {
-            if let claurst_core::types::ContentBlock::ToolUse { id, name, .. } = block {
+            if let simon_core::types::ContentBlock::ToolUse { id, name, .. } = block {
                 map.insert(id.clone(), name.clone());
             }
         }
@@ -1957,7 +1957,7 @@ fn render_footer(frame: &mut Frame, app: &App, area: Rect) {
         // Permission mode badge (left side, mirrors TS bottom-left indicator).
         // Default mode is silent; non-default modes show a badge.
         {
-            use claurst_core::config::PermissionMode;
+            use simon_core::config::PermissionMode;
             match &app.config.permission_mode {
                 PermissionMode::BypassPermissions => {
                     if !spans.is_empty() { spans.push(Span::raw("  ")); }
@@ -2130,7 +2130,7 @@ fn render_footer(frame: &mut Frame, app: &App, area: Rect) {
             }
             parts.push(Span::styled(
                 format!("[{}]", badge),
-                Style::default().fg(CLAURST_ACCENT),
+                Style::default().fg(SIMON_ACCENT),
             ));
         }
 

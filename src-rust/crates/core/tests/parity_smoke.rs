@@ -1,7 +1,7 @@
 //! T5-1 parity smoke tests.
 //! Verifies that core data structures are usable as the TS CLI would use them.
 
-use claurst_core::{
+use simon_core::{
     session_storage::{TranscriptEntry, transcript_dir},
     prompt_history::HistoryEntry,
     file_history::FileHistory,
@@ -21,7 +21,7 @@ fn session_dir_encoding() {
     // Verify transcript dir encoding is stable.
     let root = PathBuf::from("/home/user/project");
     let dir = transcript_dir(&root);
-    // Should contain the base64-encoded project root under .claurst/projects/.
+    // Should contain the base64-encoded project root under .simon/projects/.
     assert!(dir.to_string_lossy().contains("projects"));
 }
 
@@ -84,7 +84,7 @@ fn load_memory_from_nonexistent_dir() {
     // Loading from a dir with no AGENTS.md should return empty, not panic.
     let tmp = TempDir::new().unwrap();
     let files = load_all_memory_files(tmp.path());
-    // May be empty or may pick up user ~/.claurst/AGENTS.md — both are valid.
+    // May be empty or may pick up user ~/.simon/AGENTS.md — both are valid.
     let _ = files;
 }
 

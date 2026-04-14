@@ -17,7 +17,7 @@ struct FileWriteInput {
 #[async_trait]
 impl Tool for FileWriteTool {
     fn name(&self) -> &str {
-        claurst_core::constants::TOOL_NAME_FILE_WRITE
+        simon_core::constants::TOOL_NAME_FILE_WRITE
     }
 
     fn description(&self) -> &str {

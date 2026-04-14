@@ -16,7 +16,7 @@ members = [
 [workspace.package]
 version = "0.0.9"
 edition = "2021"
-authors = ["Claurst"]
+authors = ["Simon"]
 license = "GPL-3.0"
 
 [workspace.dependencies]
@@ -99,12 +99,12 @@ tokio-tungstenite = { version = "0.24", features = ["native-tls"] }
 schemars = { version = "0.8", features = ["derive"] }
 
 # Workspace crates
-claurst-core = { path = "crates/core" }
-claurst-api = { path = "crates/api" }
-claurst-tools = { path = "crates/tools" }
-claurst-query = { path = "crates/query" }
-claurst-tui = { path = "crates/tui" }
-claurst-commands = { path = "crates/commands" }
-claurst-mcp = { path = "crates/mcp" }
-claurst-bridge = { path = "crates/bridge" }
-claurst-plugins = { path = "crates/plugins" }
+simon-core = { path = "crates/core" }
+simon-api = { path = "crates/api" }
+simon-tools = { path = "crates/tools" }
+simon-query = { path = "crates/query" }
+simon-tui = { path = "crates/tui" }
+simon-commands = { path = "crates/commands" }
+simon-mcp = { path = "crates/mcp" }
+simon-bridge = { path = "crates/bridge" }
+simon-plugins = { path = "crates/plugins" }

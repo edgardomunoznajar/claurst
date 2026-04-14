@@ -31,15 +31,15 @@ pub use session_memory::{
     ExtractedMemory, MemoryCategory, SessionMemoryExtractor, SessionMemoryState,
 };
 
-use claurst_api::{
+use simon_api::{
     ApiMessage, ApiToolDefinition, AnthropicStreamEvent, CreateMessageRequest, StreamAccumulator,
     StreamHandler, SystemPrompt, ThinkingConfig,
 };
-use claurst_core::config::Config;
-use claurst_core::cost::CostTracker;
-use claurst_core::error::ClaudeError;
-use claurst_core::types::{ContentBlock, Message, ToolResultContent, UsageInfo};
-use claurst_tools::{Tool, ToolContext, ToolResult};
+use simon_core::config::Config;
+use simon_core::cost::CostTracker;
+use simon_core::error::ClaudeError;
+use simon_core::types::{ContentBlock, Message, ToolResultContent, UsageInfo};
+use simon_tools::{Tool, ToolContext, ToolResult};
 use serde_json::Value;
 use std::sync::Arc;
 use tokio::sync::mpsc;
@@ -72,7 +72,7 @@ pub struct QueryConfig {
     pub max_turns: u32,
     pub system_prompt: Option<String>,
     pub append_system_prompt: Option<String>,
-    pub output_style: claurst_core::system_prompt::OutputStyle,
+    pub output_style: simon_core::system_prompt::OutputStyle,
     pub output_style_prompt: Option<String>,
     pub working_directory: Option<String>,
     pub thinking_budget: Option<u32>,
@@ -85,7 +85,7 @@ pub struct QueryConfig {
     /// the effort level's `thinking_budget_tokens()` is used as the
     /// thinking budget.  Also provides a temperature override when the
     /// level specifies one.
-    pub effort_level: Option<claurst_core::effort::EffortLevel>,
+    pub effort_level: Option<simon_core::effort::EffortLevel>,
     /// T1-4: Optional shared command queue.
     ///
     /// When set, the query loop drains this queue before each API call and
@@ -109,27 +109,27 @@ pub struct QueryConfig {
     /// When `config.provider` is set to something other than "anthropic" and
     /// this registry contains that provider, the registry's provider is used
     /// instead of `AnthropicClient`.
-    pub provider_registry: Option<std::sync::Arc<claurst_api::ProviderRegistry>>,
+    pub provider_registry: Option<std::sync::Arc<simon_api::ProviderRegistry>>,
     /// Active agent name (e.g., "build", "plan", "explore", or None for default).
     pub agent_name: Option<String>,
     /// Resolved agent definition for the current session.
-    pub agent_definition: Option<claurst_core::AgentDefinition>,
+    pub agent_definition: Option<simon_core::AgentDefinition>,
     /// Optional shared model registry for dynamic provider and model resolution.
     /// When set, the query loop uses this instead of constructing a fresh registry.
-    pub model_registry: Option<std::sync::Arc<claurst_api::ModelRegistry>>,
+    pub model_registry: Option<std::sync::Arc<simon_api::ModelRegistry>>,
     /// Managed agent (manager-executor) configuration.
-    pub managed_agents: Option<claurst_core::ManagedAgentConfig>,
+    pub managed_agents: Option<simon_core::ManagedAgentConfig>,
 }
 
 impl Default for QueryConfig {
     fn default() -> Self {
         Self {
-            model: claurst_core::constants::DEFAULT_MODEL.to_string(),
-            max_tokens: claurst_core::constants::DEFAULT_MAX_TOKENS,
-            max_turns: claurst_core::constants::MAX_TURNS_DEFAULT,
+            model: simon_core::constants::DEFAULT_MODEL.to_string(),
+            max_tokens: simon_core::constants::DEFAULT_MAX_TOKENS,
+            max_turns: simon_core::constants::MAX_TURNS_DEFAULT,
             system_prompt: None,
             append_system_prompt: None,
-            output_style: claurst_core::system_prompt::OutputStyle::Default,
+            output_style: simon_core::system_prompt::OutputStyle::Default,
             output_style_prompt: None,
             working_directory: None,
             thinking_budget: None,
@@ -169,11 +169,11 @@ impl QueryConfig {
     ///
     /// Prefers the best model for the configured provider (from models.dev data)
     /// over the hardcoded defaults.
-    pub fn from_config_with_registry(cfg: &Config, registry: &claurst_api::ModelRegistry) -> Self {
+    pub fn from_config_with_registry(cfg: &Config, registry: &simon_api::ModelRegistry) -> Self {
         // We can't move the Arc here, but we need a clone for the query loop.
         // Callers typically wrap the registry in an Arc already.
         Self {
-            model: claurst_api::effective_model_for_config(cfg, registry),
+            model: simon_api::effective_model_for_config(cfg, registry),
             max_tokens: cfg.effective_max_tokens(),
             output_style: cfg.effective_output_style(),
             output_style_prompt: cfg.resolve_output_style_prompt(),
@@ -188,24 +188,24 @@ impl QueryConfig {
 }
 
 fn reasoning_effort_for_level(
-    effort_level: claurst_core::effort::EffortLevel,
+    effort_level: simon_core::effort::EffortLevel,
 ) -> &'static str {
     match effort_level {
-        claurst_core::effort::EffortLevel::Low => "low",
-        claurst_core::effort::EffortLevel::Medium => "medium",
-        claurst_core::effort::EffortLevel::High | claurst_core::effort::EffortLevel::Max => {
+        simon_core::effort::EffortLevel::Low => "low",
+        simon_core::effort::EffortLevel::Medium => "medium",
+        simon_core::effort::EffortLevel::High | simon_core::effort::EffortLevel::Max => {
             "high"
         }
     }
 }
 
 fn google_thinking_level_for_effort(
-    effort_level: Option<claurst_core::effort::EffortLevel>,
+    effort_level: Option<simon_core::effort::EffortLevel>,
 ) -> &'static str {
-    match effort_level.unwrap_or(claurst_core::effort::EffortLevel::High) {
-        claurst_core::effort::EffortLevel::Low => "low",
-        claurst_core::effort::EffortLevel::Medium => "medium",
-        claurst_core::effort::EffortLevel::High | claurst_core::effort::EffortLevel::Max => {
+    match effort_level.unwrap_or(simon_core::effort::EffortLevel::High) {
+        simon_core::effort::EffortLevel::Low => "low",
+        simon_core::effort::EffortLevel::Medium => "medium",
+        simon_core::effort::EffortLevel::High | simon_core::effort::EffortLevel::Max => {
             "high"
         }
     }
@@ -267,7 +267,7 @@ fn is_openaiish_provider(provider_id: &str) -> bool {
 fn build_provider_options(
     provider_id: &str,
     model_id: &str,
-    effort_level: Option<claurst_core::effort::EffortLevel>,
+    effort_level: Option<simon_core::effort::EffortLevel>,
     thinking_budget: Option<u32>,
 ) -> Value {
     let mut options = serde_json::Map::new();
@@ -439,7 +439,7 @@ pub struct PostSamplingHookResult {
     /// Error messages produced by hooks with non-zero exit codes.
     /// These are injected into the conversation as user messages before the
     /// next model turn so the model can react to them.
-    pub blocking_errors: Vec<claurst_core::types::Message>,
+    pub blocking_errors: Vec<simon_core::types::Message>,
     /// When `true` the query loop must not continue and should surface the
     /// error messages to the caller.  Set when any hook exits with code > 1.
     pub prevent_continuation: bool,
@@ -453,11 +453,11 @@ pub struct PostSamplingHookResult {
 /// If the exit code is **strictly greater than 1** `prevent_continuation` is
 /// set so the query loop can return early.
 pub fn fire_post_sampling_hooks(
-    _turn_result: &claurst_core::types::Message,
-    config: &claurst_core::config::Config,
+    _turn_result: &simon_core::types::Message,
+    config: &simon_core::config::Config,
 ) -> PostSamplingHookResult {
-    use claurst_core::config::HookEvent;
-    use claurst_core::types::Message;
+    use simon_core::config::HookEvent;
+    use simon_core::types::Message;
 
     let mut result = PostSamplingHookResult::default();
 
@@ -518,11 +518,11 @@ pub fn fire_post_sampling_hooks(
 /// Stop hooks are non-blocking by design: the caller does not wait for them.
 /// Returns an empty `Vec` immediately; results (if any) are lost.
 pub fn stop_hooks_with_full_behavior(
-    turn_result: &claurst_core::types::Message,
-    config: &claurst_core::config::Config,
+    turn_result: &simon_core::types::Message,
+    config: &simon_core::config::Config,
     working_dir: std::path::PathBuf,
-) -> Vec<claurst_core::types::Message> {
-    use claurst_core::config::HookEvent;
+) -> Vec<simon_core::types::Message> {
+    use simon_core::config::HookEvent;
 
     let entries = match config.hooks.get(&HookEvent::Stop) {
         Some(e) if !e.is_empty() => e.clone(),
@@ -564,9 +564,9 @@ pub fn stop_hooks_with_full_behavior(
 fn total_tool_result_chars(messages: &[Message]) -> usize {
     messages
         .iter()
-        .filter(|m| m.role == claurst_core::types::Role::User)
+        .filter(|m| m.role == simon_core::types::Role::User)
         .flat_map(|m| match &m.content {
-            claurst_core::types::MessageContent::Blocks(blocks) => blocks.as_slice(),
+            simon_core::types::MessageContent::Blocks(blocks) => blocks.as_slice(),
             _ => &[],
         })
         .filter_map(|b| {
@@ -604,11 +604,11 @@ fn apply_tool_result_budget(messages: Vec<Message>, budget: usize) -> (Vec<Messa
     let mut result = messages;
 
     'outer: for msg in result.iter_mut() {
-        if msg.role != claurst_core::types::Role::User {
+        if msg.role != simon_core::types::Role::User {
             continue;
         }
         let blocks = match &mut msg.content {
-            claurst_core::types::MessageContent::Blocks(b) => b,
+            simon_core::types::MessageContent::Blocks(b) => b,
             _ => continue,
         };
         for block in blocks.iter_mut() {
@@ -662,7 +662,7 @@ const MAX_TOKENS_RECOVERY_MSG: &str =
 /// appended as a plain user message between turns.  Callers that do not need
 /// command queuing may pass `None` or an empty `Vec`.
 pub async fn run_query_loop(
-    client: &claurst_api::AnthropicClient,
+    client: &simon_api::AnthropicClient,
     messages: &mut Vec<Message>,
     tools: &[Box<dyn Tool>],
     tool_ctx: &ToolContext,
@@ -862,7 +862,7 @@ pub async fn run_query_loop(
             let tx = tx.clone();
             Arc::new(ChannelStreamHandler { tx })
         } else {
-            Arc::new(claurst_api::streaming::NullStreamHandler)
+            Arc::new(simon_api::streaming::NullStreamHandler)
         };
 
         // Non-Anthropic provider dispatch: if the model is "provider/model"
@@ -925,13 +925,13 @@ pub async fn run_query_loop(
                 // Use the shared model registry from QueryConfig if available;
                 // otherwise construct a temporary one.
                 let temp_reg;
-                let model_reg: &claurst_api::ModelRegistry = if let Some(ref shared) = config.model_registry {
+                let model_reg: &simon_api::ModelRegistry = if let Some(ref shared) = config.model_registry {
                     shared
                 } else {
                     temp_reg = {
-                        let mut r = claurst_api::ModelRegistry::new();
+                        let mut r = simon_api::ModelRegistry::new();
                         if let Some(cache_dir) = dirs::cache_dir() {
-                            let cache_path = cache_dir.join("claurst").join("models_dev.json");
+                            let cache_path = cache_dir.join("simon").join("models_dev.json");
                             r.load_cache(&cache_path);
                         }
                         r
@@ -959,14 +959,14 @@ pub async fn run_query_loop(
                 || client.api_key_is_empty();
 
             if use_provider_dispatch {
-                let pid = claurst_core::provider_id::ProviderId::new(&provider_id_str);
+                let pid = simon_core::provider_id::ProviderId::new(&provider_id_str);
 
                 // Always prefer a fresh provider built from the auth_store so
                 // that keys added at runtime via /connect are picked up
                 // immediately — even when the provider was pre-registered at
                 // startup with a stale or missing key.
                 let runtime_provider =
-                    claurst_api::registry::runtime_provider_for(&provider_id_str);
+                    simon_api::registry::runtime_provider_for(&provider_id_str);
 
                 let registry_provider = if runtime_provider.is_some() {
                     // Fresh auth_store key available — use it instead of the
@@ -980,11 +980,11 @@ pub async fn run_query_loop(
 
                 // Rebuild providers using the unified base resolver so overrides
                 // from settings/env/defaults are applied consistently.
-                if let Some(_) = claurst_api::registry::resolve_provider_api_base(
+                if let Some(_) = simon_api::registry::resolve_provider_api_base(
                     &tool_ctx.config,
                     &provider_id_str,
                 ) {
-                    if let Some(overridden) = claurst_api::registry::provider_from_config(
+                    if let Some(overridden) = simon_api::registry::provider_from_config(
                         &tool_ctx.config,
                         &provider_id_str,
                     ) {
@@ -1014,25 +1014,25 @@ pub async fn run_query_loop(
                         caps.tool_calling = model_entry.tool_calling;
                         caps.thinking = model_entry.reasoning;
                     }
-                    let provider_tools: Vec<claurst_core::types::ToolDefinition> = if caps.tool_calling {
+                    let provider_tools: Vec<simon_core::types::ToolDefinition> = if caps.tool_calling {
                         tools.iter().map(|t| t.to_definition()).collect()
                     } else {
                         Vec::new()
                     };
-                    let provider_messages: Vec<claurst_core::types::Message> = messages
+                    let provider_messages: Vec<simon_core::types::Message> = messages
                         .iter()
                         .map(|msg| {
                             let mut msg = msg.clone();
-                            if let claurst_core::types::MessageContent::Blocks(ref mut blocks) = msg.content {
+                            if let simon_core::types::MessageContent::Blocks(ref mut blocks) = msg.content {
                                 for block in blocks.iter_mut() {
                                     match block {
-                                        claurst_core::types::ContentBlock::Image { .. } if !caps.image_input => {
-                                            *block = claurst_core::types::ContentBlock::Text {
+                                        simon_core::types::ContentBlock::Image { .. } if !caps.image_input => {
+                                            *block = simon_core::types::ContentBlock::Text {
                                                 text: "[Image not supported by this model]".to_string(),
                                             };
                                         }
-                                        claurst_core::types::ContentBlock::Document { .. } if !caps.pdf_input => {
-                                            *block = claurst_core::types::ContentBlock::Text {
+                                        simon_core::types::ContentBlock::Document { .. } if !caps.pdf_input => {
+                                            *block = simon_core::types::ContentBlock::Text {
                                                 text: "[PDF not supported by this model]".to_string(),
                                             };
                                         }
@@ -1044,7 +1044,7 @@ pub async fn run_query_loop(
                         })
                         .collect();
 
-                    let provider_request = claurst_api::ProviderRequest {
+                    let provider_request = simon_api::ProviderRequest {
                         model: model_id_str.to_owned(),
                         messages: provider_messages,
                         system_prompt: Some(system_for_provider.clone()),
@@ -1056,7 +1056,7 @@ pub async fn run_query_loop(
                         stop_sequences: vec![],
                         thinking: if caps.thinking {
                             effective_thinking_budget
-                                .map(|b| claurst_api::ThinkingConfig::enabled(b))
+                                .map(|b| simon_api::ThinkingConfig::enabled(b))
                         } else {
                             None
                         },
@@ -1075,7 +1075,7 @@ pub async fn run_query_loop(
                         Err(e) => {
                             error!(provider = %provider_id_str, error = %e, "Provider stream failed");
                             return QueryOutcome::Error(
-                                claurst_core::error::ClaudeError::Api(e.to_string())
+                                simon_core::error::ClaudeError::Api(e.to_string())
                             );
                         }
                     };
@@ -1122,36 +1122,36 @@ pub async fn run_query_loop(
 
                                         // Accumulate response data.
                                         match &evt {
-                                            claurst_api::StreamEvent::MessageStart { id, usage: u, .. } => {
+                                            simon_api::StreamEvent::MessageStart { id, usage: u, .. } => {
                                                 msg_id = id.clone();
                                                 usage.input_tokens = u.input_tokens;
                                                 usage.cache_read_input_tokens = u.cache_read_input_tokens;
                                                 usage.cache_creation_input_tokens = u.cache_creation_input_tokens;
                                             }
-                                            claurst_api::StreamEvent::ContentBlockStart { index, content_block } => {
+                                            simon_api::StreamEvent::ContentBlockStart { index, content_block } => {
                                                 if let ContentBlock::ToolUse { id, name, .. } = content_block {
                                                     tool_call_blocks.insert(*index, (id.clone(), name.clone(), String::new()));
                                                 }
                                             }
-                                            claurst_api::StreamEvent::TextDelta { text, .. } => {
+                                            simon_api::StreamEvent::TextDelta { text, .. } => {
                                                 text_chunks.push(text.clone());
                                             }
-                                            claurst_api::StreamEvent::InputJsonDelta { index, partial_json } => {
+                                            simon_api::StreamEvent::InputJsonDelta { index, partial_json } => {
                                                 if let Some((_, _, buf)) = tool_call_blocks.get_mut(index) {
                                                     buf.push_str(partial_json);
                                                 }
                                             }
-                                            claurst_api::StreamEvent::MessageDelta { stop_reason, usage: u } => {
+                                            simon_api::StreamEvent::MessageDelta { stop_reason, usage: u } => {
                                                 stop_str = match stop_reason {
-                                                    Some(claurst_api::provider_types::StopReason::ToolUse) => "tool_use",
-                                                    Some(claurst_api::provider_types::StopReason::MaxTokens) => "max_tokens",
+                                                    Some(simon_api::provider_types::StopReason::ToolUse) => "tool_use",
+                                                    Some(simon_api::provider_types::StopReason::MaxTokens) => "max_tokens",
                                                     _ => "end_turn",
                                                 }.to_string();
                                                 if let Some(u) = u {
                                                     usage.output_tokens = u.output_tokens;
                                                 }
                                             }
-                                            claurst_api::StreamEvent::MessageStop => break,
+                                            simon_api::StreamEvent::MessageStop => break,
                                             _ => {}
                                         }
                                     }
@@ -1194,8 +1194,8 @@ pub async fn run_query_loop(
                     }
 
                     let assistant_msg = Message {
-                        role: claurst_core::types::Role::Assistant,
-                        content: claurst_core::types::MessageContent::Blocks(content_blocks.clone()),
+                        role: simon_core::types::Role::Assistant,
+                        content: simon_core::types::MessageContent::Blocks(content_blocks.clone()),
                         uuid: Some(msg_id),
                         cost: None,
                     };
@@ -1245,13 +1245,13 @@ pub async fn run_query_loop(
                             }
                             tool_results.push(ContentBlock::ToolResult {
                                 tool_use_id: tool_id,
-                                content: claurst_core::types::ToolResultContent::Text(result.content),
+                                content: simon_core::types::ToolResultContent::Text(result.content),
                                 is_error: Some(result.is_error),
                             });
                         }
                         messages.push(Message {
-                            role: claurst_core::types::Role::User,
-                            content: claurst_core::types::MessageContent::Blocks(tool_results),
+                            role: simon_core::types::Role::User,
+                            content: simon_core::types::MessageContent::Blocks(tool_results),
                             uuid: None,
                             cost: None,
                         });
@@ -1276,15 +1276,15 @@ pub async fn run_query_loop(
                     // available.  Return a clear error instead of silently falling
                     // through to the Anthropic client.
                     let hint = match provider_id_str.as_str() {
-                        "google" => "Set GOOGLE_API_KEY or run `claurst auth login --provider google`.",
-                        "openai" => "Set OPENAI_API_KEY or run `claurst auth login --provider openai`.",
+                        "google" => "Set GOOGLE_API_KEY or run `simon auth login --provider google`.",
+                        "openai" => "Set OPENAI_API_KEY or run `simon auth login --provider openai`.",
                         "groq" => "Set GROQ_API_KEY.",
                         "mistral" => "Set MISTRAL_API_KEY.",
                         "deepseek" => "Set DEEPSEEK_API_KEY.",
                         "xai" => "Set XAI_API_KEY.",
                         "github-copilot" => "Reconnect GitHub Copilot via /connect, or set GITHUB_TOKEN.",
                         "cohere" => "Set COHERE_API_KEY.",
-                        _ => "Set the appropriate API key environment variable or use `claurst auth login`.",
+                        _ => "Set the appropriate API key environment variable or use `simon auth login`.",
                     };
                     error!(
                         provider = %provider_id_str,
@@ -1479,9 +1479,9 @@ pub async fn run_query_loop(
         // compact / context-collapse instead. This fires on every streaming turn
         // so it can act before a prompt-too-long error is returned by the API.
         //
-        // Feature gate check: CLAURST_FEATURE_REACTIVE_COMPACT=1
+        // Feature gate check: SIMON_FEATURE_REACTIVE_COMPACT=1
         let reactive_compact_enabled =
-            claurst_core::feature_gates::is_feature_enabled("reactive_compact");
+            simon_core::feature_gates::is_feature_enabled("reactive_compact");
 
         if reactive_compact_enabled {
             // Reactive path: emergency collapse takes priority over normal compact.
@@ -1532,7 +1532,7 @@ pub async fn run_query_loop(
                             "Reactive compact complete"
                         );
                     }
-                    Err(claurst_core::error::ClaudeError::Cancelled) => {
+                    Err(simon_core::error::ClaudeError::Cancelled) => {
                         warn!("Reactive compact was cancelled");
                     }
                     Err(e) => {
@@ -1571,7 +1571,7 @@ pub async fn run_query_loop(
         // Helper closure for firing the Stop hook.
         macro_rules! fire_stop_hook {
             ($msg:expr) => {{
-                let stop_ctx = claurst_core::hooks::HookContext {
+                let stop_ctx = simon_core::hooks::HookContext {
                     event: "Stop".to_string(),
                     tool_name: None,
                     tool_input: None,
@@ -1579,9 +1579,9 @@ pub async fn run_query_loop(
                     is_error: None,
                     session_id: Some(tool_ctx.session_id.clone()),
                 };
-                claurst_core::hooks::run_hooks(
+                simon_core::hooks::run_hooks(
                     &tool_ctx.config.hooks,
-                    claurst_core::config::HookEvent::Stop,
+                    simon_core::config::HookEvent::Stop,
                     &stop_ctx,
                     &tool_ctx.working_dir,
                 )
@@ -1613,8 +1613,8 @@ pub async fn run_query_loop(
                     // requiring an Arc in the existing run_query_loop signature.
                     if let Ok(api_key) = std::env::var("ANTHROPIC_API_KEY") {
                         if !api_key.is_empty() {
-                            if let Ok(sm_client) = claurst_api::AnthropicClient::new(
-                                claurst_api::client::ClientConfig {
+                            if let Ok(sm_client) = simon_api::AnthropicClient::new(
+                                simon_api::client::ClientConfig {
                                     api_key,
                                     ..Default::default()
                                 },
@@ -1629,7 +1629,7 @@ pub async fn run_query_loop(
                                     {
                                         Ok(memories) if !memories.is_empty() => {
                                             let target = working_dir_clone
-                                                .join(".claurst")
+                                                .join(".simon")
                                                 .join("AGENTS.md");
                                             if let Err(e) =
                                                 session_memory::SessionMemoryExtractor::persist(
@@ -1751,7 +1751,7 @@ pub async fn run_query_loop(
                         }
 
                         let hooks = &tool_ctx.config.hooks;
-                        let hook_ctx = claurst_core::hooks::HookContext {
+                        let hook_ctx = simon_core::hooks::HookContext {
                             event: "PreToolUse".to_string(),
                             tool_name: Some(name.clone()),
                             tool_input: Some(input.clone()),
@@ -1759,27 +1759,27 @@ pub async fn run_query_loop(
                             is_error: None,
                             session_id: Some(tool_ctx.session_id.clone()),
                         };
-                        let pre_outcome = claurst_core::hooks::run_hooks(
+                        let pre_outcome = simon_core::hooks::run_hooks(
                             hooks,
-                            claurst_core::config::HookEvent::PreToolUse,
+                            simon_core::config::HookEvent::PreToolUse,
                             &hook_ctx,
                             &tool_ctx.working_dir,
                         )
                         .await;
 
                         let plugin_pre_outcome =
-                            claurst_plugins::run_global_pre_tool_hook(&name, &input);
+                            simon_plugins::run_global_pre_tool_hook(&name, &input);
 
                         let blocked_result =
-                            if let claurst_core::hooks::HookOutcome::Blocked(reason) = pre_outcome {
+                            if let simon_core::hooks::HookOutcome::Blocked(reason) = pre_outcome {
                                 warn!(tool = %name, reason = %reason, "PreToolUse hook blocked execution");
-                                Some(claurst_tools::ToolResult::error(format!(
+                                Some(simon_tools::ToolResult::error(format!(
                                     "Blocked by hook: {}",
                                     reason
                                 )))
-                            } else if let claurst_plugins::HookOutcome::Deny(reason) = plugin_pre_outcome {
+                            } else if let simon_plugins::HookOutcome::Deny(reason) = plugin_pre_outcome {
                                 warn!(tool = %name, reason = %reason, "Plugin PreToolUse hook blocked execution");
-                                Some(claurst_tools::ToolResult::error(format!(
+                                Some(simon_tools::ToolResult::error(format!(
                                     "Blocked by plugin hook: {}",
                                     reason
                                 )))
@@ -1825,7 +1825,7 @@ pub async fn run_query_loop(
                     Vec::with_capacity(prepared.len());
                 for (p, result) in prepared.iter().zip(exec_results.into_iter()) {
                     let hooks = &tool_ctx.config.hooks;
-                    let post_ctx = claurst_core::hooks::HookContext {
+                    let post_ctx = simon_core::hooks::HookContext {
                         event: "PostToolUse".to_string(),
                         tool_name: Some(p.name.clone()),
                         tool_input: Some(p.input.clone()),
@@ -1833,15 +1833,15 @@ pub async fn run_query_loop(
                         is_error: Some(result.is_error),
                         session_id: Some(tool_ctx.session_id.clone()),
                     };
-                    claurst_core::hooks::run_hooks(
+                    simon_core::hooks::run_hooks(
                         hooks,
-                        claurst_core::config::HookEvent::PostToolUse,
+                        simon_core::config::HookEvent::PostToolUse,
                         &post_ctx,
                         &tool_ctx.working_dir,
                     )
                     .await;
 
-                    claurst_plugins::run_global_post_tool_hook(
+                    simon_plugins::run_global_post_tool_hook(
                         &p.name,
                         &p.input,
                         &result.content,
@@ -1923,7 +1923,7 @@ async fn execute_tool(
 /// Load persisted todos for `session_id` and return a nudge string if any are
 /// incomplete (status != "completed"). Returns empty string otherwise.
 fn build_todo_nudge(session_id: &str) -> String {
-    let todos = claurst_tools::todo_write::load_todos(session_id);
+    let todos = simon_tools::todo_write::load_todos(session_id);
     let incomplete_count = todos
         .iter()
         .filter(|t| t["status"].as_str().map_or(true, |s| s != "completed"))
@@ -1942,7 +1942,7 @@ fn build_todo_nudge(session_id: &str) -> String {
 
 /// Build the system prompt from config.
 ///
-/// Delegates to `claurst_core::system_prompt::build_system_prompt` so that all
+/// Delegates to `simon_core::system_prompt::build_system_prompt` so that all
 /// default content (capabilities, safety guidelines, dynamic-boundary marker,
 /// etc.) is assembled in one place.  The `QueryConfig` fields map directly to
 /// `SystemPromptOptions`:
@@ -1950,7 +1950,7 @@ fn build_todo_nudge(session_id: &str) -> String {
 /// - `system_prompt`        → `custom_system_prompt` (added to cacheable block)
 /// - `append_system_prompt` → `append_system_prompt` (added after boundary)
 fn build_system_prompt(config: &QueryConfig) -> SystemPrompt {
-    use claurst_core::system_prompt::SystemPromptOptions;
+    use simon_core::system_prompt::SystemPromptOptions;
 
     let opts = SystemPromptOptions {
         custom_system_prompt: config.system_prompt.clone(),
@@ -1966,7 +1966,7 @@ fn build_system_prompt(config: &QueryConfig) -> SystemPrompt {
         ..Default::default()
     };
 
-    let text = claurst_core::system_prompt::build_system_prompt(&opts);
+    let text = simon_core::system_prompt::build_system_prompt(&opts);
     SystemPrompt::Text(text)
 }
 
@@ -1978,10 +1978,10 @@ fn build_system_prompt(config: &QueryConfig) -> SystemPrompt {
 /// equivalent `AnthropicStreamEvent` so that the TUI stream consumer sees a
 /// single, consistent event type regardless of which provider produced it.
 fn map_to_anthropic_event(
-    evt: &claurst_api::StreamEvent,
-) -> Option<claurst_api::AnthropicStreamEvent> {
-    use claurst_api::streaming::{AnthropicStreamEvent, ContentDelta};
-    use claurst_api::StreamEvent;
+    evt: &simon_api::StreamEvent,
+) -> Option<simon_api::AnthropicStreamEvent> {
+    use simon_api::streaming::{AnthropicStreamEvent, ContentDelta};
+    use simon_api::StreamEvent;
 
     match evt {
         StreamEvent::MessageStart { id, model, usage } => {
@@ -2034,12 +2034,12 @@ fn map_to_anthropic_event(
             // Convert the unified StopReason to the string form used by
             // AnthropicStreamEvent::MessageDelta.
             let stop_reason_str = stop_reason.as_ref().map(|r| match r {
-                claurst_api::provider_types::StopReason::ToolUse => "tool_use".to_string(),
-                claurst_api::provider_types::StopReason::MaxTokens => "max_tokens".to_string(),
-                claurst_api::provider_types::StopReason::StopSequence => "stop_sequence".to_string(),
-                claurst_api::provider_types::StopReason::EndTurn => "end_turn".to_string(),
-                claurst_api::provider_types::StopReason::ContentFiltered => "content_filtered".to_string(),
-                claurst_api::provider_types::StopReason::Other(s) => s.clone(),
+                simon_api::provider_types::StopReason::ToolUse => "tool_use".to_string(),
+                simon_api::provider_types::StopReason::MaxTokens => "max_tokens".to_string(),
+                simon_api::provider_types::StopReason::StopSequence => "stop_sequence".to_string(),
+                simon_api::provider_types::StopReason::EndTurn => "end_turn".to_string(),
+                simon_api::provider_types::StopReason::ContentFiltered => "content_filtered".to_string(),
+                simon_api::provider_types::StopReason::Other(s) => s.clone(),
             });
             Some(AnthropicStreamEvent::MessageDelta {
                 stop_reason: stop_reason_str,
@@ -2063,7 +2063,7 @@ fn map_to_anthropic_event(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use claurst_api::SystemPrompt;
+    use simon_api::SystemPrompt;
 
     fn make_config(sys: Option<&str>, append: Option<&str>) -> QueryConfig {
         QueryConfig {
@@ -2072,7 +2072,7 @@ mod tests {
             max_turns: 10,
             system_prompt: sys.map(String::from),
             append_system_prompt: append.map(String::from),
-            output_style: claurst_core::system_prompt::OutputStyle::Default,
+            output_style: simon_core::system_prompt::OutputStyle::Default,
             output_style_prompt: None,
             working_directory: None,
             thinking_budget: None,
@@ -2096,17 +2096,17 @@ mod tests {
     #[test]
     fn test_system_prompt_default_when_empty() {
         // The default prompt (no custom system prompt set) should include the
-        // Claurst attribution and standard sections.
+        // Simon attribution and standard sections.
         let cfg = make_config(None, None);
         let prompt = build_system_prompt(&cfg);
         if let SystemPrompt::Text(text) = prompt {
             assert!(
-                text.contains("Claurst") || text.contains("Claude agent"),
+                text.contains("Simon") || text.contains("Claude agent"),
                 "Default prompt should contain attribution: {}",
                 text
             );
             assert!(
-                text.contains(claurst_core::system_prompt::SYSTEM_PROMPT_DYNAMIC_BOUNDARY),
+                text.contains(simon_core::system_prompt::SYSTEM_PROMPT_DYNAMIC_BOUNDARY),
                 "Default prompt must contain the dynamic boundary marker"
             );
         } else {
@@ -2126,7 +2126,7 @@ mod tests {
                 "Custom prompt text should appear in the output"
             );
             assert!(
-                text.contains("Claurst") || text.contains("Claude agent"),
+                text.contains("Simon") || text.contains("Claude agent"),
                 "Default attribution should still be present"
             );
         } else {
@@ -2144,7 +2144,7 @@ mod tests {
             assert!(text.contains("Additional context."));
             // append_system_prompt appears after the boundary
             let boundary_pos = text
-                .find(claurst_core::system_prompt::SYSTEM_PROMPT_DYNAMIC_BOUNDARY)
+                .find(simon_core::system_prompt::SYSTEM_PROMPT_DYNAMIC_BOUNDARY)
                 .expect("boundary must exist");
             let append_pos = text.find("Additional context.").unwrap();
             assert!(
@@ -2168,7 +2168,7 @@ mod tests {
                 "Appended text must appear in the prompt"
             );
             let boundary_pos = text
-                .find(claurst_core::system_prompt::SYSTEM_PROMPT_DYNAMIC_BOUNDARY)
+                .find(simon_core::system_prompt::SYSTEM_PROMPT_DYNAMIC_BOUNDARY)
                 .expect("boundary must exist");
             let append_pos = text.find("Appended text.").unwrap();
             assert!(
@@ -2212,7 +2212,7 @@ mod tests {
         let s = format!("{:?}", outcome);
         assert!(s.contains("Cancelled"));
 
-        let err_outcome = QueryOutcome::Error(claurst_core::error::ClaudeError::RateLimit);
+        let err_outcome = QueryOutcome::Error(simon_core::error::ClaudeError::RateLimit);
         let s2 = format!("{:?}", err_outcome);
         assert!(s2.contains("Error"));
     }
@@ -2222,7 +2222,7 @@ mod tests {
         let options = build_provider_options(
             "google",
             "gemini-3-flash-preview",
-            Some(claurst_core::effort::EffortLevel::High),
+            Some(simon_core::effort::EffortLevel::High),
             None,
         );
         assert_eq!(
@@ -2240,7 +2240,7 @@ mod tests {
         let options = build_provider_options(
             "openrouter",
             "gpt-5.4",
-            Some(claurst_core::effort::EffortLevel::Medium),
+            Some(simon_core::effort::EffortLevel::Medium),
             None,
         );
         assert_eq!(options["reasoningEffort"], serde_json::json!("medium"));
@@ -2253,7 +2253,7 @@ mod tests {
         let options = build_provider_options(
             "amazon-bedrock",
             "anthropic.claude-sonnet-4-6-v1",
-            Some(claurst_core::effort::EffortLevel::High),
+            Some(simon_core::effort::EffortLevel::High),
             Some(10_000),
         );
         assert_eq!(
@@ -2280,7 +2280,7 @@ impl StreamHandler for ChannelStreamHandler {
 
 /// Run a single (non-agentic) query – no tool loop, just one API call.
 pub async fn run_single_query(
-    client: &claurst_api::AnthropicClient,
+    client: &simon_api::AnthropicClient,
     messages: Vec<Message>,
     config: &QueryConfig,
 ) -> Result<Message, ClaudeError> {
@@ -2292,7 +2292,7 @@ pub async fn run_single_query(
         .system(system)
         .build();
 
-    let handler: Arc<dyn StreamHandler> = Arc::new(claurst_api::streaming::NullStreamHandler);
+    let handler: Arc<dyn StreamHandler> = Arc::new(simon_api::streaming::NullStreamHandler);
 
     let mut rx = client.create_message_stream(request, handler).await?;
     let mut acc = StreamAccumulator::new();

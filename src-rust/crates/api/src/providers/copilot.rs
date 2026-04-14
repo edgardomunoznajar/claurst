@@ -12,7 +12,7 @@
 //
 // Required headers on model/chat requests:
 //   Authorization: Bearer <github_token>
-//   User-Agent: claurst/0.0.9
+//   User-Agent: simon/0.0.9
 //   Openai-Intent: conversation-edits
 //   x-initiator: user | agent
 //
@@ -22,8 +22,8 @@ use std::pin::Pin;
 
 use async_stream::stream;
 use async_trait::async_trait;
-use claurst_core::provider_id::{ModelId, ProviderId};
-use claurst_core::types::{ContentBlock, ImageSource, MessageContent, Role, ToolResultContent, UsageInfo};
+use simon_core::provider_id::{ModelId, ProviderId};
+use simon_core::types::{ContentBlock, ImageSource, MessageContent, Role, ToolResultContent, UsageInfo};
 use futures::Stream;
 use serde_json::{json, Value};
 use tracing::debug;
@@ -114,7 +114,7 @@ impl CopilotProvider {
     fn copilot_headers(&self, builder: reqwest::RequestBuilder) -> reqwest::RequestBuilder {
         builder
             .bearer_auth(&self.token)
-            .header("User-Agent", "claurst/0.0.9")
+            .header("User-Agent", "simon/0.0.9")
     }
 
     fn copilot_request_headers(

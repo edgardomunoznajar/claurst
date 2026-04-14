@@ -1,4 +1,4 @@
-// claurst-tui: Terminal UI using ratatui + crossterm for Claurst.
+// simon-tui: Terminal UI using ratatui + crossterm for Simon.
 //
 // This crate provides the interactive terminal interface including:
 // - Message display with syntax highlighting
@@ -91,7 +91,7 @@ pub mod voice_mode_notice;
 pub mod message_copy;
 /// Desktop app upsell startup dialog (shown at startup on macOS/Windows x64).
 pub mod desktop_upsell_startup;
-/// Memory update notification banner (shown after Claurst updates a AGENTS.md file).
+/// Memory update notification banner (shown after Simon updates a AGENTS.md file).
 pub mod memory_update_notification;
 /// MCP elicitation dialog (form-based user input requested by MCP servers).
 pub mod elicitation_dialog;
@@ -185,7 +185,7 @@ pub fn setup_terminal() -> io::Result<Terminal<CrosstermBackend<Stdout>>> {
     enable_raw_mode()?;
     let mut stdout = io::stdout();
     execute!(stdout, EnterAlternateScreen, EnableMouseCapture)?;
-    set_terminal_title("\u{1f980} Claurst");
+    set_terminal_title("\u{1f980} Simon");
     let backend = CrosstermBackend::new(stdout);
     let terminal = Terminal::new(backend)?;
     Ok(terminal)
@@ -210,11 +210,11 @@ pub fn set_terminal_title(title: &str) {
 }
 
 /// Update the terminal title to reflect the current session context.
-/// Format: "🦀 | <topic>" or just "🦀 Claurst" when no topic is set.
+/// Format: "🦀 | <topic>" or just "🦀 Simon" when no topic is set.
 pub fn update_terminal_title(topic: Option<&str>) {
     match topic {
         Some(t) if !t.is_empty() => set_terminal_title(&format!("\u{1f980} | {}", t)),
-        _ => set_terminal_title("\u{1f980} Claurst"),
+        _ => set_terminal_title("\u{1f980} Simon"),
     }
 }
 
@@ -226,10 +226,10 @@ pub fn update_terminal_title(topic: Option<&str>) {
 mod tests {
     use super::*;
     use app::{App, HistorySearch, ToolStatus, ToolUseBlock};
-    use claurst_core::config::Config;
-    use claurst_core::cost::CostTracker;
-    use claurst_core::file_history::FileHistory;
-    use claurst_core::types::{ContentBlock, Role, ToolResultContent};
+    use simon_core::config::Config;
+    use simon_core::cost::CostTracker;
+    use simon_core::file_history::FileHistory;
+    use simon_core::types::{ContentBlock, Role, ToolResultContent};
     use dialogs::PermissionRequest;
     use notifications::NotificationKind;
     use ratatui::{backend::TestBackend, buffer::Buffer, layout::Rect, Terminal};
@@ -358,7 +358,7 @@ mod tests {
 
         app.handle_key_event(ctrl(KeyCode::Char('s')));
 
-        let saved = temp.path().join(".claurst").join("agents").join("planner.md");
+        let saved = temp.path().join(".simon").join("agents").join("planner.md");
         assert!(saved.exists());
         let content = std::fs::read_to_string(saved).unwrap();
         assert!(content.contains("name: Planner"));
@@ -563,7 +563,7 @@ mod tests {
         let backend = TestBackend::new(120, 40);
         let mut terminal = Terminal::new(backend).unwrap();
         let mut app = make_app();
-        app.push_message(claurst_core::types::Message::user("hello".to_string()));
+        app.push_message(simon_core::types::Message::user("hello".to_string()));
 
         terminal
             .draw(|frame| crate::render::render_app(frame, &app))
@@ -578,7 +578,7 @@ mod tests {
             .collect::<Vec<_>>()
             .join("");
 
-        assert!(rendered.contains("Claurst"));
+        assert!(rendered.contains("Simon"));
         assert!(rendered.contains("hello"));
     }
 
@@ -907,7 +907,7 @@ mod tests {
 
     #[test]
     fn test_message_renderer_includes_tool_use_and_thinking_blocks() {
-        let msg = claurst_core::types::Message::assistant_blocks(vec![
+        let msg = simon_core::types::Message::assistant_blocks(vec![
             ContentBlock::Thinking {
                 thinking: "reasoning".to_string(),
                 signature: "sig".to_string(),
@@ -936,7 +936,7 @@ mod tests {
 
     #[test]
     fn test_message_renderer_includes_tool_result_errors() {
-        let msg = claurst_core::types::Message::user_blocks(vec![ContentBlock::ToolResult {
+        let msg = simon_core::types::Message::user_blocks(vec![ContentBlock::ToolResult {
             tool_use_id: "toolu_1".to_string(),
             content: ToolResultContent::Text("boom".to_string()),
             is_error: Some(true),
@@ -958,7 +958,7 @@ mod tests {
     #[test]
     fn test_handle_status_event() {
         let mut app = make_app();
-        app.handle_query_event(claurst_query::QueryEvent::Status("working".to_string()));
+        app.handle_query_event(simon_query::QueryEvent::Status("working".to_string()));
         assert_eq!(app.status_message.as_deref(), Some("working"));
     }
 
@@ -966,7 +966,7 @@ mod tests {
     fn test_handle_error_event() {
         let mut app = make_app();
         app.is_streaming = true;
-        app.handle_query_event(claurst_query::QueryEvent::Error("oops".to_string()));
+        app.handle_query_event(simon_query::QueryEvent::Error("oops".to_string()));
         assert!(!app.is_streaming);
         assert_eq!(app.messages.len(), 1);
         assert!(app.messages[0].get_all_text().contains("oops"));
@@ -975,7 +975,7 @@ mod tests {
     #[test]
     fn test_handle_tool_start_and_end() {
         let mut app = make_app();
-        app.handle_query_event(claurst_query::QueryEvent::ToolStart {
+        app.handle_query_event(simon_query::QueryEvent::ToolStart {
             tool_name: "Bash".to_string(),
             tool_id: "t1".to_string(),
             input_json: r#"{"command":"ls -la"}"#.to_string(),
@@ -984,7 +984,7 @@ mod tests {
         assert_eq!(app.tool_use_blocks[0].turn_index, None);
         assert_eq!(app.tool_use_blocks[0].status, ToolStatus::Running);
 
-        app.handle_query_event(claurst_query::QueryEvent::ToolEnd {
+        app.handle_query_event(simon_query::QueryEvent::ToolEnd {
             tool_name: "Bash".to_string(),
             tool_id: "t1".to_string(),
             result: "output".to_string(),
@@ -1004,7 +1004,7 @@ mod tests {
             output_preview: None,
             input_json: r#"{"file_path":"foo.rs"}"#.to_string(),
         });
-        app.handle_query_event(claurst_query::QueryEvent::ToolEnd {
+        app.handle_query_event(simon_query::QueryEvent::ToolEnd {
             tool_name: "Read".to_string(),
             tool_id: "t2".to_string(),
             result: "file not found".to_string(),
@@ -1019,7 +1019,7 @@ mod tests {
         let mut app = make_app();
         app.is_streaming = true;
         app.streaming_text = "partial response".to_string();
-        app.handle_query_event(claurst_query::QueryEvent::TurnComplete {
+        app.handle_query_event(simon_query::QueryEvent::TurnComplete {
             turn: 1,
             stop_reason: "end_turn".to_string(),
             usage: None,
@@ -1035,7 +1035,7 @@ mod tests {
         let mut app = make_app();
         app.is_streaming = true;
         app.streaming_thinking = "outline the fix".to_string();
-        app.handle_query_event(claurst_query::QueryEvent::TurnComplete {
+        app.handle_query_event(simon_query::QueryEvent::TurnComplete {
             turn: 1,
             stop_reason: "end_turn".to_string(),
             usage: None,
@@ -1053,8 +1053,8 @@ mod tests {
         let backend = TestBackend::new(120, 30);
         let mut terminal = Terminal::new(backend).unwrap();
         let mut app = make_app();
-        app.push_message(claurst_core::types::Message::user("hello".to_string()));
-        app.push_message(claurst_core::types::Message::assistant("hi there".to_string()));
+        app.push_message(simon_core::types::Message::user("hello".to_string()));
+        app.push_message(simon_core::types::Message::assistant("hi there".to_string()));
 
         terminal
             .draw(|frame| crate::render::render_app(frame, &app))

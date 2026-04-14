@@ -3,7 +3,7 @@
 // A focused overlay with toggle-style controls for privacy preferences.
 // Opened by /privacy-settings. Changes are persisted via Settings::save_sync().
 
-use claurst_core::config::Settings;
+use simon_core::config::Settings;
 use ratatui::layout::Rect;
 use ratatui::style::{Color, Modifier, Style};
 use ratatui::text::{Line, Span};
@@ -110,13 +110,13 @@ fn default_toggles() -> Vec<PrivacyToggle> {
             key: "usage_sharing",
             label: "Usage Sharing",
             description: "Share aggregate usage patterns (no personal data) to help \
-                          Anthropic understand how Claurst is used.",
+                          Anthropic understand how Simon is used.",
             enabled: false,
         },
         PrivacyToggle {
             key: "api_request_logging",
             label: "API Request Logging",
-            description: "Log API requests to a local file (~/.claurst/api_requests.log) \
+            description: "Log API requests to a local file (~/.simon/api_requests.log) \
                           for debugging. Logs are stored locally only.",
             enabled: false,
         },

@@ -53,9 +53,9 @@ impl NamedCommand for AgentsCommand {
     fn execute_named(&self, args: &[&str], ctx: &CommandContext) -> CommandResult {
         match args.first().copied().unwrap_or("list") {
             "list" => {
-                // Load agent definitions from .claurst/agents/ in working dir
+                // Load agent definitions from .simon/agents/ in working dir
                 // (and home dir), using the same loader as the TUI agents view.
-                let defs = claurst_tui::agents_view::load_agent_definitions(&ctx.working_dir);
+                let defs = simon_tui::agents_view::load_agent_definitions(&ctx.working_dir);
 
                 if defs.is_empty() {
                     return CommandResult::Message(
@@ -87,7 +87,7 @@ impl NamedCommand for AgentsCommand {
             "create" => {
                 let name = args.get(1).copied().unwrap_or("my-agent");
                 CommandResult::Message(format!(
-                    "Create a new agent by adding .claurst/agents/{name}.md\n\
+                    "Create a new agent by adding .simon/agents/{name}.md\n\
                      Template:\n\
                      ---\n\
                      name: {name}\n\
@@ -105,7 +105,7 @@ impl NamedCommand for AgentsCommand {
                     ),
                 };
                 CommandResult::Message(format!(
-                    "Edit .claurst/agents/{name}.md in your editor to update the agent."
+                    "Edit .simon/agents/{name}.md in your editor to update the agent."
                 ))
             }
             "delete" => {
@@ -116,7 +116,7 @@ impl NamedCommand for AgentsCommand {
                     ),
                 };
                 CommandResult::Message(format!(
-                    "Delete .claurst/agents/{name}.md to remove the agent."
+                    "Delete .simon/agents/{name}.md to remove the agent."
                 ))
             }
             sub => CommandResult::Error(format!("Unknown agents subcommand: '{sub}'")),
@@ -132,7 +132,7 @@ pub struct AddDirCommand;
 
 impl NamedCommand for AddDirCommand {
     fn name(&self) -> &str { "add-dir" }
-    fn description(&self) -> &str { "Add a directory to Claurst's allowed workspace paths" }
+    fn description(&self) -> &str { "Add a directory to Simon's allowed workspace paths" }
     fn usage(&self) -> &str { "claude add-dir <path>" }
 
     fn execute_named(&self, args: &[&str], _ctx: &CommandContext) -> CommandResult {
@@ -156,7 +156,7 @@ impl NamedCommand for AddDirCommand {
             Err(e) => return CommandResult::Error(format!("Cannot resolve path: {e}")),
         };
 
-        let mut settings = match claurst_core::config::Settings::load_sync() {
+        let mut settings = match simon_core::config::Settings::load_sync() {
             Ok(s) => s,
             Err(e) => {
                 return CommandResult::Error(format!(
@@ -216,7 +216,7 @@ impl NamedCommand for BranchCommand {
 
                 let result = tokio::task::block_in_place(|| {
                     tokio::runtime::Handle::current().block_on(async move {
-                        claurst_core::history::branch_session(
+                        simon_core::history::branch_session(
                             &session_id,
                             msg_count,
                             title_opt.as_deref(),
@@ -245,7 +245,7 @@ impl NamedCommand for BranchCommand {
 
                 let sessions = tokio::task::block_in_place(|| {
                     tokio::runtime::Handle::current()
-                        .block_on(claurst_core::history::list_sessions())
+                        .block_on(simon_core::history::list_sessions())
                 });
 
                 let branches: Vec<_> = sessions
@@ -289,7 +289,7 @@ impl NamedCommand for BranchCommand {
 
                 let result = tokio::task::block_in_place(|| {
                     tokio::runtime::Handle::current()
-                        .block_on(claurst_core::history::load_session(&id))
+                        .block_on(simon_core::history::load_session(&id))
                 });
 
                 match result {
@@ -320,7 +320,7 @@ impl NamedCommand for TagCommand {
             "list" => {
                 let result = tokio::task::block_in_place(|| {
                     tokio::runtime::Handle::current()
-                        .block_on(claurst_core::history::load_session(&session_id))
+                        .block_on(simon_core::history::load_session(&session_id))
                 });
                 match result {
                     Ok(session) => {
@@ -357,7 +357,7 @@ impl NamedCommand for TagCommand {
 
                 let result = tokio::task::block_in_place(|| {
                     tokio::runtime::Handle::current()
-                        .block_on(claurst_core::history::tag_session(&session_id, &tag))
+                        .block_on(simon_core::history::tag_session(&session_id, &tag))
                 });
 
                 match result {
@@ -379,7 +379,7 @@ impl NamedCommand for TagCommand {
 
                 let result = tokio::task::block_in_place(|| {
                     tokio::runtime::Handle::current()
-                        .block_on(claurst_core::history::untag_session(&session_id, &tag))
+                        .block_on(simon_core::history::untag_session(&session_id, &tag))
                 });
 
                 match result {
@@ -400,7 +400,7 @@ impl NamedCommand for TagCommand {
                 // Load session to check existing tags
                 let load_result = tokio::task::block_in_place(|| {
                     tokio::runtime::Handle::current()
-                        .block_on(claurst_core::history::load_session(&session_id))
+                        .block_on(simon_core::history::load_session(&session_id))
                 });
 
                 match load_result {
@@ -410,7 +410,7 @@ impl NamedCommand for TagCommand {
                             // Tag exists — remove it
                             let remove_result = tokio::task::block_in_place(|| {
                                 tokio::runtime::Handle::current()
-                                    .block_on(claurst_core::history::untag_session(&session_id, &tag_clone))
+                                    .block_on(simon_core::history::untag_session(&session_id, &tag_clone))
                             });
                             match remove_result {
                                 Ok(()) => CommandResult::Message(format!("Removed tag: #{tag}")),
@@ -420,7 +420,7 @@ impl NamedCommand for TagCommand {
                             // Tag absent — add it
                             let add_result = tokio::task::block_in_place(|| {
                                 tokio::runtime::Handle::current()
-                                    .block_on(claurst_core::history::tag_session(&session_id, &tag_clone))
+                                    .block_on(simon_core::history::tag_session(&session_id, &tag_clone))
                             });
                             match add_result {
                                 Ok(()) => CommandResult::Message(format!("Added tag: #{tag}")),
@@ -448,15 +448,15 @@ pub struct PassesCommand;
 
 impl NamedCommand for PassesCommand {
     fn name(&self) -> &str { "passes" }
-    fn description(&self) -> &str { "Share a free week of Claurst with friends" }
+    fn description(&self) -> &str { "Share a free week of Simon with friends" }
     fn usage(&self) -> &str { "claude passes" }
 
     fn execute_named(&self, _args: &[&str], _ctx: &CommandContext) -> CommandResult {
         CommandResult::Message(
-            "Claurst Passes \u{2014} Share Claurst with friends\n\n\
-             Share a free week of Claurst with a friend\n\
+            "Simon Passes \u{2014} Share Simon with friends\n\n\
+             Share a free week of Simon with a friend\n\
              Visit https://claude.ai/passes to get your referral link\n\
-             Each referral gives your friend 1 week of Claurst Pro"
+             Each referral gives your friend 1 week of Simon Pro"
                 .to_string(),
         )
     }
@@ -498,12 +498,12 @@ impl NamedCommand for IdeCommand {
 
     fn execute_named(&self, _args: &[&str], _ctx: &CommandContext) -> CommandResult {
         // ---- Environment-based IDE detection --------------------------------
-        let env_detection = claurst_core::detect_ide();
+        let env_detection = simon_core::detect_ide();
         let env_section = match &env_detection {
             Some(kind) => {
                 let mut lines = vec![format!("Detected IDE: {}", kind.display_name())];
                 if let Some(cmd) = kind.extension_install_command() {
-                    lines.push(format!("To install the Claurst extension: {}", cmd));
+                    lines.push(format!("To install the Simon extension: {}", cmd));
                 }
                 lines.join("\n")
             }
@@ -512,7 +512,7 @@ impl NamedCommand for IdeCommand {
 
         // ---- Lockfile-based connection status --------------------------------
         let lockfile_dir = dirs::home_dir()
-            .map(|h| h.join(".claurst").join("ide"))
+            .map(|h| h.join(".simon").join("ide"))
             .unwrap_or_default();
 
         let mut ides = Vec::new();
@@ -635,7 +635,7 @@ pub struct DesktopCommand;
 
 impl NamedCommand for DesktopCommand {
     fn name(&self) -> &str { "desktop" }
-    fn description(&self) -> &str { "Download and set up Claurst Desktop app" }
+    fn description(&self) -> &str { "Download and set up Simon Desktop app" }
     fn usage(&self) -> &str { "claude desktop" }
 
     fn execute_named(&self, _args: &[&str], ctx: &CommandContext) -> CommandResult {
@@ -643,7 +643,7 @@ impl NamedCommand for DesktopCommand {
         let arch = std::env::consts::ARCH;
         let download_url = "https://claude.ai/download";
 
-        // Detect if Claurst Desktop is likely installed (platform-specific heuristic).
+        // Detect if Simon Desktop is likely installed (platform-specific heuristic).
         let desktop_likely_installed = match os {
             "macos" => {
                 std::path::Path::new("/Applications/Claude.app").exists()
@@ -669,11 +669,11 @@ impl NamedCommand for DesktopCommand {
             let deep_link = format!("claude://session/{}", session_id);
 
             let mut msg = String::new();
-            msg.push_str("\u{2713} Already connected to Claurst Desktop\n\n");
-            msg.push_str("Your Claurst session is synced with Claurst Desktop.\n\n");
+            msg.push_str("\u{2713} Already connected to Simon Desktop\n\n");
+            msg.push_str("Your Simon session is synced with Simon Desktop.\n\n");
             msg.push_str(&format!("Open this session in Desktop: {deep_link}\n\n"));
             if desktop_likely_installed {
-                msg.push_str("Claurst Desktop is installed on this machine.\n");
+                msg.push_str("Simon Desktop is installed on this machine.\n");
                 msg.push_str(&format!("Manage your installation: {download_url}"));
             } else {
                 msg.push_str(&format!("Download / manage Desktop: {download_url}"));
@@ -684,45 +684,45 @@ impl NamedCommand for DesktopCommand {
         let msg = if os == "macos" {
             if desktop_likely_installed {
                 format!(
-                    "Open Claurst Desktop \u{2014} macOS\n\n\
-                     Claurst Desktop appears to be installed.\n\
+                    "Open Simon Desktop \u{2014} macOS\n\n\
+                     Simon Desktop appears to be installed.\n\
                      Launch it from /Applications/Claude.app and sign in with your Anthropic account.\n\n\
                      Download / update: {download_url}"
                 )
             } else {
                 format!(
-                    "Download Claurst Desktop \u{2014} macOS\n\n\
+                    "Download Simon Desktop \u{2014} macOS\n\n\
                      Download: {download_url}\n\n\
                      Setup instructions:\n\
-                     1. Download and install Claurst Desktop for macOS\n\
-                     2. Open Claurst Desktop and sign in with the same Anthropic account\n\
-                     3. Claurst will detect the Desktop bridge automatically"
+                     1. Download and install Simon Desktop for macOS\n\
+                     2. Open Simon Desktop and sign in with the same Anthropic account\n\
+                     3. Simon will detect the Desktop bridge automatically"
                 )
             }
         } else if os == "windows" {
             let arch_note = if arch == "x86_64" { " (x64)" } else { "" };
             if desktop_likely_installed {
                 format!(
-                    "Open Claurst Desktop \u{2014} Windows{arch_note}\n\n\
-                     Claurst Desktop appears to be installed.\n\
+                    "Open Simon Desktop \u{2014} Windows{arch_note}\n\n\
+                     Simon Desktop appears to be installed.\n\
                      Launch it from your Start menu and sign in with your Anthropic account.\n\n\
                      Download / update: {download_url}"
                 )
             } else {
                 format!(
-                    "Download Claurst Desktop for Windows{arch_note}\n\n\
+                    "Download Simon Desktop for Windows{arch_note}\n\n\
                      Download: {download_url}\n\n\
                      Setup instructions:\n\
-                     1. Download and run the Claurst Desktop installer\n\
-                     2. Open Claurst Desktop and sign in with the same Anthropic account\n\
-                     3. Claurst will detect the Desktop bridge automatically"
+                     1. Download and run the Simon Desktop installer\n\
+                     2. Open Simon Desktop and sign in with the same Anthropic account\n\
+                     3. Simon will detect the Desktop bridge automatically"
                 )
             }
         } else {
             // Linux and other platforms
             format!(
-                "Claurst Desktop is not yet available for {os}\n\n\
-                 On Linux, you can use Claurst via the CLI or visit https://claude.ai in your browser.\n\
+                "Simon Desktop is not yet available for {os}\n\n\
+                 On Linux, you can use Simon via the CLI or visit https://claude.ai in your browser.\n\
                  Check {download_url} for the latest platform availability."
             )
         };
@@ -797,7 +797,7 @@ pub struct MobileCommand;
 
 impl NamedCommand for MobileCommand {
     fn name(&self) -> &str { "mobile" }
-    fn description(&self) -> &str { "Download the Claurst mobile app" }
+    fn description(&self) -> &str { "Download the Simon mobile app" }
     fn usage(&self) -> &str { "claude mobile [ios|android]" }
 
     fn execute_named(&self, args: &[&str], ctx: &CommandContext) -> CommandResult {
@@ -832,7 +832,7 @@ impl NamedCommand for MobileCommand {
         let qr_lines = render_qr(qr_url);
 
         let mut out = String::new();
-        out.push_str("Scan to download Claurst mobile app\n");
+        out.push_str("Scan to download Simon mobile app\n");
         out.push_str(&format!("Platform: {platform_label}\n\n"));
         if has_session {
             out.push_str("  [1] iOS    [2] Android    [3] Session (QR links to active session)\n\n");
@@ -868,12 +868,12 @@ pub struct InstallGithubAppCommand;
 
 impl NamedCommand for InstallGithubAppCommand {
     fn name(&self) -> &str { "install-github-app" }
-    fn description(&self) -> &str { "Set up Claurst GitHub Actions for a repository" }
+    fn description(&self) -> &str { "Set up Simon GitHub Actions for a repository" }
     fn usage(&self) -> &str { "claude install-github-app" }
 
     fn execute_named(&self, _args: &[&str], ctx: &CommandContext) -> CommandResult {
         let provider_id = ctx.config.selected_provider_id();
-        let provider_secret_step = claurst_core::config::primary_api_key_env_var_for_provider(provider_id)
+        let provider_secret_step = simon_core::config::primary_api_key_env_var_for_provider(provider_id)
             .map(|provider_secret| {
                 format!(
                     "3. Add your provider credential to repository secrets (for example {provider_secret})"
@@ -887,11 +887,11 @@ impl NamedCommand for InstallGithubAppCommand {
 
         CommandResult::Message(
             format!(
-                "To install the Claurst GitHub App:\n\
+                "To install the Simon GitHub App:\n\
              1. Visit https://github.com/apps/claude-code-app and click Install\n\
              2. Select the repositories to enable\n\
              {provider_secret_step}\n\n\
-             The app enables Claurst in GitHub Actions workflows for the configured provider."
+             The app enables Simon in GitHub Actions workflows for the configured provider."
             ),
         )
     }
@@ -905,7 +905,7 @@ pub struct RemoteSetupCommand;
 
 impl NamedCommand for RemoteSetupCommand {
     fn name(&self) -> &str { "remote-setup" }
-    fn description(&self) -> &str { "Check and configure a remote Claurst environment" }
+    fn description(&self) -> &str { "Check and configure a remote Simon environment" }
     fn usage(&self) -> &str { "claude remote-setup" }
 
     fn execute_named(&self, _args: &[&str], ctx: &CommandContext) -> CommandResult {
@@ -914,7 +914,7 @@ impl NamedCommand for RemoteSetupCommand {
         let mut steps = Vec::new();
         let provider_id = ctx.config.selected_provider_id();
         let provider_name = provider_id.replace('-', " ");
-        let credential_hint = claurst_core::config::api_key_env_vars_for_provider(provider_id);
+        let credential_hint = simon_core::config::api_key_env_vars_for_provider(provider_id);
         let credentials_required = !matches!(
             provider_id,
             "ollama" | "lmstudio" | "lm-studio" | "llamacpp" | "llama-cpp" | "llama-server"
@@ -953,10 +953,10 @@ impl NamedCommand for RemoteSetupCommand {
         ));
 
         // Step 3: Check claude config dir exists
-        let config_dir = claurst_core::config::Settings::config_dir();
+        let config_dir = simon_core::config::Settings::config_dir();
         let has_config = config_dir.exists();
         steps.push(format!(
-            "{} Claurst config dir {}",
+            "{} Simon config dir {}",
             if has_config { "\u{2713}" } else { "\u{2717}" },
             if has_config {
                 format!("exists at {}", config_dir.display())
@@ -1000,7 +1000,7 @@ impl NamedCommand for RemoteSetupCommand {
              {}",
             steps.join("\n"),
             if all_ok {
-                "\u{2713} All checks passed. Claurst is ready for remote use.\nStart a session: claude --bridge"
+                "\u{2713} All checks passed. Simon is ready for remote use.\nStart a session: claude --bridge"
             } else {
                 "\u{2717} Some checks failed. Fix the issues above and run 'claude remote-setup' again."
             }
@@ -1016,7 +1016,7 @@ pub struct StickersCommand;
 
 impl NamedCommand for StickersCommand {
     fn name(&self) -> &str { "stickers" }
-    fn description(&self) -> &str { "Open the Claurst sticker page in your browser" }
+    fn description(&self) -> &str { "Open the Simon sticker page in your browser" }
     fn usage(&self) -> &str { "claude stickers" }
 
     fn execute_named(&self, _args: &[&str], _ctx: &CommandContext) -> CommandResult {
@@ -1107,11 +1107,11 @@ pub fn find_named_command(name: &str) -> Option<Box<dyn NamedCommand>> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use claurst_core::cost::CostTracker;
+    use simon_core::cost::CostTracker;
 
     fn make_ctx() -> CommandContext {
         CommandContext {
-            config: claurst_core::config::Config::default(),
+            config: simon_core::config::Config::default(),
             cost_tracker: CostTracker::new(),
             messages: vec![],
             working_dir: std::path::PathBuf::from("."),

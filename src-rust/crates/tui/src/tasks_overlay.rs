@@ -18,7 +18,7 @@ use ratatui::Frame;
 use std::sync::Arc;
 
 use crate::overlays::centered_rect;
-use claurst_tools::TaskStatus;
+use simon_tools::TaskStatus;
 use chrono;
 
 // ---------------------------------------------------------------------------
@@ -105,7 +105,7 @@ impl TasksOverlay {
     ///
     /// This should be called periodically (e.g., every frame) to keep the
     /// overlay in sync with the global task state.
-    pub fn refresh_tasks(&mut self, task_store: &Arc<dashmap::DashMap<String, claurst_tools::Task>>) {
+    pub fn refresh_tasks(&mut self, task_store: &Arc<dashmap::DashMap<String, simon_tools::Task>>) {
         self.tasks.clear();
 
         for entry in task_store.iter() {
@@ -196,7 +196,7 @@ impl TasksOverlay {
             let new_status = next_status(&task.status);
 
             // Update the global task store
-            if let Some(mut global_task) = claurst_tools::TASK_STORE.get_mut(&task_id) {
+            if let Some(mut global_task) = simon_tools::TASK_STORE.get_mut(&task_id) {
                 global_task.status = new_status.clone();
                 global_task.updated_at = chrono::Utc::now();
             }

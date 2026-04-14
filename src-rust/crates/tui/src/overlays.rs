@@ -12,12 +12,12 @@ use ratatui::widgets::{Block, Borders, Clear, Paragraph, Widget};
 use ratatui::Frame;
 use unicode_width::UnicodeWidthStr;
 
-pub const CLAURST_ACCENT: Color = Color::Rgb(233, 30, 99);
-pub const CLAURST_PANEL_BG: Color = Color::Rgb(20, 20, 28);
-pub const CLAURST_PANEL_BORDER: Color = Color::Rgb(72, 72, 80);
-pub const CLAURST_TEXT: Color = Color::Rgb(235, 235, 240);
-pub const CLAURST_MUTED: Color = Color::Rgb(110, 110, 118);
-pub const CLAURST_OVERLAY_BG: Color = Color::Rgb(10, 10, 14);
+pub const SIMON_ACCENT: Color = Color::Rgb(233, 30, 99);
+pub const SIMON_PANEL_BG: Color = Color::Rgb(20, 20, 28);
+pub const SIMON_PANEL_BORDER: Color = Color::Rgb(72, 72, 80);
+pub const SIMON_TEXT: Color = Color::Rgb(235, 235, 240);
+pub const SIMON_MUTED: Color = Color::Rgb(110, 110, 118);
+pub const SIMON_OVERLAY_BG: Color = Color::Rgb(10, 10, 14);
 
 // ---------------------------------------------------------------------------
 // Geometry helper (shared)
@@ -49,8 +49,8 @@ pub fn render_dark_overlay_buf(buf: &mut Buffer, area: Rect) {
     for y in area.y..area.y + area.height {
         for x in area.x..area.x + area.width {
             if let Some(cell) = buf.cell_mut((x, y)) {
-                cell.set_bg(CLAURST_OVERLAY_BG);
-                cell.set_fg(CLAURST_MUTED);
+                cell.set_bg(SIMON_OVERLAY_BG);
+                cell.set_fg(SIMON_MUTED);
             }
         }
     }
@@ -66,8 +66,8 @@ pub fn render_dialog_bg_buf(buf: &mut Buffer, area: Rect) {
         for x in area.x..area.x + area.width {
             if let Some(cell) = buf.cell_mut((x, y)) {
                 cell.set_char(' ');
-                cell.set_bg(CLAURST_PANEL_BG);
-                cell.set_fg(CLAURST_TEXT);
+                cell.set_bg(SIMON_PANEL_BG);
+                cell.set_fg(SIMON_TEXT);
             }
         }
     }
@@ -159,11 +159,11 @@ pub fn modal_title_line(title: &str, right_hint: &str) -> Line<'static> {
     Line::from(vec![
         Span::styled(
             format!(" {}", title),
-            Style::default().fg(CLAURST_TEXT).add_modifier(Modifier::BOLD),
+            Style::default().fg(SIMON_TEXT).add_modifier(Modifier::BOLD),
         ),
         Span::styled(
             format!("  {}", right_hint),
-            Style::default().fg(CLAURST_MUTED),
+            Style::default().fg(SIMON_MUTED),
         ),
     ])
 }
@@ -180,12 +180,12 @@ pub fn render_modal_title_frame(frame: &mut Frame, area: Rect, title: &str, righ
     let line = Line::from(vec![
         Span::styled(
             format!(" {}", title),
-            Style::default().fg(CLAURST_TEXT).add_modifier(Modifier::BOLD),
+            Style::default().fg(SIMON_TEXT).add_modifier(Modifier::BOLD),
         ),
-        Span::styled(" ".repeat(padding), Style::default().fg(CLAURST_TEXT)),
+        Span::styled(" ".repeat(padding), Style::default().fg(SIMON_TEXT)),
         Span::styled(
             right_hint.to_string(),
-            Style::default().fg(CLAURST_MUTED),
+            Style::default().fg(SIMON_MUTED),
         ),
     ]);
     frame.render_widget(Paragraph::new(line), Rect { x: area.x, y: area.y, width: area.width, height: 1 });
@@ -203,12 +203,12 @@ pub fn render_modal_title_buf(buf: &mut Buffer, area: Rect, title: &str, right_h
     let line = Line::from(vec![
         Span::styled(
             format!(" {}", title),
-            Style::default().fg(CLAURST_TEXT).add_modifier(Modifier::BOLD),
+            Style::default().fg(SIMON_TEXT).add_modifier(Modifier::BOLD),
         ),
-        Span::styled(" ".repeat(padding), Style::default().fg(CLAURST_TEXT)),
+        Span::styled(" ".repeat(padding), Style::default().fg(SIMON_TEXT)),
         Span::styled(
             right_hint.to_string(),
-            Style::default().fg(CLAURST_MUTED),
+            Style::default().fg(SIMON_MUTED),
         ),
     ]);
     Paragraph::new(line).render(
@@ -342,7 +342,7 @@ impl HelpOverlay {
 pub fn render_help_overlay(frame: &mut Frame, overlay: &HelpOverlay, area: Rect) {
     use ratatui::layout::{Constraint, Direction, Layout};
     use ratatui::widgets::Wrap;
-    use claurst_core::constants::APP_VERSION;
+    use simon_core::constants::APP_VERSION;
 
     if !overlay.visible {
         return;
@@ -353,8 +353,8 @@ pub fn render_help_overlay(frame: &mut Frame, overlay: &HelpOverlay, area: Rect)
     let search_line = modal_search_line(
         &overlay.filter,
         "Search shortcuts or commands",
-        CLAURST_MUTED,
-        CLAURST_TEXT,
+        SIMON_MUTED,
+        SIMON_TEXT,
     );
     if let Some(search_area) = modal_header_line_area(layout.header_area, 2) {
         frame.render_widget(Paragraph::new(search_line), search_area);
@@ -375,14 +375,14 @@ pub fn render_help_overlay(frame: &mut Frame, overlay: &HelpOverlay, area: Rect)
 
     left_lines.push(Line::from(Span::styled(
         " Keyboard Shortcuts",
-        Style::default().fg(CLAURST_ACCENT).add_modifier(Modifier::BOLD),
+        Style::default().fg(SIMON_ACCENT).add_modifier(Modifier::BOLD),
     )));
     left_lines.push(Line::from(""));
 
     // Navigation category
     left_lines.push(Line::from(Span::styled(
         " Navigation",
-        Style::default().fg(CLAURST_ACCENT).add_modifier(Modifier::BOLD),
+        Style::default().fg(SIMON_ACCENT).add_modifier(Modifier::BOLD),
     )));
     for (key, desc) in &[
         ("PageUp / PgDn",   "Scroll messages"),
@@ -396,7 +396,7 @@ pub fn render_help_overlay(frame: &mut Frame, overlay: &HelpOverlay, area: Rect)
     // Input category
     left_lines.push(Line::from(Span::styled(
         " Input",
-        Style::default().fg(CLAURST_ACCENT).add_modifier(Modifier::BOLD),
+        Style::default().fg(SIMON_ACCENT).add_modifier(Modifier::BOLD),
     )));
     for (key, desc) in &[
         ("Enter",           "Submit message"),
@@ -411,7 +411,7 @@ pub fn render_help_overlay(frame: &mut Frame, overlay: &HelpOverlay, area: Rect)
     // App category
     left_lines.push(Line::from(Span::styled(
         " App",
-        Style::default().fg(CLAURST_ACCENT).add_modifier(Modifier::BOLD),
+        Style::default().fg(SIMON_ACCENT).add_modifier(Modifier::BOLD),
     )));
     for (key, desc) in &[
         ("F1 / ?",          "Toggle help"),
@@ -427,13 +427,13 @@ pub fn render_help_overlay(frame: &mut Frame, overlay: &HelpOverlay, area: Rect)
     frame.render_widget(
         Paragraph::new(left_lines)
             .wrap(Wrap { trim: false })
-            .style(Style::default().bg(CLAURST_PANEL_BG)),
+            .style(Style::default().bg(SIMON_PANEL_BG)),
         col_chunks[0],
     );
 
     // ─── Center divider ────────────────────────────────────────────────────
     let divider_lines: Vec<Line<'static>> = (0..content_area.height)
-        .map(|_| Line::from(Span::styled("\u{2502}", Style::default().fg(CLAURST_MUTED))))
+        .map(|_| Line::from(Span::styled("\u{2502}", Style::default().fg(SIMON_MUTED))))
         .collect();
     frame.render_widget(Paragraph::new(divider_lines), col_chunks[1]);
 
@@ -454,7 +454,7 @@ pub fn render_help_overlay(frame: &mut Frame, overlay: &HelpOverlay, area: Rect)
 
     right_lines.push(Line::from(Span::styled(
         " Slash Commands",
-        Style::default().fg(CLAURST_ACCENT).add_modifier(Modifier::BOLD),
+        Style::default().fg(SIMON_ACCENT).add_modifier(Modifier::BOLD),
     )));
     right_lines.push(Line::from(""));
 
@@ -467,7 +467,7 @@ pub fn render_help_overlay(frame: &mut Frame, overlay: &HelpOverlay, area: Rect)
             }
             right_lines.push(Line::from(Span::styled(
                 format!(" {}", entry.category),
-                Style::default().fg(CLAURST_ACCENT).add_modifier(Modifier::BOLD),
+                Style::default().fg(SIMON_ACCENT).add_modifier(Modifier::BOLD),
             )));
         }
         let aliases_text = if entry.aliases.is_empty() {
@@ -479,18 +479,18 @@ pub fn render_help_overlay(frame: &mut Frame, overlay: &HelpOverlay, area: Rect)
             Span::raw("  "),
             Span::styled(
                 format!("/{:<14}", entry.name),
-                Style::default().fg(CLAURST_TEXT).add_modifier(Modifier::BOLD),
+                Style::default().fg(SIMON_TEXT).add_modifier(Modifier::BOLD),
             ),
-            Span::styled(aliases_text, Style::default().fg(CLAURST_MUTED)),
+            Span::styled(aliases_text, Style::default().fg(SIMON_MUTED)),
             Span::raw("  "),
-            Span::styled(entry.description.clone(), Style::default().fg(CLAURST_MUTED)),
+            Span::styled(entry.description.clone(), Style::default().fg(SIMON_MUTED)),
         ]));
     }
 
     if filtered.is_empty() {
         right_lines.push(Line::from(Span::styled(
             " No matching commands",
-            Style::default().fg(CLAURST_MUTED),
+            Style::default().fg(SIMON_MUTED),
         )));
     }
 
@@ -503,7 +503,7 @@ pub fn render_help_overlay(frame: &mut Frame, overlay: &HelpOverlay, area: Rect)
         Paragraph::new(right_lines)
             .wrap(Wrap { trim: false })
             .scroll((scroll, 0))
-            .style(Style::default().bg(CLAURST_PANEL_BG)),
+            .style(Style::default().bg(SIMON_PANEL_BG)),
         col_chunks[2],
     );
 
@@ -514,7 +514,7 @@ pub fn render_help_overlay(frame: &mut Frame, overlay: &HelpOverlay, area: Rect)
                 APP_VERSION
             ),
             Style::default()
-                .fg(CLAURST_MUTED)
+                .fg(SIMON_MUTED)
                 .add_modifier(Modifier::ITALIC),
         ),
     ]);
@@ -545,7 +545,7 @@ pub struct HistoryEntry {
     pub timestamp: Option<u64>,
     /// Whether this entry has been pinned by the user.  Pinned entries always
     /// appear at the top of the history overlay list and are persisted to
-    /// `~/.claurst/history_pins.json`.
+    /// `~/.simon/history_pins.json`.
     pub pinned: bool,
 }
 
@@ -581,17 +581,17 @@ impl HistoryEntry {
 }
 
 // ---------------------------------------------------------------------------
-// Pinned-entry persistence  (~/.claurst/history_pins.json)
+// Pinned-entry persistence  (~/.simon/history_pins.json)
 // ---------------------------------------------------------------------------
 
 fn pins_path() -> std::path::PathBuf {
     dirs::home_dir()
         .unwrap_or_else(|| std::path::PathBuf::from("."))
-        .join(".claurst")
+        .join(".simon")
         .join("history_pins.json")
 }
 
-/// Load the set of pinned entry texts from `~/.claurst/history_pins.json`.
+/// Load the set of pinned entry texts from `~/.simon/history_pins.json`.
 /// Returns an empty set if the file does not exist or cannot be parsed.
 pub fn load_pinned_texts() -> std::collections::HashSet<String> {
     let path = pins_path();
@@ -603,7 +603,7 @@ pub fn load_pinned_texts() -> std::collections::HashSet<String> {
         .unwrap_or_default()
 }
 
-/// Persist `pinned_texts` to `~/.claurst/history_pins.json`.
+/// Persist `pinned_texts` to `~/.simon/history_pins.json`.
 /// Failures are silently ignored (best-effort).
 pub fn save_pinned_texts(pinned_texts: &std::collections::HashSet<String>) {
     let path = pins_path();
@@ -768,7 +768,7 @@ impl HistorySearchOverlay {
 
     /// Open with a pre-built `Vec<HistoryEntry>` (timestamp-aware callers).
     ///
-    /// Pinned state is loaded from `~/.claurst/history_pins.json` and applied
+    /// Pinned state is loaded from `~/.simon/history_pins.json` and applied
     /// to any matching entries.
     pub fn open_with_entries(entries: Vec<HistoryEntry>) -> Self {
         let pinned_texts = load_pinned_texts();
@@ -794,7 +794,7 @@ impl HistorySearchOverlay {
 
     /// Toggle the pinned state of the currently selected entry.
     ///
-    /// Persists the updated pin set to `~/.claurst/history_pins.json` and
+    /// Persists the updated pin set to `~/.simon/history_pins.json` and
     /// recomputes the match list so the entry moves to/from the pinned section.
     pub fn toggle_pin(&mut self) {
         let Some(m) = self.matches.get(self.selected_idx) else { return };
@@ -1485,10 +1485,10 @@ fn kb_line<'a>(key: &str, desc: &str) -> Line<'a> {
         Span::styled(
             format!("{:<20}", key),
             Style::default()
-                .fg(CLAURST_TEXT)
+                .fg(SIMON_TEXT)
                 .add_modifier(Modifier::BOLD),
         ),
-        Span::styled(desc.to_string(), Style::default().fg(CLAURST_MUTED)),
+        Span::styled(desc.to_string(), Style::default().fg(SIMON_MUTED)),
     ])
 }
 
@@ -1860,7 +1860,7 @@ mod tests {
 
     #[test]
     fn modal_search_line_separates_leading_space_from_cursor() {
-        let line = modal_search_line("", "Search", CLAURST_MUTED, CLAURST_TEXT);
+        let line = modal_search_line("", "Search", SIMON_MUTED, SIMON_TEXT);
         assert_eq!(line.spans.len(), 3);
         assert_eq!(line.spans[0].content.as_ref(), " ");
         assert_eq!(line.spans[1].content.as_ref(), "S");

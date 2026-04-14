@@ -5,8 +5,8 @@ use std::sync::Arc;
 
 use async_stream::stream;
 use async_trait::async_trait;
-use claurst_core::provider_id::{ModelId, ProviderId};
-use claurst_core::types::{ContentBlock, UsageInfo};
+use simon_core::provider_id::{ModelId, ProviderId};
+use simon_core::types::{ContentBlock, UsageInfo};
 use futures::Stream;
 
 use crate::client::{AnthropicClient, ClientConfig};

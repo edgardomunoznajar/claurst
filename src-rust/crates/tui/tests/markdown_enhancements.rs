@@ -1,6 +1,6 @@
 //! Tests for markdown table rendering and inline formatting (bold, italic, strikethrough).
 
-use claurst_tui::messages::{
+use simon_tui::messages::{
     render_markdown, detect_table, render_table, parse_inline_formatting,
 };
 
@@ -51,11 +51,11 @@ fn table_alignment_detection() {
     let (table, _) = detect_table(&lines, 0).expect("Table should be detected");
     assert_eq!(table.alignments.len(), 3);
     // First column should be left-aligned
-    assert!(matches!(table.alignments[0], claurst_tui::messages::TableAlignment::Left));
+    assert!(matches!(table.alignments[0], simon_tui::messages::TableAlignment::Left));
     // Second column should be center-aligned
-    assert!(matches!(table.alignments[1], claurst_tui::messages::TableAlignment::Center));
+    assert!(matches!(table.alignments[1], simon_tui::messages::TableAlignment::Center));
     // Third column should be right-aligned
-    assert!(matches!(table.alignments[2], claurst_tui::messages::TableAlignment::Right));
+    assert!(matches!(table.alignments[2], simon_tui::messages::TableAlignment::Right));
 }
 
 #[test]

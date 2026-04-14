@@ -14,9 +14,9 @@
 // - Connection manager with exponential-backoff reconnection
 
 use async_trait::async_trait;
-use claurst_core::config::McpServerConfig;
-use claurst_core::mcp_templates::TemplateRenderer;
-use claurst_core::types::ToolDefinition;
+use simon_core::config::McpServerConfig;
+use simon_core::mcp_templates::TemplateRenderer;
+use simon_core::types::ToolDefinition;
 use dashmap::DashMap;
 use futures::stream::{BoxStream, StreamExt};
 use serde::{Deserialize, Serialize};
@@ -614,8 +614,8 @@ pub mod client {
                     sampling: None,
                 },
                 client_info: ClientInfo {
-                    name: claurst_core::constants::APP_NAME.to_string(),
-                    version: claurst_core::constants::APP_VERSION.to_string(),
+                    name: simon_core::constants::APP_NAME.to_string(),
+                    version: simon_core::constants::APP_VERSION.to_string(),
                 },
             };
 
@@ -1429,7 +1429,7 @@ impl McpManager {
 
         // 4. Build auth URL
         let auth_url = format!(
-            "{}?client_id=claurst&redirect_uri={}&response_type=code&code_challenge={}&code_challenge_method=S256",
+            "{}?client_id=simon&redirect_uri={}&response_type=code&code_challenge={}&code_challenge_method=S256",
             authorization_endpoint,
             urlencoding::encode(&redirect_uri),
             challenge,

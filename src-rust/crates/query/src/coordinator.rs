@@ -1,6 +1,6 @@
 //! Coordinator mode: multi-worker agent orchestration
 
-pub const COORDINATOR_ENV_VAR: &str = "CLAURST_COORDINATOR_MODE";
+pub const COORDINATOR_ENV_VAR: &str = "SIMON_COORDINATOR_MODE";
 
 /// Tools that belong exclusively to the coordinator — not exposed to workers.
 /// Maps to INTERNAL_WORKER_TOOLS in coordinatorMode.ts.
@@ -13,7 +13,7 @@ pub const COORDINATOR_ONLY_TOOLS: &[&str] = &[
     "SyntheticOutput",
 ];
 
-/// Tools that workers are allowed to use in simple mode (CLAURST_SIMPLE=1).
+/// Tools that workers are allowed to use in simple mode (SIMON_SIMPLE=1).
 pub const WORKER_SIMPLE_TOOLS: &[&str] = &["Bash", "Read", "Edit"];
 
 /// Tools explicitly banned in coordinator mode (coordinator delegates these to workers).
@@ -152,9 +152,9 @@ impl Default for ScratchpadGate {
 /// - `AgentMode::Worker`: COORDINATOR_ONLY_TOOLS are removed.
 /// - `AgentMode::Normal`: no filtering.
 pub fn filter_tools_for_mode<'a>(
-    tools: &'a [Box<dyn claurst_tools::Tool>],
+    tools: &'a [Box<dyn simon_tools::Tool>],
     mode: AgentMode,
-) -> Vec<&'a Box<dyn claurst_tools::Tool>> {
+) -> Vec<&'a Box<dyn simon_tools::Tool>> {
     match mode {
         AgentMode::Coordinator | AgentMode::Normal => tools.iter().collect(),
         AgentMode::Worker => tools

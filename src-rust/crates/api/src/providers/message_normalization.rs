@@ -1,4 +1,4 @@
-use claurst_core::types::{ContentBlock, Message, MessageContent};
+use simon_core::types::{ContentBlock, Message, MessageContent};
 
 pub(crate) fn remove_empty_messages(messages: &[Message]) -> Vec<Message> {
     messages
@@ -78,7 +78,7 @@ fn remove_empty_block(block: &ContentBlock) -> Option<ContentBlock> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use claurst_core::types::{Message, Role, ToolResultContent};
+    use simon_core::types::{Message, Role, ToolResultContent};
     use serde_json::json;
 
     #[test]

@@ -20,7 +20,7 @@ struct FileReadInput {
 #[async_trait]
 impl Tool for FileReadTool {
     fn name(&self) -> &str {
-        claurst_core::constants::TOOL_NAME_FILE_READ
+        simon_core::constants::TOOL_NAME_FILE_READ
     }
 
     fn description(&self) -> &str {

@@ -1,5 +1,5 @@
 // cc-core: Core types, error handling, configuration, settings, and constants
-// for Claurst.
+// for Simon.
 //
 // All sub-modules are defined inline below.
 
@@ -95,7 +95,7 @@ pub use permissions::{
 pub mod error {
     use thiserror::Error;
 
-    /// The unified error type for Claurst.
+    /// The unified error type for Simon.
     #[derive(Error, Debug)]
     pub enum ClaudeError {
         #[error("API error: {0}")]
@@ -1200,7 +1200,7 @@ pub mod config {
         }
 
         /// Resolve the prompt text for the selected output style, including
-        /// user-defined styles loaded from `~/.claurst/output-styles/`.
+        /// user-defined styles loaded from `~/.simon/output-styles/`.
         pub fn resolve_output_style_prompt(&self) -> Option<String> {
             let style_name = self.output_style.as_deref().unwrap_or("default");
             let styles = crate::output_styles::all_styles(&Settings::config_dir());
@@ -1258,7 +1258,7 @@ pub mod config {
             self.resolve_provider_api_key(self.selected_provider_id())
         }
 
-        /// Async variant: also checks `~/.claurst/oauth_tokens.json`.
+        /// Async variant: also checks `~/.simon/oauth_tokens.json`.
         /// Returns `(credential, use_bearer_auth)`.
         /// - For Console OAuth flow: credential is the stored API key, bearer=false.
         /// - For Claude.ai OAuth flow: credential is the access token, bearer=true.
@@ -1362,11 +1362,11 @@ pub mod config {
     }
 
     impl Settings {
-        /// The per-user configuration directory (`~/.claurst`).
+        /// The per-user configuration directory (`~/.simon`).
         pub fn config_dir() -> PathBuf {
             dirs::home_dir()
                 .unwrap_or_else(|| PathBuf::from("."))
-                .join(".claurst")
+                .join(".simon")
         }
 
         /// Full path to the global settings JSON file.
@@ -1471,15 +1471,15 @@ pub mod config {
             merged
         }
 
-        /// Walk up from `cwd` looking for `.claurst/settings.json` or
-        /// `.claurst/settings.jsonc`.
+        /// Walk up from `cwd` looking for `.simon/settings.json` or
+        /// `.simon/settings.jsonc`.
         async fn find_project_settings(cwd: &std::path::Path) -> Option<Self> {
             let global_path = Self::global_settings_path();
             let mut dir = cwd;
             loop {
                 // Try .json first, then .jsonc.
                 for name in &["settings.json", "settings.jsonc"] {
-                    let candidate = dir.join(".claurst").join(name);
+                    let candidate = dir.join(".simon").join(name);
                     if candidate.exists() && candidate != global_path {
                         if let Ok(content) = tokio::fs::read_to_string(&candidate).await {
                             let stripped = strip_jsonc_comments(&content);
@@ -1683,7 +1683,7 @@ pub mod constants {
     pub const CLAUDE_MD_FILENAME: &str = "AGENTS.md";
     pub const SETTINGS_FILENAME: &str = "settings.json";
     pub const HISTORY_FILENAME: &str = "conversations";
-    pub const CONFIG_DIR_NAME: &str = ".claurst";
+    pub const CONFIG_DIR_NAME: &str = ".simon";
 
     // Tool names
     pub const TOOL_NAME_BASH: &str = "Bash";
@@ -1828,10 +1828,10 @@ pub mod context {
         async fn find_and_read_claude_md(&self) -> Option<String> {
             let mut claude_mds = vec![];
 
-            // Global ~/.claurst/AGENTS.md
+            // Global ~/.simon/AGENTS.md
             if let Some(home) = dirs::home_dir() {
                 let global_claude_md =
-                    home.join(".claurst").join(crate::constants::CLAUDE_MD_FILENAME);
+                    home.join(".simon").join(crate::constants::CLAUDE_MD_FILENAME);
                 if global_claude_md.exists() {
                     if let Ok(content) = tokio::fs::read_to_string(&global_claude_md).await {
                         claude_mds.push(format!(
@@ -2792,7 +2792,7 @@ pub mod history {
         crate::config::Settings::config_dir().join("sessions")
     }
 
-    /// Save a session to `~/.claurst/sessions/<id>.json`.
+    /// Save a session to `~/.simon/sessions/<id>.json`.
     pub async fn save_session(session: &ConversationSession) -> anyhow::Result<()> {
         let dir = sessions_dir();
         tokio::fs::create_dir_all(&dir).await?;
@@ -3241,8 +3241,8 @@ pub mod oauth {
     // ---- Production OAuth endpoints & constants ----
 
     // NOTE: This client ID is registered to Anthropic's official Claude Code CLI.
-    // It will NOT work for Claurst. Users should use an API key from console.anthropic.com.
-    pub const CLIENT_ID: &str = "9d1c250a-e61b-44d9-88ed-5944d1962f5e"; // Anthropic's — will not work for Claurst
+    // It will NOT work for Simon. Users should use an API key from console.anthropic.com.
+    pub const CLIENT_ID: &str = "9d1c250a-e61b-44d9-88ed-5944d1962f5e"; // Anthropic's — will not work for Simon
     pub const CONSOLE_AUTHORIZE_URL: &str = "https://platform.claude.com/oauth/authorize";
     pub const CLAUDE_AI_AUTHORIZE_URL: &str = "https://claude.com/cai/oauth/authorize";
     pub const TOKEN_URL: &str = "https://platform.claude.com/v1/oauth/token";
@@ -3270,7 +3270,7 @@ pub mod oauth {
 
     // ---- Stored token struct ----
 
-    /// Persisted OAuth tokens (saved to `~/.claurst/oauth_tokens.json`).
+    /// Persisted OAuth tokens (saved to `~/.simon/oauth_tokens.json`).
     #[derive(Debug, Clone, Serialize, Deserialize, Default)]
     pub struct OAuthTokens {
         pub access_token: String,
@@ -3325,7 +3325,7 @@ pub mod oauth {
         pub fn token_file_path() -> std::path::PathBuf {
             dirs::home_dir()
                 .unwrap_or_else(|| std::path::PathBuf::from("."))
-                .join(".claurst")
+                .join(".simon")
                 .join("oauth_tokens.json")
         }
 

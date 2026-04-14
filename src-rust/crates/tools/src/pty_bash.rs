@@ -12,8 +12,8 @@
 
 use crate::{PermissionLevel, Tool, ToolContext, ToolResult, session_shell_state};
 use async_trait::async_trait;
-use claurst_core::bash_classifier::{BashRiskLevel, classify_bash_command};
-use claurst_core::tasks::{BackgroundTask, global_registry};
+use simon_core::bash_classifier::{BashRiskLevel, classify_bash_command};
+use simon_core::tasks::{BackgroundTask, global_registry};
 use serde::Deserialize;
 use serde_json::{json, Value};
 use std::path::PathBuf;
@@ -196,7 +196,7 @@ async fn run_in_background(command: String, cwd: PathBuf, timeout_ms: u64) -> To
                             let code = status.code().unwrap_or(-1);
                             global_registry().update_status(
                                 &task_id_clone,
-                                claurst_core::tasks::TaskStatus::Failed(format!(
+                                simon_core::tasks::TaskStatus::Failed(format!(
                                     "exit code {}",
                                     code
                                 )),
@@ -205,7 +205,7 @@ async fn run_in_background(command: String, cwd: PathBuf, timeout_ms: u64) -> To
                         Err(e) => {
                             global_registry().update_status(
                                 &task_id_clone,
-                                claurst_core::tasks::TaskStatus::Failed(e.to_string()),
+                                simon_core::tasks::TaskStatus::Failed(e.to_string()),
                             );
                         }
                     }
@@ -213,7 +213,7 @@ async fn run_in_background(command: String, cwd: PathBuf, timeout_ms: u64) -> To
                 Err(e) => {
                     global_registry().update_status(
                         &task_id_clone,
-                        claurst_core::tasks::TaskStatus::Failed(e.to_string()),
+                        simon_core::tasks::TaskStatus::Failed(e.to_string()),
                     );
                 }
             }
@@ -223,7 +223,7 @@ async fn run_in_background(command: String, cwd: PathBuf, timeout_ms: u64) -> To
         if result.is_err() {
             global_registry().update_status(
                 &task_id_clone,
-                claurst_core::tasks::TaskStatus::Failed(format!(
+                simon_core::tasks::TaskStatus::Failed(format!(
                     "timed out after {}ms",
                     timeout_ms
                 )),
@@ -482,7 +482,7 @@ fn truncate_output(mut output: String, exit_code: i32) -> ToolResult {
 #[async_trait]
 impl Tool for PtyBashTool {
     fn name(&self) -> &str {
-        claurst_core::constants::TOOL_NAME_BASH
+        simon_core::constants::TOOL_NAME_BASH
     }
 
     fn description(&self) -> &str {

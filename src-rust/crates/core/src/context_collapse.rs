@@ -148,12 +148,12 @@ fn summarize_messages(messages: Vec<Message>, _max_tokens: u64) -> (Vec<Message>
     (result, dropped)
 }
 
-/// Persist collapse state to ~/.claurst/context_collapse_state.json
+/// Persist collapse state to ~/.simon/context_collapse_state.json
 #[cfg(feature = "cached_microcompact")]
 pub fn save_collapse_state(_session_id: &str, state: &CollapseState) -> anyhow::Result<()> {
     let path = dirs::home_dir()
         .ok_or_else(|| anyhow::anyhow!("Could not determine home directory"))?
-        .join(".claurst")
+        .join(".simon")
         .join("context_collapse_state.json");
 
     std::fs::create_dir_all(path.parent().unwrap())?;
@@ -162,11 +162,11 @@ pub fn save_collapse_state(_session_id: &str, state: &CollapseState) -> anyhow::
     Ok(())
 }
 
-/// Load collapse state from ~/.claurst/context_collapse_state.json
+/// Load collapse state from ~/.simon/context_collapse_state.json
 #[cfg(feature = "cached_microcompact")]
 pub fn load_collapse_state(_session_id: &str) -> Option<CollapseState> {
     let path = dirs::home_dir()?
-        .join(".claurst")
+        .join(".simon")
         .join("context_collapse_state.json");
 
     if !path.exists() {

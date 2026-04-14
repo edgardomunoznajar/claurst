@@ -1,8 +1,8 @@
 // SkillTool: execute user-defined skill (prompt template) files programmatically.
 //
 // Skills are Markdown files stored in:
-//   <project>/.claurst/commands/<name>.md
-//   ~/.claurst/commands/<name>.md
+//   <project>/.simon/commands/<name>.md
+//   ~/.simon/commands/<name>.md
 //
 // Bundled skills (defined in bundled_skills.rs) are checked first before the
 // disk directories, so they take precedence over same-named .md files.
@@ -34,7 +34,7 @@ impl Tool for SkillTool {
 
     fn description(&self) -> &str {
         "Execute a skill (custom prompt template) by name. \
-         Skills are .md files in .claurst/commands/ or ~/.claurst/commands/. \
+         Skills are .md files in .simon/commands/ or ~/.simon/commands/. \
          Use skill=\"list\" to discover available skills. \
          The expanded skill prompt is returned for you to act on."
     }
@@ -122,10 +122,10 @@ impl Tool for SkillTool {
 
 fn skill_search_dirs(ctx: &ToolContext) -> Vec<PathBuf> {
     let mut dirs = vec![
-        ctx.working_dir.join(".claurst").join("commands"),
+        ctx.working_dir.join(".simon").join("commands"),
     ];
     if let Some(home) = dirs::home_dir() {
-        dirs.push(home.join(".claurst").join("commands"));
+        dirs.push(home.join(".simon").join("commands"));
     }
     dirs
 }
@@ -173,8 +173,8 @@ async fn list_skills(dirs: &[PathBuf]) -> ToolResult {
     let total = bundled.len() + disk_skills.len();
     if total == 0 {
         return ToolResult::success(
-            "No skills found. Create .md files in .claurst/commands/ to define skills.\n\
-             Example: .claurst/commands/review.md"
+            "No skills found. Create .md files in .simon/commands/ to define skills.\n\
+             Example: .simon/commands/review.md"
                 .to_string(),
         );
     }

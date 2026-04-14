@@ -77,9 +77,9 @@ pub struct OAuthConfig {
 // ---------------------------------------------------------------------------
 
 // NOTE: These OAuth client IDs are registered to Anthropic's official Claude Code CLI.
-// They will NOT work for Claurst — Anthropic's auth server will reject or misattribute requests.
+// They will NOT work for Simon — Anthropic's auth server will reject or misattribute requests.
 // Users should use an API key from console.anthropic.com instead.
-// To use OAuth, Claurst would need its own registered OAuth application with Anthropic.
+// To use OAuth, Simon would need its own registered OAuth application with Anthropic.
 pub const PROD_OAUTH: OAuthConfig = OAuthConfig {
     base_api_url: "https://api.anthropic.com",
     // Routes through claude.com/cai/* for attribution, 307s to claude.ai in
@@ -93,7 +93,7 @@ pub const PROD_OAUTH: OAuthConfig = OAuthConfig {
     console_success_url: "https://platform.claude.com/buy_credits?returnUrl=/oauth/code/success%3Fapp%3Dclaude-code",
     claudeai_success_url: "https://platform.claude.com/oauth/code/success?app=claude-code",
     manual_redirect_url: "https://platform.claude.com/oauth/code/callback",
-    client_id: "9d1c250a-e61b-44d9-88ed-5944d1962f5e", // Anthropic's Claude Code — will not work for Claurst
+    client_id: "9d1c250a-e61b-44d9-88ed-5944d1962f5e", // Anthropic's Claude Code — will not work for Simon
     oauth_file_suffix: "",
     mcp_proxy_url: "https://mcp-proxy.anthropic.com",
     mcp_proxy_path: "/v1/mcp/{server_id}",
@@ -114,7 +114,7 @@ pub const STAGING_OAUTH: OAuthConfig = OAuthConfig {
     console_success_url: "https://platform.staging.ant.dev/buy_credits?returnUrl=/oauth/code/success%3Fapp%3Dclaude-code",
     claudeai_success_url: "https://platform.staging.ant.dev/oauth/code/success?app=claude-code",
     manual_redirect_url: "https://platform.staging.ant.dev/oauth/code/callback",
-    client_id: "22422756-60c9-4084-8eb7-27705fd5cf9a", // Anthropic's Claude Code staging — will not work for Claurst
+    client_id: "22422756-60c9-4084-8eb7-27705fd5cf9a", // Anthropic's Claude Code staging — will not work for Simon
     oauth_file_suffix: "-staging-oauth",
     mcp_proxy_url: "https://mcp-proxy-staging.anthropic.com",
     mcp_proxy_path: "/v1/mcp/{server_id}",
@@ -294,7 +294,7 @@ pub fn build_auth_url(
 // Codex (OpenAI) OAuth Token Storage
 // ---------------------------------------------------------------------------
 
-/// OpenAI Codex OAuth tokens, persisted to ~/.claurst/codex_tokens.json
+/// OpenAI Codex OAuth tokens, persisted to ~/.simon/codex_tokens.json
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct CodexTokens {
     pub access_token: String,
@@ -307,12 +307,12 @@ pub struct CodexTokens {
     pub expires_at: Option<u64>,
 }
 
-/// Path to the Codex tokens file (~/.claurst/codex_tokens.json)
+/// Path to the Codex tokens file (~/.simon/codex_tokens.json)
 fn codex_tokens_path() -> Option<std::path::PathBuf> {
-    dirs::home_dir().map(|h| h.join(".claurst").join("codex_tokens.json"))
+    dirs::home_dir().map(|h| h.join(".simon").join("codex_tokens.json"))
 }
 
-/// Save Codex OAuth tokens to ~/.claurst/codex_tokens.json
+/// Save Codex OAuth tokens to ~/.simon/codex_tokens.json
 pub fn save_codex_tokens(tokens: &CodexTokens) -> anyhow::Result<()> {
     let path = codex_tokens_path().ok_or_else(|| anyhow::anyhow!("Could not determine home directory"))?;
     std::fs::create_dir_all(path.parent().unwrap())?;
@@ -321,7 +321,7 @@ pub fn save_codex_tokens(tokens: &CodexTokens) -> anyhow::Result<()> {
     Ok(())
 }
 
-/// Load Codex OAuth tokens from ~/.claurst/codex_tokens.json
+/// Load Codex OAuth tokens from ~/.simon/codex_tokens.json
 pub fn get_codex_tokens() -> Option<CodexTokens> {
     let path = codex_tokens_path()?;
     if !path.exists() {
@@ -342,7 +342,7 @@ pub fn clear_codex_tokens() -> anyhow::Result<()> {
 
 /// Returns true if the user has a valid Codex access token.
 /// Tokens are obtained via `/connect → OpenAI Codex` (browser OAuth flow)
-/// or by setting `CLAURST_USE_OPENAI=1` with a manually stored token.
+/// or by setting `SIMON_USE_OPENAI=1` with a manually stored token.
 pub fn is_codex_subscriber() -> bool {
     get_codex_tokens()
         .map(|t| !t.access_token.is_empty())

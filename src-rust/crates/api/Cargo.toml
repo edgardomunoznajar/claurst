@@ -1,10 +1,10 @@
 [package]
-name = "claurst-api"
+name = "simon-api"
 version.workspace = true
 edition.workspace = true
 
 [dependencies]
-claurst-core = { workspace = true }
+simon-core = { workspace = true }
 tokio = { workspace = true }
 tokio-stream = { workspace = true }
 futures = { workspace = true }

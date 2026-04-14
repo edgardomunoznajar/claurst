@@ -332,9 +332,9 @@ pub const MAX_ENTRYPOINT_BYTES: usize = 25_000;
 ///
 /// Resolution order (mirrors `getAutoMemPath` in `paths.ts`):
 /// 1. `CLAUDE_COWORK_MEMORY_PATH_OVERRIDE` env var (full-path override).
-/// 2. `<CLAURST_REMOTE_MEMORY_DIR>/projects/<sanitized-root>/memory/`
-///    when `CLAURST_REMOTE_MEMORY_DIR` is set.
-/// 3. `~/.claurst/projects/<sanitized-root>/memory/` (default).
+/// 2. `<SIMON_REMOTE_MEMORY_DIR>/projects/<sanitized-root>/memory/`
+///    when `SIMON_REMOTE_MEMORY_DIR` is set.
+/// 3. `~/.simon/projects/<sanitized-root>/memory/` (default).
 pub fn auto_memory_path(project_root: &Path) -> PathBuf {
     // 1. Cowork full-path override.
     if let Ok(override_path) = std::env::var("CLAUDE_COWORK_MEMORY_PATH_OVERRIDE") {
@@ -344,12 +344,12 @@ pub fn auto_memory_path(project_root: &Path) -> PathBuf {
     }
 
     // 2. Determine the memory base directory.
-    let memory_base = std::env::var("CLAURST_REMOTE_MEMORY_DIR")
+    let memory_base = std::env::var("SIMON_REMOTE_MEMORY_DIR")
         .map(PathBuf::from)
         .unwrap_or_else(|_| {
             dirs::home_dir()
                 .unwrap_or_else(|| PathBuf::from("."))
-                .join(".claurst")
+                .join(".simon")
         });
 
     // 3. Sanitize the project root into a safe directory name.
@@ -375,13 +375,13 @@ pub fn sanitize_path_component(s: &str) -> String {
 /// Whether the auto-memory system is enabled for this session.
 ///
 /// Priority chain (mirrors `isAutoMemoryEnabled` in `paths.ts`):
-/// 1. `CLAURST_DISABLE_AUTO_MEMORY` — truthy → OFF, falsy (but defined) → ON.
-/// 2. `CLAURST_SIMPLE` (--bare) → OFF.
-/// 3. Remote mode without `CLAURST_REMOTE_MEMORY_DIR` → OFF.
+/// 1. `SIMON_DISABLE_AUTO_MEMORY` — truthy → OFF, falsy (but defined) → ON.
+/// 2. `SIMON_SIMPLE` (--bare) → OFF.
+/// 3. Remote mode without `SIMON_REMOTE_MEMORY_DIR` → OFF.
 /// 4. `settings_enabled` parameter (from settings.json `autoMemoryEnabled` field).
 /// 5. Default: enabled.
 pub fn is_auto_memory_enabled(settings_enabled: Option<bool>) -> bool {
-    if let Ok(val) = std::env::var("CLAURST_DISABLE_AUTO_MEMORY") {
+    if let Ok(val) = std::env::var("SIMON_DISABLE_AUTO_MEMORY") {
         // Truthy values (non-empty, non-"0", non-"false") disable memory.
         match val.to_lowercase().as_str() {
             "" | "0" | "false" | "no" | "off" => return true, // defined-falsy → ON
@@ -389,12 +389,12 @@ pub fn is_auto_memory_enabled(settings_enabled: Option<bool>) -> bool {
         }
     }
 
-    if std::env::var("CLAURST_SIMPLE").is_ok() {
+    if std::env::var("SIMON_SIMPLE").is_ok() {
         return false;
     }
 
-    if std::env::var("CLAURST_REMOTE").is_ok()
-        && std::env::var("CLAURST_REMOTE_MEMORY_DIR").is_err()
+    if std::env::var("SIMON_REMOTE").is_ok()
+        && std::env::var("SIMON_REMOTE_MEMORY_DIR").is_err()
     {
         return false;
     }

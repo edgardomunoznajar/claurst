@@ -21,7 +21,7 @@ struct FileEditInput {
 #[async_trait]
 impl Tool for FileEditTool {
     fn name(&self) -> &str {
-        claurst_core::constants::TOOL_NAME_FILE_EDIT
+        simon_core::constants::TOOL_NAME_FILE_EDIT
     }
 
     fn description(&self) -> &str {

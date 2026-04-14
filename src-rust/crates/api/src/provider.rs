@@ -5,7 +5,7 @@
 // and report capabilities.  Auth concerns live in `auth.rs`.
 
 use async_trait::async_trait;
-use claurst_core::provider_id::{ModelId, ProviderId};
+use simon_core::provider_id::{ModelId, ProviderId};
 use futures::Stream;
 use serde::{Deserialize, Serialize};
 use std::pin::Pin;

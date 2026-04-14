@@ -1,12 +1,12 @@
 [package]
-name = "claurst-bridge"
+name = "simon-bridge"
 version.workspace = true
 edition.workspace = true
 
 [dependencies]
-claurst-core = { workspace = true }
-claurst-api = { workspace = true }
-claurst-query = { workspace = true }
+simon-core = { workspace = true }
+simon-api = { workspace = true }
+simon-query = { workspace = true }
 tokio = { workspace = true }
 tokio-stream = { workspace = true }
 futures = { workspace = true }

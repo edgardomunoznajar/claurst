@@ -5,7 +5,7 @@
 // will be filled in during Phase 2A.
 
 use async_trait::async_trait;
-use claurst_core::provider_id::ProviderId;
+use simon_core::provider_id::ProviderId;
 use futures::Stream;
 use std::pin::Pin;
 

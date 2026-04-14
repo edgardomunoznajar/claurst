@@ -1,13 +1,13 @@
 [package]
-name = "claurst-query"
+name = "simon-query"
 version.workspace = true
 edition.workspace = true
 
 [dependencies]
-claurst-core = { workspace = true }
-claurst-api = { workspace = true }
-claurst-plugins = { workspace = true }
-claurst-tools = { workspace = true }
+simon-core = { workspace = true }
+simon-api = { workspace = true }
+simon-plugins = { workspace = true }
+simon-tools = { workspace = true }
 tokio = { workspace = true }
 tokio-stream = { workspace = true }
 futures = { workspace = true }

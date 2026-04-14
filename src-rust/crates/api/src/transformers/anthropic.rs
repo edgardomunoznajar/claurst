@@ -1,7 +1,7 @@
 // transformers/anthropic.rs — Identity transformer for the Anthropic wire
 // format (ProviderRequest → Anthropic JSON body and back).
 //
-// The Anthropic provider is the native/internal format for Claurst, so
+// The Anthropic provider is the native/internal format for Simon, so
 // `to_provider` serialises the request fields directly to the Anthropic v1
 // messages schema and `from_provider` parses the standard Anthropic response.
 
@@ -11,8 +11,8 @@ use crate::provider_types::{ProviderRequest, ProviderResponse, StopReason};
 use crate::transform::MessageTransformer;
 use crate::types::{ApiMessage, ApiToolDefinition};
 use crate::providers::message_normalization::normalize_anthropic_messages;
-use claurst_core::provider_id::ProviderId;
-use claurst_core::types::{ContentBlock, UsageInfo};
+use simon_core::provider_id::ProviderId;
+use simon_core::types::{ContentBlock, UsageInfo};
 
 // ---------------------------------------------------------------------------
 // AnthropicTransformer

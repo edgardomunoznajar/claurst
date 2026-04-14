@@ -4,7 +4,7 @@
 // These types form a provider-agnostic layer that every concrete provider
 // adapter (Anthropic, OpenAI, Google, …) maps to/from.
 
-use claurst_core::types::{ContentBlock, Message, ToolDefinition, UsageInfo};
+use simon_core::types::{ContentBlock, Message, ToolDefinition, UsageInfo};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 

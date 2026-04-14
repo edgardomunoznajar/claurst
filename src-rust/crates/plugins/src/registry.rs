@@ -184,11 +184,11 @@ impl PluginRegistry {
     }
 
     /// Collect all MCP server configs contributed by enabled plugins.
-    pub fn all_mcp_servers(&self) -> Vec<claurst_core::config::McpServerConfig> {
-        let mut servers: Vec<claurst_core::config::McpServerConfig> = Vec::new();
+    pub fn all_mcp_servers(&self) -> Vec<simon_core::config::McpServerConfig> {
+        let mut servers: Vec<simon_core::config::McpServerConfig> = Vec::new();
         for plugin in self.enabled() {
             for mcp in &plugin.manifest.mcp_servers {
-                servers.push(claurst_core::config::McpServerConfig {
+                servers.push(simon_core::config::McpServerConfig {
                     name: mcp.name.clone(),
                     command: mcp.command.clone(),
                     args: mcp.args.clone(),

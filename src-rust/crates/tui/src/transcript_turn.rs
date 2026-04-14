@@ -1,5 +1,5 @@
 use crate::app::{App, ToolStatus, ToolUseBlock, TurnMetadata};
-use claurst_core::types::{ContentBlock, Message, Role};
+use simon_core::types::{ContentBlock, Message, Role};
 
 #[derive(Debug)]
 pub struct TranscriptTurn<'a> {

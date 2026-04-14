@@ -68,7 +68,7 @@ fn extensions_for_type(t: &str) -> Vec<&'static str> {
 #[async_trait]
 impl Tool for GrepTool {
     fn name(&self) -> &str {
-        claurst_core::constants::TOOL_NAME_GREP
+        simon_core::constants::TOOL_NAME_GREP
     }
 
     fn description(&self) -> &str {

@@ -1,13 +1,13 @@
-// claurst-tools: All tool implementations for Claurst.
+// simon-tools: All tool implementations for Simon.
 //
 // Each tool maps to a capability the LLM can invoke: running shell commands,
 // reading/writing/editing files, searching codebases, fetching web pages, etc.
 
 use async_trait::async_trait;
-use claurst_core::config::PermissionMode;
-use claurst_core::cost::CostTracker;
-use claurst_core::permissions::{PermissionDecision, PermissionHandler, PermissionRequest};
-use claurst_core::types::ToolDefinition;
+use simon_core::config::PermissionMode;
+use simon_core::cost::CostTracker;
+use simon_core::permissions::{PermissionDecision, PermissionHandler, PermissionRequest};
+use simon_core::types::ToolDefinition;
 use serde_json::Value;
 use std::collections::HashMap;
 use std::path::PathBuf;
@@ -171,7 +171,7 @@ static SHELL_STATE_REGISTRY: once_cell::sync::Lazy<dashmap::DashMap<String, Arc<
 
 /// Process-global registry of `SnapshotManager` instances keyed by session_id.
 /// Used by tools to record pre-write snapshots and by `/undo` to revert them.
-static SNAPSHOT_REGISTRY: once_cell::sync::Lazy<dashmap::DashMap<String, Arc<parking_lot::Mutex<claurst_core::SnapshotManager>>>> =
+static SNAPSHOT_REGISTRY: once_cell::sync::Lazy<dashmap::DashMap<String, Arc<parking_lot::Mutex<simon_core::SnapshotManager>>>> =
     once_cell::sync::Lazy::new(dashmap::DashMap::new);
 
 /// Return the persistent `ShellState` for the given session, creating one if needed.
@@ -188,10 +188,10 @@ pub fn clear_session_shell_state(session_id: &str) {
 }
 
 /// Return the persistent `SnapshotManager` for the given session, creating one if needed.
-pub fn session_snapshot(session_id: &str) -> Arc<parking_lot::Mutex<claurst_core::SnapshotManager>> {
+pub fn session_snapshot(session_id: &str) -> Arc<parking_lot::Mutex<simon_core::SnapshotManager>> {
     SNAPSHOT_REGISTRY
         .entry(session_id.to_string())
-        .or_insert_with(|| Arc::new(parking_lot::Mutex::new(claurst_core::SnapshotManager::new())))
+        .or_insert_with(|| Arc::new(parking_lot::Mutex::new(simon_core::SnapshotManager::new())))
         .clone()
 }
 
@@ -222,16 +222,16 @@ pub struct ToolContext {
     pub permission_handler: Arc<dyn PermissionHandler>,
     pub cost_tracker: Arc<CostTracker>,
     pub session_id: String,
-    pub file_history: Arc<parking_lot::Mutex<claurst_core::file_history::FileHistory>>,
+    pub file_history: Arc<parking_lot::Mutex<simon_core::file_history::FileHistory>>,
     pub current_turn: Arc<AtomicUsize>,
     /// If true, suppress interactive prompts (batch / CI mode).
     pub non_interactive: bool,
     /// Optional MCP manager for ListMcpResources / ReadMcpResource tools.
-    pub mcp_manager: Option<Arc<claurst_mcp::McpManager>>,
+    pub mcp_manager: Option<Arc<simon_mcp::McpManager>>,
     /// Configured event hooks (PreToolUse, PostToolUse, etc.).
-    pub config: claurst_core::config::Config,
+    pub config: simon_core::config::Config,
     /// Managed agent (manager-executor) configuration, if active.
-    pub managed_agent_config: Option<claurst_core::ManagedAgentConfig>,
+    pub managed_agent_config: Option<simon_core::ManagedAgentConfig>,
     /// Optional notifier for injecting completion messages into the next agent turn.
     /// Set when the query loop has a command queue wired up.
     pub completion_notifier: Option<CompletionNotifier>,
@@ -254,7 +254,7 @@ impl ToolContext {
         tool_name: &str,
         description: &str,
         is_read_only: bool,
-    ) -> Result<(), claurst_core::error::ClaudeError> {
+    ) -> Result<(), simon_core::error::ClaudeError> {
         let request = PermissionRequest {
             tool_name: tool_name.to_string(),
             description: description.to_string(),
@@ -265,7 +265,7 @@ impl ToolContext {
         let decision = self.permission_handler.request_permission(&request);
         match decision {
             PermissionDecision::Allow | PermissionDecision::AllowPermanently => Ok(()),
-            _ => Err(claurst_core::error::ClaudeError::PermissionDenied(format!(
+            _ => Err(simon_core::error::ClaudeError::PermissionDenied(format!(
                 "Permission denied for tool '{}'",
                 tool_name
             ))),
@@ -283,7 +283,7 @@ impl ToolContext {
         description: &str,
         details: &str,
         is_read_only: bool,
-    ) -> Result<(), claurst_core::error::ClaudeError> {
+    ) -> Result<(), simon_core::error::ClaudeError> {
         let request = PermissionRequest {
             tool_name: tool_name.to_string(),
             description: description.to_string(),
@@ -294,7 +294,7 @@ impl ToolContext {
         let decision = self.permission_handler.request_permission(&request);
         match decision {
             PermissionDecision::Allow | PermissionDecision::AllowPermanently => Ok(()),
-            _ => Err(claurst_core::error::ClaudeError::PermissionDenied(format!(
+            _ => Err(simon_core::error::ClaudeError::PermissionDenied(format!(
                 "Permission denied for tool '{}': {}",
                 tool_name, details
             ))),
@@ -325,7 +325,7 @@ impl ToolContext {
 /// The trait every tool must implement.
 #[async_trait]
 pub trait Tool: Send + Sync {
-    /// Human-readable name (matches the constant in claurst_core::constants).
+    /// Human-readable name (matches the constant in simon_core::constants).
     fn name(&self) -> &str;
 
     /// One-line description shown to the LLM.
@@ -524,20 +524,20 @@ mod tests {
 
     #[test]
     fn test_resolve_path_absolute() {
-        use claurst_core::config::Config;
-        use claurst_core::permissions::AutoPermissionHandler;
+        use simon_core::config::Config;
+        use simon_core::permissions::AutoPermissionHandler;
 
         let handler = Arc::new(AutoPermissionHandler {
-            mode: claurst_core::config::PermissionMode::Default,
+            mode: simon_core::config::PermissionMode::Default,
         });
         let ctx = ToolContext {
             working_dir: PathBuf::from("/workspace"),
-            permission_mode: claurst_core::config::PermissionMode::Default,
+            permission_mode: simon_core::config::PermissionMode::Default,
             permission_handler: handler,
-            cost_tracker: claurst_core::cost::CostTracker::new(),
+            cost_tracker: simon_core::cost::CostTracker::new(),
             session_id: "test".to_string(),
             file_history: Arc::new(parking_lot::Mutex::new(
-                claurst_core::file_history::FileHistory::new(),
+                simon_core::file_history::FileHistory::new(),
             )),
             current_turn: Arc::new(AtomicUsize::new(0)),
             non_interactive: true,
@@ -554,20 +554,20 @@ mod tests {
 
     #[test]
     fn test_resolve_path_relative() {
-        use claurst_core::config::Config;
-        use claurst_core::permissions::AutoPermissionHandler;
+        use simon_core::config::Config;
+        use simon_core::permissions::AutoPermissionHandler;
 
         let handler = Arc::new(AutoPermissionHandler {
-            mode: claurst_core::config::PermissionMode::Default,
+            mode: simon_core::config::PermissionMode::Default,
         });
         let ctx = ToolContext {
             working_dir: PathBuf::from("/workspace"),
-            permission_mode: claurst_core::config::PermissionMode::Default,
+            permission_mode: simon_core::config::PermissionMode::Default,
             permission_handler: handler,
-            cost_tracker: claurst_core::cost::CostTracker::new(),
+            cost_tracker: simon_core::cost::CostTracker::new(),
             session_id: "test".to_string(),
             file_history: Arc::new(parking_lot::Mutex::new(
-                claurst_core::file_history::FileHistory::new(),
+                simon_core::file_history::FileHistory::new(),
             )),
             current_turn: Arc::new(AtomicUsize::new(0)),
             non_interactive: true,

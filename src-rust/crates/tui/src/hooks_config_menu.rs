@@ -7,7 +7,7 @@
 //   Screen 4 ViewHook      — full detail for a single hook
 //
 // The menu is intentionally read-only; as in the TS original, users edit
-// ~/.claurst/settings.json directly or ask Claurst to change hooks.
+// ~/.simon/settings.json directly or ask Simon to change hooks.
 
 use ratatui::buffer::Buffer;
 use ratatui::layout::{Alignment, Rect};
@@ -16,8 +16,8 @@ use ratatui::text::{Line, Span};
 use ratatui::widgets::{Paragraph, Widget, Wrap};
 
 use crate::overlays::{
-    begin_modal_buf, modal_header_line_area, render_modal_title_buf, CLAURST_ACCENT,
-    CLAURST_MUTED, CLAURST_PANEL_BG, CLAURST_TEXT,
+    begin_modal_buf, modal_header_line_area, render_modal_title_buf, SIMON_ACCENT,
+    SIMON_MUTED, SIMON_PANEL_BG, SIMON_TEXT,
 };
 
 // ---------------------------------------------------------------------------
@@ -269,7 +269,7 @@ impl HooksConfigMenuState {
     }
 
     fn load_hooks(&mut self) {
-        let settings_path = claurst_core::config::Settings::config_dir().join("settings.json");
+        let settings_path = simon_core::config::Settings::config_dir().join("settings.json");
         let json_str = match std::fs::read_to_string(&settings_path) {
             Ok(s)  => s,
             Err(_) => return,
@@ -373,7 +373,7 @@ pub fn render_hooks_config_menu(
     if let Some(subtitle_area) = modal_header_line_area(layout.header_area, 1) {
         Paragraph::new(Line::from(vec![Span::styled(
             breadcrumb,
-            Style::default().fg(CLAURST_MUTED),
+            Style::default().fg(SIMON_MUTED),
         )]))
         .render(subtitle_area, buf);
     }
@@ -385,7 +385,7 @@ pub fn render_hooks_config_menu(
         .alignment(Alignment::Left)
         .wrap(Wrap { trim: false })
         .scroll((scroll, 0))
-        .style(Style::default().bg(CLAURST_PANEL_BG))
+        .style(Style::default().bg(SIMON_PANEL_BG))
         .render(layout.body_area, buf);
     let footer = match state.mode {
         HooksMenuMode::SelectEvent => " enter drill  ·  esc close",
@@ -395,7 +395,7 @@ pub fn render_hooks_config_menu(
     };
     Paragraph::new(Line::from(vec![Span::styled(
         footer,
-        Style::default().fg(CLAURST_MUTED).add_modifier(Modifier::ITALIC),
+        Style::default().fg(SIMON_MUTED).add_modifier(Modifier::ITALIC),
     )]))
     .render(layout.footer_area, buf);
 }
@@ -412,7 +412,7 @@ fn render_event_list(state: &HooksConfigMenuState) -> (&'static str, Vec<Line<'s
             Style::default().fg(Color::DarkGray),
         )]));
         lines.push(Line::from(vec![Span::styled(
-            "  Edit ~/.claurst/settings.json to add hooks.",
+            "  Edit ~/.simon/settings.json to add hooks.",
             Style::default().fg(Color::DarkGray),
         )]));
     } else {
@@ -508,7 +508,7 @@ fn render_hook_detail(state: &HooksConfigMenuState) -> (&'static str, Vec<Line<'
     }
     lines.push(Line::from(""));
     lines.push(Line::from(vec![Span::styled(
-        "  Edit ~/.claurst/settings.json to modify hooks.",
+        "  Edit ~/.simon/settings.json to modify hooks.",
         Style::default().fg(Color::DarkGray).add_modifier(Modifier::ITALIC),
     )]));
     (" Hook Detail ", lines)
@@ -517,16 +517,16 @@ fn render_hook_detail(state: &HooksConfigMenuState) -> (&'static str, Vec<Line<'
 // ---- Line helpers ----------------------------------------------------------
 
 fn push_list_row(lines: &mut Vec<Line<'static>>, label: &str, badge: &str, selected: bool) {
-    let bg = if selected { CLAURST_ACCENT } else { CLAURST_PANEL_BG };
+    let bg = if selected { SIMON_ACCENT } else { SIMON_PANEL_BG };
     let row_style = if selected {
         Style::default().fg(Color::White).bg(bg).add_modifier(Modifier::BOLD)
     } else {
-        Style::default().fg(CLAURST_TEXT).bg(bg)
+        Style::default().fg(SIMON_TEXT).bg(bg)
     };
     let badge_style = if selected {
         Style::default().fg(Color::Rgb(248, 220, 236)).bg(bg)
     } else {
-        Style::default().fg(CLAURST_MUTED).bg(bg)
+        Style::default().fg(SIMON_MUTED).bg(bg)
     };
     lines.push(Line::from(vec![
         Span::styled(" ", Style::default().bg(bg)),

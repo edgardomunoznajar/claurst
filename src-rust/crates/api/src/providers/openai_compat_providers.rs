@@ -6,8 +6,8 @@
 // variable is absent or empty the provider is still constructed but
 // `health_check()` will return `ProviderStatus::Unavailable`.
 
-use claurst_core::Settings;
-use claurst_core::provider_id::ProviderId;
+use simon_core::Settings;
+use simon_core::provider_id::ProviderId;
 
 use super::openai_compat::{OpenAiCompatProvider, ProviderQuirks};
 
@@ -284,8 +284,8 @@ pub fn openrouter() -> OpenAiCompatProvider {
         "https://openrouter.ai/api/v1",
     )
     .with_api_key(key)
-    .with_header("HTTP-Referer", "https://claurst.ai/")
-    .with_header("X-Title", "Claurst")
+    .with_header("HTTP-Referer", "https://simon.ai/")
+    .with_header("X-Title", "Simon")
     .with_quirks(ProviderQuirks {
         include_usage_in_stream: true,
         ..Default::default()

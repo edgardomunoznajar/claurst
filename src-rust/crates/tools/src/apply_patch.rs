@@ -249,7 +249,7 @@ fn find_context_position(
 #[async_trait]
 impl Tool for ApplyPatchTool {
     fn name(&self) -> &str {
-        claurst_core::constants::TOOL_NAME_APPLY_PATCH
+        simon_core::constants::TOOL_NAME_APPLY_PATCH
     }
 
     fn description(&self) -> &str {

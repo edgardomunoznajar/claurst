@@ -16,10 +16,10 @@
 //     Use the `monitor` tool to check completion status/output.
 
 use async_trait::async_trait;
-use claurst_api::client::ClientConfig;
-use claurst_api::{AnthropicClient, ModelRegistry, ProviderRegistry};
-use claurst_core::types::Message;
-use claurst_tools::{PermissionLevel, Tool, ToolContext, ToolResult};
+use simon_api::client::ClientConfig;
+use simon_api::{AnthropicClient, ModelRegistry, ProviderRegistry};
+use simon_core::types::Message;
+use simon_tools::{PermissionLevel, Tool, ToolContext, ToolResult};
 use serde::Deserialize;
 use serde_json::{json, Value};
 use std::path::{Path, PathBuf};
@@ -93,7 +93,7 @@ pub struct AgentTool;
 fn build_model_registry() -> ModelRegistry {
     let mut registry = ModelRegistry::new();
     if let Some(cache_dir) = dirs::cache_dir() {
-        let cache_path = cache_dir.join("claurst").join("models_dev.json");
+        let cache_path = cache_dir.join("simon").join("models_dev.json");
         registry.load_cache(&cache_path);
     }
     registry
@@ -154,7 +154,7 @@ struct AgentInput {
 #[async_trait]
 impl Tool for AgentTool {
     fn name(&self) -> &str {
-        claurst_core::constants::TOOL_NAME_AGENT
+        simon_core::constants::TOOL_NAME_AGENT
     }
 
     fn description(&self) -> &str {
@@ -246,14 +246,14 @@ impl Tool for AgentTool {
 
         // Build the tool list for the sub-agent.
         // Always exclude AgentTool itself to prevent unbounded recursion.
-        let all = claurst_tools::all_tools();
+        let all = simon_tools::all_tools();
         let agent_tools: Vec<Box<dyn Tool>> = if let Some(ref allowed) = params.tools {
             all.into_iter()
                 .filter(|t| allowed.contains(&t.name().to_string()))
                 .collect()
         } else {
             all.into_iter()
-                .filter(|t| t.name() != claurst_core::constants::TOOL_NAME_AGENT)
+                .filter(|t| t.name() != simon_core::constants::TOOL_NAME_AGENT)
                 .collect()
         };
 
@@ -267,7 +267,7 @@ impl Tool for AgentTool {
 
             // Append plugin-contributed agent definitions so the sub-agent
             // is aware of any specialised agents declared by plugins.
-            if let Some(registry) = claurst_plugins::global_plugin_registry() {
+            if let Some(registry) = simon_plugins::global_plugin_registry() {
                 let mut agent_defs = String::new();
                 for agent_dir in registry.all_agent_paths() {
                     if let Ok(entries) = std::fs::read_dir(&agent_dir) {
@@ -347,7 +347,7 @@ impl Tool for AgentTool {
 
         let query_config = QueryConfig {
             model,
-            max_tokens: claurst_core::constants::DEFAULT_MAX_TOKENS,
+            max_tokens: simon_core::constants::DEFAULT_MAX_TOKENS,
             max_turns: resolved_max_turns,
             system_prompt: Some(system_prompt),
             append_system_prompt: None,
@@ -372,17 +372,17 @@ impl Tool for AgentTool {
         // Background mode: spawn and return agent_id immediately.
         // -----------------------------------------------------------------------
         if params.run_in_background {
-            let mut task = claurst_core::tasks::BackgroundTask::new(format!(
+            let mut task = simon_core::tasks::BackgroundTask::new(format!(
                 "subagent: {}",
                 params.description
             ));
             task.id = agent_id.clone();
-            let _ = claurst_core::tasks::global_registry().register(task);
+            let _ = simon_core::tasks::global_registry().register(task);
 
             // Re-create the tool list inside the closure so it is owned and Send.
-            let agent_tools_bg: Vec<Box<dyn Tool>> = claurst_tools::all_tools()
+            let agent_tools_bg: Vec<Box<dyn Tool>> = simon_tools::all_tools()
                 .into_iter()
-                .filter(|t| t.name() != claurst_core::constants::TOOL_NAME_AGENT)
+                .filter(|t| t.name() != simon_core::constants::TOOL_NAME_AGENT)
                 .collect();
 
             let client_bg = client.clone();
@@ -416,24 +416,24 @@ impl Tool for AgentTool {
 
                 // Respect a prior external cancellation mark from monitor cancel.
                 let cancelled = matches!(
-                    claurst_core::tasks::global_registry()
+                    simon_core::tasks::global_registry()
                         .get(&agent_id_bg)
                         .map(|t| t.status),
-                    Some(claurst_core::tasks::TaskStatus::Cancelled)
+                    Some(simon_core::tasks::TaskStatus::Cancelled)
                 );
 
                 let result_text = format_outcome(outcome);
-                claurst_core::tasks::global_registry().append_output(&agent_id_bg, &result_text);
+                simon_core::tasks::global_registry().append_output(&agent_id_bg, &result_text);
 
                 if !cancelled {
                     let status = if result_text.starts_with("[Agent error:")
                         || result_text.starts_with("[Agent stopped:")
                     {
-                        claurst_core::tasks::TaskStatus::Failed(result_text.clone())
+                        simon_core::tasks::TaskStatus::Failed(result_text.clone())
                     } else {
-                        claurst_core::tasks::TaskStatus::Completed
+                        simon_core::tasks::TaskStatus::Completed
                     };
-                    claurst_core::tasks::global_registry().update_status(&agent_id_bg, status);
+                    simon_core::tasks::global_registry().update_status(&agent_id_bg, status);
                 }
 
                 debug!(
@@ -549,18 +549,18 @@ fn format_outcome(outcome: QueryOutcome) -> String {
 /// # Panics
 /// Panics if the runner was already registered.
 pub fn init_team_swarm_runner() {
-    let runner: claurst_tools::AgentRunFn = Arc::new(
+    let runner: simon_tools::AgentRunFn = Arc::new(
         |description: String,
          prompt: String,
          tools: Option<Vec<String>>,
          system: Option<String>,
          max_turns: Option<u32>,
-         ctx: Arc<claurst_tools::ToolContext>| {
+         ctx: Arc<simon_tools::ToolContext>| {
             // We must return a Pin<Box<dyn Future<...> + Send>>.
             Box::pin(async move {
                 let anthropic_key = ctx.config.resolve_anthropic_api_key().unwrap_or_default();
                 let anthropic_base = ctx.config.resolve_anthropic_api_base();
-                let client = match claurst_api::AnthropicClient::new(claurst_api::client::ClientConfig {
+                let client = match simon_api::AnthropicClient::new(simon_api::client::ClientConfig {
                     api_key: anthropic_key.clone(),
                     api_base: anthropic_base,
                     ..Default::default()
@@ -576,7 +576,7 @@ pub fn init_team_swarm_runner() {
 
                 let provider_registry = ProviderRegistry::from_config(
                     &ctx.config,
-                    claurst_api::client::ClientConfig {
+                    simon_api::client::ClientConfig {
                         api_key: anthropic_key,
                         api_base: ctx.config.resolve_anthropic_api_base(),
                         ..Default::default()
@@ -585,15 +585,15 @@ pub fn init_team_swarm_runner() {
                 let model_registry = Arc::new(build_model_registry());
 
                 // Build the tool list, filtering to the allowlist if provided.
-                let all = claurst_tools::all_tools();
-                let agent_tools: Vec<Box<dyn claurst_tools::Tool>> =
+                let all = simon_tools::all_tools();
+                let agent_tools: Vec<Box<dyn simon_tools::Tool>> =
                     if let Some(ref allowed) = tools {
                         all.into_iter()
                             .filter(|t| allowed.contains(&t.name().to_string()))
                             .collect()
                     } else {
                         all.into_iter()
-                            .filter(|t| t.name() != claurst_core::constants::TOOL_NAME_AGENT)
+                            .filter(|t| t.name() != simon_core::constants::TOOL_NAME_AGENT)
                             .collect()
                     };
 
@@ -619,7 +619,7 @@ pub fn init_team_swarm_runner() {
 
                 let query_config = crate::QueryConfig {
                     model,
-                    max_tokens: claurst_core::constants::DEFAULT_MAX_TOKENS,
+                    max_tokens: simon_core::constants::DEFAULT_MAX_TOKENS,
                     max_turns: max_turns.unwrap_or(10),
                     system_prompt: Some(system_prompt),
                     working_directory: Some(ctx.working_dir.display().to_string()),
@@ -631,7 +631,7 @@ pub fn init_team_swarm_runner() {
                 };
 
                 let cancel = tokio_util::sync::CancellationToken::new();
-                let mut messages = vec![claurst_core::types::Message::user(prompt)];
+                let mut messages = vec![simon_core::types::Message::user(prompt)];
                 let outcome = crate::run_query_loop(
                     client.as_ref(),
                     &mut messages,
@@ -650,5 +650,5 @@ pub fn init_team_swarm_runner() {
         },
     );
 
-    claurst_tools::register_agent_runner(runner);
+    simon_tools::register_agent_runner(runner);
 }

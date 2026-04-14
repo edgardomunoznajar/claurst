@@ -1,7 +1,7 @@
 //! T5-2: Message renderer snapshot tests.
 //! Renders each message type and verifies key content in returned Lines.
 
-use claurst_tui::messages::{
+use simon_tui::messages::{
     render_assistant_text, render_user_text, render_tool_use,
     render_tool_result_success, render_tool_result_error,
     render_compact_boundary, render_summary_message,

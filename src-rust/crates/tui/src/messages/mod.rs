@@ -7,7 +7,7 @@
 
 use std::collections::HashMap;
 
-use claurst_core::types::{ContentBlock, Message, Role, ToolResultContent};
+use simon_core::types::{ContentBlock, Message, Role, ToolResultContent};
 use crate::app::TurnMetadata;
 use crate::kitty_image::render_image;
 use crate::transcript_turn::reasoning_heading;
@@ -1915,10 +1915,10 @@ mod tests {
 
     #[test]
     fn test_render_user_memory_input() {
-        let result = render_user_memory_input("project", "Claurst");
+        let result = render_user_memory_input("project", "Simon");
         assert_eq!(result.len(), 2);
         let first = line_text(&result[0]);
-        assert!(first.contains("# project: Claurst"));
+        assert!(first.contains("# project: Simon"));
         let second = line_text(&result[1]);
         assert!(second.contains("Got it."));
     }

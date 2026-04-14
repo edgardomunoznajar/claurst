@@ -20,9 +20,9 @@
 //   the most recent `keep_recent_messages` intact.  This is lighter than a
 //   full compaction and can fire proactively at 75 % capacity.
 
-use claurst_api::{AnthropicStreamEvent, ApiMessage, CreateMessageRequest, StreamAccumulator, StreamHandler, SystemPrompt};
-use claurst_core::error::ClaudeError;
-use claurst_core::types::{ContentBlock, Message, MessageContent, Role};
+use simon_api::{AnthropicStreamEvent, ApiMessage, CreateMessageRequest, StreamAccumulator, StreamHandler, SystemPrompt};
+use simon_core::error::ClaudeError;
+use simon_core::types::{ContentBlock, Message, MessageContent, Role};
 use serde_json::Value;
 use std::sync::Arc;
 use tracing::{debug, info, warn};
@@ -177,8 +177,8 @@ fn estimate_block_chars(block: &ContentBlock) -> usize {
             name.len() + input.to_string().len()
         }
         ContentBlock::ToolResult { content, .. } => match content {
-            claurst_core::types::ToolResultContent::Text(t) => t.len(),
-            claurst_core::types::ToolResultContent::Blocks(blocks) => {
+            simon_core::types::ToolResultContent::Text(t) => t.len(),
+            simon_core::types::ToolResultContent::Blocks(blocks) => {
                 blocks.iter().map(|b| estimate_block_chars(b)).sum()
             }
         },
@@ -259,7 +259,7 @@ impl Default for MicroCompactConfig {
 ///
 /// Returns `Some(new_messages)` when compaction occurred, `None` otherwise.
 pub async fn micro_compact_if_needed(
-    client: &claurst_api::AnthropicClient,
+    client: &simon_api::AnthropicClient,
     messages: &[Message],
     input_tokens: u64,
     model: &str,
@@ -533,7 +533,7 @@ pub fn should_auto_compact(input_tokens: u64, model: &str, state: &AutoCompactSt
 /// carefully crafted compaction prompt from TypeScript prompt.ts.
 /// Returns a new conversation: [summary user msg] + messages[split_at..].
 async fn summarise_head(
-    client: &claurst_api::AnthropicClient,
+    client: &simon_api::AnthropicClient,
     messages: &[Message],
     split_at: usize,
     model: &str,
@@ -571,8 +571,8 @@ async fn summarise_head(
                     }
                     ContentBlock::ToolResult { tool_use_id, content, is_error } => {
                         let result_text = match content {
-                            claurst_core::types::ToolResultContent::Text(t) => t.as_str().to_string(),
-                            claurst_core::types::ToolResultContent::Blocks(_) => "[complex content]".to_string(),
+                            simon_core::types::ToolResultContent::Text(t) => t.as_str().to_string(),
+                            simon_core::types::ToolResultContent::Blocks(_) => "[complex content]".to_string(),
                         };
                         let error_flag = if is_error.unwrap_or(false) { " [ERROR]" } else { "" };
                         transcript.push_str(&format!(
@@ -612,7 +612,7 @@ async fn summarise_head(
         .build();
 
     // Use a null handler since we just want the final accumulated message.
-    let handler: Arc<dyn StreamHandler> = Arc::new(claurst_api::streaming::NullStreamHandler);
+    let handler: Arc<dyn StreamHandler> = Arc::new(simon_api::streaming::NullStreamHandler);
     let mut rx = client.create_message_stream(request, handler).await?;
     let mut acc = StreamAccumulator::new();
 
@@ -650,7 +650,7 @@ async fn summarise_head(
 /// Compact `messages` in-place, replacing the head with a summary.
 /// Returns the new messages vector on success.
 pub async fn compact_conversation(
-    client: &claurst_api::AnthropicClient,
+    client: &simon_api::AnthropicClient,
     messages: &[Message],
     model: &str,
 ) -> Result<Vec<Message>, ClaudeError> {
@@ -681,7 +681,7 @@ pub async fn compact_conversation(
 /// Auto-compact `messages` if needed.  Updates `state` in place.
 /// Returns `Some(new_messages)` if compaction ran, `None` otherwise.
 pub async fn auto_compact_if_needed(
-    client: &claurst_api::AnthropicClient,
+    client: &simon_api::AnthropicClient,
     messages: &[Message],
     input_tokens: u64,
     model: &str,
@@ -747,7 +747,7 @@ pub enum CompactTrigger {
 #[derive(Debug, Clone)]
 pub struct CompactResult {
     /// The new (reduced) message list.
-    pub messages: Vec<claurst_core::types::Message>,
+    pub messages: Vec<simon_core::types::Message>,
     /// Formatted summary text injected at the head of `messages`.
     pub summary: String,
     /// Rough estimate of how many tokens were freed.
@@ -787,7 +787,7 @@ pub fn should_context_collapse(tokens_used: u64, context_limit: u64) -> bool {
 /// Returns `(new_messages, rough_tokens_freed)`.
 ///
 /// Mirrors `snipCompact` from TypeScript (no API call required — purely local).
-pub fn snip_compact(messages: Vec<claurst_core::types::Message>, keep_n_newest: usize) -> (Vec<claurst_core::types::Message>, u64) {
+pub fn snip_compact(messages: Vec<simon_core::types::Message>, keep_n_newest: usize) -> (Vec<simon_core::types::Message>, u64) {
     let total = messages.len();
     if total <= keep_n_newest + 1 {
         // Nothing to snip.
@@ -819,7 +819,7 @@ pub fn snip_compact(messages: Vec<claurst_core::types::Message>, keep_n_newest: 
 /// Returns the cut index (0 = keep everything, messages.len() = keep nothing).
 /// Iterates from the newest message backwards, accumulating token estimates
 /// until the budget is exhausted.
-pub fn calculate_messages_to_keep_index(messages: &[claurst_core::types::Message], token_budget: u64) -> usize {
+pub fn calculate_messages_to_keep_index(messages: &[simon_core::types::Message], token_budget: u64) -> usize {
     if messages.is_empty() {
         return 0;
     }
@@ -846,8 +846,8 @@ pub fn calculate_messages_to_keep_index(messages: &[claurst_core::types::Message
 /// Image tokens are expensive and carry no information that a text summary
 /// needs.  Mirrors the TypeScript `stripImages` helper used inside
 /// `reactiveCompact.ts`.
-fn strip_images(messages: Vec<claurst_core::types::Message>) -> Vec<claurst_core::types::Message> {
-    use claurst_core::types::{ContentBlock, MessageContent};
+fn strip_images(messages: Vec<simon_core::types::Message>) -> Vec<simon_core::types::Message> {
+    use simon_core::types::{ContentBlock, MessageContent};
 
     messages
         .into_iter()
@@ -869,19 +869,19 @@ fn strip_images(messages: Vec<claurst_core::types::Message>) -> Vec<claurst_core
 /// conversation.
 ///
 /// Feature gate: only call this when
-/// `claurst_core::feature_gates::is_feature_enabled("reactive_compact")` is true.
+/// `simon_core::feature_gates::is_feature_enabled("reactive_compact")` is true.
 ///
 /// The `cancel` token is checked before the API call so the user can abort
 /// a long-running compact.
 pub async fn reactive_compact(
-    messages: Vec<claurst_core::types::Message>,
-    client: &claurst_api::AnthropicClient,
+    messages: Vec<simon_core::types::Message>,
+    client: &simon_api::AnthropicClient,
     config: &crate::QueryConfig,
     cancel: tokio_util::sync::CancellationToken,
     recently_modified: &[std::path::PathBuf],
-) -> Result<CompactResult, claurst_core::error::ClaudeError> {
+) -> Result<CompactResult, simon_core::error::ClaudeError> {
     if cancel.is_cancelled() {
-        return Err(claurst_core::error::ClaudeError::Cancelled);
+        return Err(simon_core::error::ClaudeError::Cancelled);
     }
 
     let total = messages.len();
@@ -941,7 +941,7 @@ pub async fn reactive_compact(
         };
         let file_name = path.display().to_string();
         let text = format!("<file path=\"{}\">\n{}\n</file>", file_name, content);
-        new_messages.push(claurst_core::types::Message::user(text));
+        new_messages.push(simon_core::types::Message::user(text));
         injected += 1;
     }
 
@@ -963,11 +963,11 @@ pub async fn reactive_compact(
 /// context is at ≥ 97 % capacity and a regular reactive compact is unlikely
 /// to free enough space.
 pub async fn context_collapse(
-    messages: Vec<claurst_core::types::Message>,
-    client: &claurst_api::AnthropicClient,
+    messages: Vec<simon_core::types::Message>,
+    client: &simon_api::AnthropicClient,
     config: &crate::QueryConfig,
-) -> Result<CompactResult, claurst_core::error::ClaudeError> {
-    use claurst_api::{AnthropicStreamEvent, ApiMessage, CreateMessageRequest, StreamAccumulator, StreamHandler, SystemPrompt};
+) -> Result<CompactResult, simon_core::error::ClaudeError> {
+    use simon_api::{AnthropicStreamEvent, ApiMessage, CreateMessageRequest, StreamAccumulator, StreamHandler, SystemPrompt};
     use serde_json::Value;
     use std::sync::Arc;
 
@@ -986,8 +986,8 @@ pub async fn context_collapse(
     let mut transcript = String::new();
     for msg in &messages {
         let role = match msg.role {
-            claurst_core::types::Role::User => "Human",
-            claurst_core::types::Role::Assistant => "Assistant",
+            simon_core::types::Role::User => "Human",
+            simon_core::types::Role::Assistant => "Assistant",
         };
         let text = msg.get_all_text();
         if !text.is_empty() {
@@ -1021,7 +1021,7 @@ pub async fn context_collapse(
         ))
         .build();
 
-    let handler: Arc<dyn StreamHandler> = Arc::new(claurst_api::streaming::NullStreamHandler);
+    let handler: Arc<dyn StreamHandler> = Arc::new(simon_api::streaming::NullStreamHandler);
     let mut rx = client.create_message_stream(request, handler).await?;
     let mut acc = StreamAccumulator::new();
 
@@ -1036,13 +1036,13 @@ pub async fn context_collapse(
     let summary_text = summary_msg.get_all_text();
 
     if summary_text.is_empty() {
-        return Err(claurst_core::error::ClaudeError::Other(
+        return Err(simon_core::error::ClaudeError::Other(
             "Context-collapse summary was empty".to_string(),
         ));
     }
 
     // Keep only: the synthetic summary + the most recent user turn.
-    let collapse_notice = claurst_core::types::Message::user(format!(
+    let collapse_notice = simon_core::types::Message::user(format!(
         "[EMERGENCY CONTEXT COLLAPSE — conversation condensed to stay within limits]\n\n{}",
         summary_text
     ));
@@ -1051,7 +1051,7 @@ pub async fn context_collapse(
     let last_user = messages
         .iter()
         .rev()
-        .find(|m| m.role == claurst_core::types::Role::User)
+        .find(|m| m.role == simon_core::types::Role::User)
         .cloned();
 
     let mut new_messages = vec![collapse_notice];
@@ -1083,8 +1083,8 @@ const CONTEXT_COLLAPSE_THRESHOLD: f64 = 0.97;
 ///
 /// When the same file is read more than once in the conversation, replaces
 /// all but the last read with `[Content shown N time(s); showing last occurrence only]`.
-pub fn collapse_read_tool_results(messages: Vec<claurst_core::types::Message>) -> Vec<claurst_core::types::Message> {
-    use claurst_core::types::{ContentBlock, MessageContent, ToolResultContent};
+pub fn collapse_read_tool_results(messages: Vec<simon_core::types::Message>) -> Vec<simon_core::types::Message> {
+    use simon_core::types::{ContentBlock, MessageContent, ToolResultContent};
     use std::collections::HashMap;
 
     // Helper: extract a fingerprint string from ToolResultContent.
@@ -1143,8 +1143,8 @@ pub fn collapse_read_tool_results(messages: Vec<claurst_core::types::Message>) -
 ///
 /// If the same search was run more than once (same query), keep only the
 /// most recent result; replace earlier results with a truncation notice.
-pub fn collapse_search_results(messages: Vec<claurst_core::types::Message>) -> Vec<claurst_core::types::Message> {
-    use claurst_core::types::{ContentBlock, MessageContent, ToolResultContent};
+pub fn collapse_search_results(messages: Vec<simon_core::types::Message>) -> Vec<simon_core::types::Message> {
+    use simon_core::types::{ContentBlock, MessageContent, ToolResultContent};
     use std::collections::HashSet;
 
     fn fingerprint(content: &ToolResultContent) -> Option<String> {
@@ -1157,7 +1157,7 @@ pub fn collapse_search_results(messages: Vec<claurst_core::types::Message>) -> V
     let mut seen_results: HashSet<String> = HashSet::new();
 
     // Iterate in reverse to keep the latest occurrence.
-    let mut result: Vec<claurst_core::types::Message> = messages
+    let mut result: Vec<simon_core::types::Message> = messages
         .into_iter()
         .rev()
         .map(|mut msg| {
@@ -1190,7 +1190,7 @@ pub fn collapse_search_results(messages: Vec<claurst_core::types::Message>) -> V
 #[cfg(test)]
 mod tests {
     use super::*;
-    use claurst_core::types::{Message, Role};
+    use simon_core::types::{Message, Role};
 
     fn make_user(text: &str) -> Message {
         Message::user(text)
