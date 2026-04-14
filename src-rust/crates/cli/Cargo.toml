@@ -17,6 +17,7 @@ simon-commands = { workspace = true }
 simon-mcp = { workspace = true }
 simon-bridge = { workspace = true }
 simon-plugins = { workspace = true }
+simon-acl = { workspace = true }
 tokio = { workspace = true }
 async-trait = { workspace = true }
 clap = { workspace = true }

@@ -608,6 +608,34 @@ async fn main() -> anyhow::Result<()> {
     // Initialize MCP servers first (needed for ToolContext.mcp_manager).
     let mcp_manager_arc = connect_mcp_manager_arc(&config).await;
 
+    // ACL enforcer wiring. Priority order:
+    //   1. Static policy file at $SIMON_ACL_POLICY (or /etc/simon/acl.json)
+    //   2. Remote NES HTTP enforcer at $SIMON_NES_URL
+    //   3. Fail-closed default: empty static policy with default_file_min_clearance
+    //      = Protected, so a misconfigured Simon refuses to read anything.
+    // TODO(simon-login): replace placeholder principal + enforcer from OIDC flow
+    let acl_policy_path = std::env::var("SIMON_ACL_POLICY")
+        .unwrap_or_else(|_| "/etc/simon/acl.json".to_string());
+    let acl_enforcer: simon_acl::SharedEnforcer = if std::path::Path::new(&acl_policy_path).exists()
+    {
+        Arc::new(simon_acl::StaticJsonEnforcer::from_file(&acl_policy_path).map_err(
+            |e| anyhow::anyhow!("failed to load ACL policy from {}: {e}", acl_policy_path),
+        )?)
+    } else if let Ok(nes_url) = std::env::var("SIMON_NES_URL") {
+        Arc::new(
+            simon_acl::NesHttpEnforcer::new(nes_url)
+                .map_err(|e| anyhow::anyhow!("failed to build NES enforcer: {e}"))?,
+        )
+    } else {
+        let policy = simon_acl::static_json::StaticPolicy {
+            default_file_min_clearance: Some(simon_acl::Clearance::Protected),
+            ..Default::default()
+        };
+        Arc::new(simon_acl::StaticJsonEnforcer::new(policy))
+    };
+    // TODO(simon-login): replace placeholder principal + enforcer from OIDC flow
+    let principal = Arc::new(simon_acl::SimonPrincipal::anonymous());
+
     let tool_ctx = ToolContext {
         working_dir: cwd.clone(),
         permission_mode: config.permission_mode.clone(),
@@ -621,6 +649,8 @@ async fn main() -> anyhow::Result<()> {
         config: config.clone(),
         managed_agent_config: config.managed_agents.clone(),
         completion_notifier: None,
+        acl_enforcer: acl_enforcer.clone(),
+        principal: principal.clone(),
     };
 
     // Register the cc-query-backed agent runner so TeamCreateTool can spawn real

@@ -3160,6 +3160,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sha2",
+ "simon-acl",
  "simon-api",
  "simon-bridge",
  "simon-commands",

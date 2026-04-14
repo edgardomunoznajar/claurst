@@ -268,6 +268,10 @@ mod tests {
             config: Config::default(),
             managed_agent_config: None,
             completion_notifier: None,
+            acl_enforcer: Arc::new(simon_acl::StaticJsonEnforcer::new(
+                simon_acl::static_json::StaticPolicy::default(),
+            )),
+            principal: Arc::new(simon_acl::SimonPrincipal::anonymous()),
         }
     }
 }
