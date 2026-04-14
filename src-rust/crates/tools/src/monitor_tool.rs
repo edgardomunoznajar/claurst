@@ -64,11 +64,28 @@ impl Tool for MonitorTool {
         })
     }
 
-    async fn execute(&self, input: Value, _ctx: &ToolContext) -> ToolResult {
+    async fn execute(&self, input: Value, ctx: &ToolContext) -> ToolResult {
         let parsed: MonitorInput = match serde_json::from_value(input) {
             Ok(v) => v,
             Err(e) => return ToolResult::error(format!("Invalid input: {}", e)),
         };
+
+        // ACL gate — only the Cancel action has external side effects
+        // (it spawns `kill`/`taskkill` on a child PID). List/Status/Output
+        // only read in-process state.
+        if matches!(parsed.action, MonitorAction::Cancel) {
+            let id = parsed.task_id.as_deref().unwrap_or("");
+            let cmd = format!("kill {}", id);
+            if let Err(e) = ctx
+                .acl_gate(
+                    &simon_acl::ResourceRef::shell(cmd),
+                    simon_acl::Operation::Execute,
+                )
+                .await
+            {
+                return ToolResult::error(e.to_string());
+            }
+        }
 
         match parsed.action {
             MonitorAction::List => {

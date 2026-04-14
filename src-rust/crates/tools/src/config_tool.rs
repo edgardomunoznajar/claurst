@@ -52,13 +52,29 @@ impl Tool for ConfigTool {
         })
     }
 
-    async fn execute(&self, input: Value, _ctx: &ToolContext) -> ToolResult {
+    async fn execute(&self, input: Value, ctx: &ToolContext) -> ToolResult {
         let params: ConfigInput = match serde_json::from_value(input) {
             Ok(p) => p,
             Err(e) => return ToolResult::error(format!("Invalid input: {}", e)),
         };
 
         let key = params.setting.trim();
+
+        // ACL gate — Config reads (and on set, writes) ~/.simon/settings.json.
+        // Gate on the settings path with the operation matching whether the
+        // caller is doing a GET (read) or a SET (write).
+        let settings_path = simon_core::config::Settings::global_settings_path();
+        let op = if params.value.is_some() {
+            simon_acl::Operation::Write
+        } else {
+            simon_acl::Operation::Read
+        };
+        if let Err(e) = ctx
+            .acl_gate(&simon_acl::ResourceRef::file(&settings_path), op)
+            .await
+        {
+            return ToolResult::error(e.to_string());
+        }
 
         // List all supported settings
         if key == "list" || key == "help" {

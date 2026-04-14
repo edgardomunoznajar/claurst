@@ -87,6 +87,19 @@ impl Tool for BriefTool {
 
         for raw_path in &params.attachments {
             let path = ctx.resolve_path(raw_path);
+            // ACL gate — stat is a filesystem read; gate each attachment
+            // path so policy can deny attachments from outside the workspace.
+            let canonical = std::fs::canonicalize(&path).unwrap_or_else(|_| path.clone());
+            if let Err(e) = ctx
+                .acl_gate(
+                    &simon_acl::ResourceRef::file(&canonical),
+                    simon_acl::Operation::Read,
+                )
+                .await
+            {
+                errors.push(format!("{}: {}", raw_path, e));
+                continue;
+            }
             match resolve_attachment(&path).await {
                 Ok(meta) => resolved.push(meta),
                 Err(e) => errors.push(format!("{}: {}", raw_path, e)),

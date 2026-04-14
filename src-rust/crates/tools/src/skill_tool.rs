@@ -67,6 +67,19 @@ impl Tool for SkillTool {
         let dirs = skill_search_dirs(ctx);
 
         if params.skill == "list" {
+            // ACL gate — `list` walks each skill dir. Gate a List op on
+            // each search directory before scanning.
+            for dir in &dirs {
+                if let Err(e) = ctx
+                    .acl_gate(
+                        &simon_acl::ResourceRef::directory(dir),
+                        simon_acl::Operation::List,
+                    )
+                    .await
+                {
+                    return ToolResult::error(e.to_string());
+                }
+            }
             return list_skills(&dirs).await;
         }
 
@@ -85,6 +98,22 @@ impl Tool for SkillTool {
                 ));
             }
             return ToolResult::success(prompt);
+        }
+
+        // ACL gate — gate a Read on each candidate skill path before
+        // touching disk. We gate every candidate rather than just the first
+        // hit so the policy sees every probe.
+        for dir in &dirs {
+            let candidate = dir.join(format!("{}.md", skill_name));
+            if let Err(e) = ctx
+                .acl_gate(
+                    &simon_acl::ResourceRef::file(&candidate),
+                    simon_acl::Operation::Read,
+                )
+                .await
+            {
+                return ToolResult::error(e.to_string());
+            }
         }
 
         let raw = match find_and_read_skill(skill_name, &dirs).await {

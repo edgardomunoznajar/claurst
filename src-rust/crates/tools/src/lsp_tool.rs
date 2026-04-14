@@ -73,6 +73,20 @@ impl Tool for LspTool {
                 .into_owned()
         };
 
+        // ACL gate — every LSP action reads the target source file through
+        // the language server. Gate the canonicalised path with Operation::Read.
+        let path_buf = std::path::PathBuf::from(&file_path);
+        let canonical = std::fs::canonicalize(&path_buf).unwrap_or(path_buf);
+        if let Err(e) = ctx
+            .acl_gate(
+                &simon_acl::ResourceRef::file(&canonical),
+                simon_acl::Operation::Read,
+            )
+            .await
+        {
+            return ToolResult::error(e.to_string());
+        }
+
         // line/column only required for position-based actions
         let line = input
             .get("line")

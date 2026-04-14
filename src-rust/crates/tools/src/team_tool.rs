@@ -279,6 +279,21 @@ impl Tool for TeamCreateTool {
             return ToolResult::error("task is required for TeamCreate".to_string());
         }
 
+        // ACL gate — TeamCreate writes ~/.simon/teams/<name>/config.json
+        // and results.json. Gate a Write on the base teams directory so
+        // policy can deny all team creation centrally.
+        if let Some(base) = teams_base_dir() {
+            if let Err(e) = ctx
+                .acl_gate(
+                    &simon_acl::ResourceRef::directory(&base),
+                    simon_acl::Operation::Write,
+                )
+                .await
+            {
+                return ToolResult::error(e.to_string());
+            }
+        }
+
         let safe_name = sanitize_name(&params.team_name);
         let lead_agent_id = format!("team-lead@{}", safe_name);
 
@@ -517,7 +532,7 @@ impl Tool for TeamDeleteTool {
         })
     }
 
-    async fn execute(&self, input: Value, _ctx: &ToolContext) -> ToolResult {
+    async fn execute(&self, input: Value, ctx: &ToolContext) -> ToolResult {
         let params: TeamDeleteInput = match serde_json::from_value(input) {
             Ok(p) => p,
             Err(e) => return ToolResult::error(format!("Invalid input: {}", e)),
@@ -525,6 +540,20 @@ impl Tool for TeamDeleteTool {
 
         if params.team_name.trim().is_empty() {
             return ToolResult::error("team_name is required for TeamDelete".to_string());
+        }
+
+        // ACL gate — TeamDelete removes ~/.simon/teams/<name>/ with
+        // tokio::fs::remove_dir_all. Gate a Write on the specific team dir.
+        if let Some(dir) = team_dir(&params.team_name) {
+            if let Err(e) = ctx
+                .acl_gate(
+                    &simon_acl::ResourceRef::directory(&dir),
+                    simon_acl::Operation::Write,
+                )
+                .await
+            {
+                return ToolResult::error(e.to_string());
+            }
         }
 
         let safe_name = sanitize_name(&params.team_name);

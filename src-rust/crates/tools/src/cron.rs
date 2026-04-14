@@ -299,11 +299,27 @@ impl Tool for CronCreateTool {
         })
     }
 
-    async fn execute(&self, input: Value, _ctx: &ToolContext) -> ToolResult {
+    async fn execute(&self, input: Value, ctx: &ToolContext) -> ToolResult {
         let params: CronCreateInput = match serde_json::from_value(input) {
             Ok(p) => p,
             Err(e) => return ToolResult::error(format!("Invalid input: {}", e)),
         };
+
+        // ACL gate — CronCreate may persist to ~/.simon/scheduled_tasks.json
+        // (durable=true) and always reads it via ensure_store_loaded.
+        if let Some(path) = scheduled_tasks_path() {
+            let op = if params.durable {
+                simon_acl::Operation::Write
+            } else {
+                simon_acl::Operation::Read
+            };
+            if let Err(e) = ctx
+                .acl_gate(&simon_acl::ResourceRef::file(&path), op)
+                .await
+            {
+                return ToolResult::error(e.to_string());
+            }
+        }
 
         if !validate_cron(&params.cron) {
             return ToolResult::error(format!(
@@ -401,11 +417,25 @@ impl Tool for CronDeleteTool {
         })
     }
 
-    async fn execute(&self, input: Value, _ctx: &ToolContext) -> ToolResult {
+    async fn execute(&self, input: Value, ctx: &ToolContext) -> ToolResult {
         let params: CronDeleteInput = match serde_json::from_value(input) {
             Ok(p) => p,
             Err(e) => return ToolResult::error(format!("Invalid input: {}", e)),
         };
+
+        // ACL gate — CronDelete reads and potentially rewrites
+        // ~/.simon/scheduled_tasks.json.
+        if let Some(path) = scheduled_tasks_path() {
+            if let Err(e) = ctx
+                .acl_gate(
+                    &simon_acl::ResourceRef::file(&path),
+                    simon_acl::Operation::Write,
+                )
+                .await
+            {
+                return ToolResult::error(e.to_string());
+            }
+        }
 
         // Load disk state first so we don't accidentally drop persisted tasks.
         ensure_store_loaded().await;
@@ -448,7 +478,20 @@ impl Tool for CronListTool {
         })
     }
 
-    async fn execute(&self, _input: Value, _ctx: &ToolContext) -> ToolResult {
+    async fn execute(&self, _input: Value, ctx: &ToolContext) -> ToolResult {
+        // ACL gate — CronList reads ~/.simon/scheduled_tasks.json on first use.
+        if let Some(path) = scheduled_tasks_path() {
+            if let Err(e) = ctx
+                .acl_gate(
+                    &simon_acl::ResourceRef::file(&path),
+                    simon_acl::Operation::Read,
+                )
+                .await
+            {
+                return ToolResult::error(e.to_string());
+            }
+        }
+
         // Merge in-memory store with any persisted tasks from disk.
         ensure_store_loaded().await;
 

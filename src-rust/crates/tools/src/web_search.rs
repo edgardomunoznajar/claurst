@@ -58,7 +58,7 @@ impl Tool for WebSearchTool {
         })
     }
 
-    async fn execute(&self, input: Value, _ctx: &ToolContext) -> ToolResult {
+    async fn execute(&self, input: Value, ctx: &ToolContext) -> ToolResult {
         let params: WebSearchInput = match serde_json::from_value(input) {
             Ok(p) => p,
             Err(e) => return ToolResult::error(format!("Invalid input: {}", e)),
@@ -66,6 +66,27 @@ impl Tool for WebSearchTool {
 
         let num_results = params.num_results.min(10).max(1);
         debug!(query = %params.query, num_results, "Web search");
+
+        // ACL gate — pick the URL of the backend we're about to hit so
+        // policy can allowlist/denylist search providers.
+        let target_url = if std::env::var("BRAVE_SEARCH_API_KEY")
+            .ok()
+            .filter(|k| !k.is_empty())
+            .is_some()
+        {
+            "https://api.search.brave.com/res/v1/web/search"
+        } else {
+            "https://api.duckduckgo.com/"
+        };
+        if let Err(e) = ctx
+            .acl_gate(
+                &simon_acl::ResourceRef::url(target_url.to_string()),
+                simon_acl::Operation::Read,
+            )
+            .await
+        {
+            return ToolResult::error(e.to_string());
+        }
 
         // Try Brave Search API first, then fall back to DuckDuckGo
         if let Some(api_key) = std::env::var("BRAVE_SEARCH_API_KEY").ok().filter(|k| !k.is_empty()) {

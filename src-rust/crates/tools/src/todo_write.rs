@@ -193,6 +193,19 @@ impl Tool for TodoWriteTool {
             Err(e) => return ToolResult::error(format!("Invalid input: {}", e)),
         };
 
+        // ACL gate — TodoWrite persists ~/.simon/todos/<session>.json; gate
+        // the write on that path so a policy can deny writes to $HOME/.simon.
+        let todos_file = todos_path(&ctx.session_id);
+        if let Err(e) = ctx
+            .acl_gate(
+                &simon_acl::ResourceRef::file(&todos_file),
+                simon_acl::Operation::Write,
+            )
+            .await
+        {
+            return ToolResult::error(e.to_string());
+        }
+
         debug!(count = params.todos.len(), "Writing todo list");
 
         // --- 2. Task ID uniqueness check ------------------------------------
