@@ -811,6 +811,19 @@ async fn connect_mcp_manager_arc(
         return None;
     }
 
+    // ACL sweep: MCP tools were deleted from the demo build because
+    // ReadMcpResource forwards raw resource URIs to external MCP server
+    // processes that run with the user's privileges and have no ACL
+    // awareness. The manager is still constructed here for any internal
+    // plumbing that expects it, but callers that rely on MCP-backed
+    // resource reads will fail closed.
+    tracing::error!(
+        count = config.mcp_servers.len(),
+        "ACL: MCP servers configured but MCP resource tools are disabled in this build. \
+         ReadMcpResource forwards raw URIs to unaudited external processes and is unsafe \
+         for the demo surface. Remove mcp_servers from config or re-enable the MCP tools \
+         behind an ACL-aware bridge before relying on them."
+    );
     info!(count = config.mcp_servers.len(), "Connecting to MCP servers");
     let mcp_manager = simon_mcp::McpManager::connect_all(&config.mcp_servers).await;
     Some(Arc::new(mcp_manager))

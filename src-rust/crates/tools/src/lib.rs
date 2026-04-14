@@ -31,7 +31,12 @@ pub mod file_write;
 pub mod glob_tool;
 pub mod grep_tool;
 pub mod lsp_tool;
-pub mod mcp_resources;
+// ACL: mcp_resources DELETED from demo registration — ReadMcpResource
+// forwards raw URI reads to external MCP server processes that run with
+// the user's privileges and have no ACL awareness, so the gate could
+// not be placed at the resource boundary. Re-enable only with a per-
+// server ACL-aware bridge.
+// pub mod mcp_resources;
 pub mod todo_write;
 pub mod notebook_edit;
 pub mod send_message;
@@ -42,9 +47,20 @@ pub mod tasks;
 pub mod tool_search;
 pub mod web_fetch;
 pub mod web_search;
-pub mod worktree;
-pub mod mcp_auth_tool;
-pub mod repl_tool;
+// ACL: worktree DELETED from demo registration — EnterWorktreeTool
+// accepts a `post_create_command` that it executes via `sh -c`, which is
+// a full bash bypass. ExitWorktreeTool also spawns `git` subprocesses
+// unconditionally. Re-enable only after reworking to gate on shell and
+// on the worktree directory path.
+// pub mod worktree;
+// ACL: mcp_auth_tool DELETED from demo registration — opens the system
+// browser (`open::that`) and forwards to McpManager::initiate_auth which
+// hits arbitrary OAuth endpoints. Tied to deleted MCP surface.
+// pub mod mcp_auth_tool;
+// ACL: repl_tool DELETED from demo registration — spawns persistent
+// bash/python/node interpreter processes and pipes raw code into them.
+// This is a full arbitrary-code-execution bypass of the Bash gate.
+// pub mod repl_tool;
 pub mod synthetic_output;
 pub mod team_tool;
 pub mod formatter;
@@ -68,7 +84,7 @@ pub use file_write::FileWriteTool;
 pub use glob_tool::GlobTool;
 pub use grep_tool::GrepTool;
 pub use lsp_tool::LspTool;
-pub use mcp_resources::{ListMcpResourcesTool, ReadMcpResourceTool};
+// pub use mcp_resources::{ListMcpResourcesTool, ReadMcpResourceTool};  // ACL: deleted
 pub use todo_write::TodoWriteTool;
 pub use notebook_edit::NotebookEditTool;
 pub use send_message::{SendMessageTool, drain_inbox, peek_inbox};
@@ -78,9 +94,9 @@ pub use tasks::{TaskCreateTool, TaskGetTool, TaskListTool, TaskOutputTool, TaskS
 pub use tool_search::ToolSearchTool;
 pub use web_fetch::WebFetchTool;
 pub use web_search::WebSearchTool;
-pub use worktree::{EnterWorktreeTool, ExitWorktreeTool};
-pub use mcp_auth_tool::McpAuthTool;
-pub use repl_tool::ReplTool;
+// pub use worktree::{EnterWorktreeTool, ExitWorktreeTool};  // ACL: deleted
+// pub use mcp_auth_tool::McpAuthTool;                       // ACL: deleted
+// pub use repl_tool::ReplTool;                              // ACL: deleted
 pub use synthetic_output::SyntheticOutputTool;
 pub use team_tool::{TeamCreateTool, TeamDeleteTool, register_agent_runner, AgentRunFn};
 pub use monitor_tool::MonitorTool;
@@ -442,21 +458,19 @@ pub fn all_tools() -> Vec<Box<dyn Tool>> {
         Box::new(CronCreateTool),
         Box::new(CronDeleteTool),
         Box::new(CronListTool),
-        Box::new(EnterWorktreeTool),
-        Box::new(ExitWorktreeTool),
-        Box::new(ListMcpResourcesTool),
-        Box::new(ReadMcpResourceTool),
+        // ACL: EnterWorktreeTool, ExitWorktreeTool deleted (post_create_command bash bypass).
+        // ACL: ListMcpResourcesTool, ReadMcpResourceTool deleted (forwards to external MCP server).
         Box::new(ToolSearchTool),
         Box::new(BriefTool),
         Box::new(ConfigTool),
         Box::new(SendMessageTool),
         Box::new(SkillTool),
         Box::new(LspTool),
-        Box::new(ReplTool),
+        // ACL: ReplTool deleted (spawns raw bash/python/node interpreter processes).
         Box::new(TeamCreateTool),
         Box::new(TeamDeleteTool),
         Box::new(SyntheticOutputTool),
-        Box::new(McpAuthTool),
+        // ACL: McpAuthTool deleted (opens system browser, hits OAuth endpoints via McpManager).
         Box::new(MonitorTool),
     ]
 }
