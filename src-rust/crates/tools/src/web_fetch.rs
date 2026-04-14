@@ -303,6 +303,18 @@ impl Tool for WebFetchTool {
             Err(e) => return ToolResult::error(format!("Invalid input: {}", e)),
         };
 
+        // ACL gate on the URL. Pass through the raw URL string — if it's
+        // malformed the enforcer will see it and (correctly) log the attempt.
+        if let Err(e) = ctx
+            .acl_gate(
+                &simon_acl::ResourceRef::url(params.url.clone()),
+                simon_acl::Operation::Read,
+            )
+            .await
+        {
+            return ToolResult::error(e.to_string());
+        }
+
         // Permission check
         if let Err(e) = ctx.check_permission(
             self.name(),

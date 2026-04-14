@@ -146,6 +146,23 @@ impl Tool for GrepTool {
 
         debug!(pattern = %params.pattern, path = %search_path.display(), "Running grep");
 
+        // ACL gate on the search root before any scan / read.
+        let canonical_root = std::fs::canonicalize(&search_path)
+            .unwrap_or_else(|_| search_path.clone());
+        let gate_resource = if search_path.is_file() {
+            simon_acl::ResourceRef::file(&canonical_root)
+        } else {
+            simon_acl::ResourceRef::directory(&canonical_root)
+        };
+        let gate_op = if search_path.is_file() {
+            simon_acl::Operation::Read
+        } else {
+            simon_acl::Operation::List
+        };
+        if let Err(e) = ctx.acl_gate(&gate_resource, gate_op).await {
+            return ToolResult::error(e.to_string());
+        }
+
         // Compile regex
         let regex = match RegexBuilder::new(&params.pattern)
             .case_insensitive(params.case_insensitive)
@@ -182,10 +199,8 @@ impl Tool for GrepTool {
             );
         }
 
-        // Walk directory tree
-        let mut results: Vec<String> = Vec::new();
-        let mut match_count = 0usize;
-
+        // Walk directory tree, collect candidate file paths first.
+        let mut candidate_paths: Vec<PathBuf> = Vec::new();
         for entry in WalkDir::new(&search_path)
             .follow_links(true)
             .into_iter()
@@ -230,6 +245,40 @@ impl Tool for GrepTool {
                     }
                 }
             }
+
+            candidate_paths.push(path.to_path_buf());
+        }
+
+        // ACL visibility filter: strip files the principal cannot read so
+        // they don't appear in matches at all.
+        let candidates: Vec<simon_acl::ResourceRef> = candidate_paths
+            .iter()
+            .map(|p| simon_acl::ResourceRef::file(p))
+            .collect();
+        let visible = match ctx
+            .acl_enforcer
+            .filter_visible(&ctx.principal, candidates)
+            .await
+        {
+            Ok(v) => v,
+            Err(e) => {
+                return ToolResult::error(format!(
+                    "ACL filter error (fail-closed): {e}"
+                ));
+            }
+        };
+        let visible_uris: std::collections::HashSet<String> =
+            visible.into_iter().map(|r| r.uri).collect();
+        let candidate_paths: Vec<PathBuf> = candidate_paths
+            .into_iter()
+            .filter(|p| visible_uris.contains(&p.to_string_lossy().into_owned()))
+            .collect();
+
+        let mut results: Vec<String> = Vec::new();
+        let mut match_count = 0usize;
+
+        for path in &candidate_paths {
+            let path = path.as_path();
 
             // Read file (skip binary)
             let content = match std::fs::read_to_string(path) {

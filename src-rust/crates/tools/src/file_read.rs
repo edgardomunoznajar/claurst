@@ -64,6 +64,19 @@ impl Tool for FileReadTool {
         let path = ctx.resolve_path(&params.file_path);
         debug!(path = %path.display(), "Reading file");
 
+        // ACL gate — runs before any syscall. Canonicalise if possible so
+        // rules match on the real path (resolves symlinks, `..`, etc.).
+        let canonical = std::fs::canonicalize(&path).unwrap_or_else(|_| path.clone());
+        if let Err(e) = ctx
+            .acl_gate(
+                &simon_acl::ResourceRef::file(&canonical),
+                simon_acl::Operation::Read,
+            )
+            .await
+        {
+            return ToolResult::error(e.to_string());
+        }
+
         // Check if file exists
         if !path.exists() {
             return ToolResult::error(format!("File not found: {}", path.display()));

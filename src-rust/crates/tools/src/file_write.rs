@@ -56,6 +56,19 @@ impl Tool for FileWriteTool {
         let path = ctx.resolve_path(&params.file_path);
         debug!(path = %path.display(), "Writing file");
 
+        // ACL gate — runs before any syscall. Canonicalise if possible
+        // (file may not exist yet, in which case fall back to the raw path).
+        let canonical = std::fs::canonicalize(&path).unwrap_or_else(|_| path.clone());
+        if let Err(e) = ctx
+            .acl_gate(
+                &simon_acl::ResourceRef::file(&canonical),
+                simon_acl::Operation::Write,
+            )
+            .await
+        {
+            return ToolResult::error(e.to_string());
+        }
+
         // Permission check
         if let Err(e) = ctx.check_permission(
             self.name(),

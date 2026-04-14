@@ -365,6 +365,17 @@ impl Tool for BashTool {
             Err(e) => return ToolResult::error(format!("Invalid input: {}", e)),
         };
 
+        // ACL gate — runs on the full command string before any syscall.
+        if let Err(e) = ctx
+            .acl_gate(
+                &simon_acl::ResourceRef::shell(params.command.clone()),
+                simon_acl::Operation::Execute,
+            )
+            .await
+        {
+            return ToolResult::error(e.to_string());
+        }
+
         // Permission check
         let desc = params.description.as_deref().unwrap_or(&params.command);
         if let Err(e) = ctx.check_permission(self.name(), desc, false) {

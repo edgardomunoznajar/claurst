@@ -76,6 +76,18 @@ impl Tool for FileEditTool {
         let path = ctx.resolve_path(&params.file_path);
         debug!(path = %path.display(), "Editing file");
 
+        // ACL gate — runs before any syscall.
+        let canonical = std::fs::canonicalize(&path).unwrap_or_else(|_| path.clone());
+        if let Err(e) = ctx
+            .acl_gate(
+                &simon_acl::ResourceRef::file(&canonical),
+                simon_acl::Operation::Write,
+            )
+            .await
+        {
+            return ToolResult::error(e.to_string());
+        }
+
         // Permission check
         if let Err(e) = ctx.check_permission(
             self.name(),

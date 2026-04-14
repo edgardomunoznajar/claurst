@@ -64,6 +64,18 @@ impl Tool for GlobTool {
 
         debug!(pattern = %params.pattern, dir = %base_dir.display(), "Running glob");
 
+        // ACL gate on the search root directory before scanning.
+        let canonical_base = std::fs::canonicalize(&base_dir).unwrap_or_else(|_| base_dir.clone());
+        if let Err(e) = ctx
+            .acl_gate(
+                &simon_acl::ResourceRef::directory(&canonical_base),
+                simon_acl::Operation::List,
+            )
+            .await
+        {
+            return ToolResult::error(e.to_string());
+        }
+
         if !base_dir.exists() || !base_dir.is_dir() {
             return ToolResult::error(format!(
                 "Directory not found: {}",
@@ -84,6 +96,39 @@ impl Tool for GlobTool {
                 return ToolResult::error(format!("Invalid glob pattern: {}", e));
             }
         };
+
+        if entries.is_empty() {
+            return ToolResult::success(format!(
+                "No files matched pattern \"{}\" in {}",
+                params.pattern,
+                base_dir.display()
+            ));
+        }
+
+        // ACL visibility filter: strip entries the principal cannot see so
+        // lower-clearance users don't even learn hidden files exist.
+        let candidates: Vec<simon_acl::ResourceRef> = entries
+            .iter()
+            .map(|p| simon_acl::ResourceRef::file(p))
+            .collect();
+        let visible = match ctx
+            .acl_enforcer
+            .filter_visible(&ctx.principal, candidates)
+            .await
+        {
+            Ok(v) => v,
+            Err(e) => {
+                return ToolResult::error(format!(
+                    "ACL filter error (fail-closed): {e}"
+                ));
+            }
+        };
+        let visible_uris: std::collections::HashSet<String> =
+            visible.into_iter().map(|r| r.uri).collect();
+        let entries: Vec<PathBuf> = entries
+            .into_iter()
+            .filter(|p| visible_uris.contains(&p.to_string_lossy().into_owned()))
+            .collect();
 
         if entries.is_empty() {
             return ToolResult::success(format!(

@@ -98,6 +98,18 @@ impl Tool for NotebookEditTool {
             return ToolResult::error("File must have .ipynb extension".to_string());
         }
 
+        // ACL gate — runs before any syscall.
+        let canonical = std::fs::canonicalize(&path).unwrap_or_else(|_| path.clone());
+        if let Err(e) = ctx
+            .acl_gate(
+                &simon_acl::ResourceRef::file(&canonical),
+                simon_acl::Operation::Write,
+            )
+            .await
+        {
+            return ToolResult::error(e.to_string());
+        }
+
         // Permission check
         if let Err(e) = ctx.check_permission(
             self.name(),

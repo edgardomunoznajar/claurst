@@ -89,6 +89,21 @@ impl Tool for BatchEditTool {
             return ToolResult::error("edits array must not be empty".to_string());
         }
 
+        // ACL gate — gate each target file before any read/write syscall.
+        for edit in &params.edits {
+            let path = ctx.resolve_path(&edit.file_path);
+            let canonical = std::fs::canonicalize(&path).unwrap_or_else(|_| path.clone());
+            if let Err(e) = ctx
+                .acl_gate(
+                    &simon_acl::ResourceRef::file(&canonical),
+                    simon_acl::Operation::Write,
+                )
+                .await
+            {
+                return ToolResult::error(e.to_string());
+            }
+        }
+
         // Permission check (one check covers the whole batch).
         let description = params
             .description

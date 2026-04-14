@@ -301,6 +301,21 @@ impl Tool for ApplyPatchTool {
             );
         }
 
+        // ACL gate — gate each target file before any read/write syscall.
+        for fp in &file_patches {
+            let path = ctx.resolve_path(&fp.path);
+            let canonical = std::fs::canonicalize(&path).unwrap_or_else(|_| path.clone());
+            if let Err(e) = ctx
+                .acl_gate(
+                    &simon_acl::ResourceRef::file(&canonical),
+                    simon_acl::Operation::Write,
+                )
+                .await
+            {
+                return ToolResult::error(e.to_string());
+            }
+        }
+
         // Permission check.
         if !params.dry_run {
             if let Err(e) = ctx.check_permission(
