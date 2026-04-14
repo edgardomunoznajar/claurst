@@ -45,6 +45,7 @@ impl Tool for SyntheticOutputTool {
     }
 
     async fn execute(&self, input: Value, _ctx: &ToolContext) -> ToolResult {
+        // ACL: inert — no external resource access
         // Validate that we at least received a JSON object
         if !input.is_object() {
             return ToolResult::error(

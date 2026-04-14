@@ -43,6 +43,7 @@ impl Tool for ExitPlanModeTool {
     }
 
     async fn execute(&self, input: Value, _ctx: &ToolContext) -> ToolResult {
+        // ACL: inert — no external resource access
         let params: ExitPlanModeInput = serde_json::from_value(input).unwrap_or(ExitPlanModeInput {
             summary: None,
         });

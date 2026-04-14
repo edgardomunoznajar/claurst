@@ -47,6 +47,7 @@ impl Tool for SleepTool {
     }
 
     async fn execute(&self, input: Value, _ctx: &ToolContext) -> ToolResult {
+        // ACL: inert — no external resource access
         let params: SleepInput = match serde_json::from_value(input) {
             Ok(p) => p,
             Err(e) => return ToolResult::error(format!("Invalid input: {}", e)),

@@ -50,6 +50,7 @@ impl Tool for AskUserQuestionTool {
     }
 
     async fn execute(&self, input: Value, ctx: &ToolContext) -> ToolResult {
+        // ACL: inert — no external resource access
         let params: AskUserInput = match serde_json::from_value(input) {
             Ok(p) => p,
             Err(e) => return ToolResult::error(format!("Invalid input: {}", e)),

@@ -145,6 +145,7 @@ impl Tool for TaskCreateTool {
     }
 
     async fn execute(&self, input: Value, _ctx: &ToolContext) -> ToolResult {
+        // ACL: inert — no external resource access
         let params: TaskCreateInput = match serde_json::from_value(input) {
             Ok(p) => p,
             Err(e) => return ToolResult::error(format!("Invalid input: {}", e)),
@@ -193,6 +194,7 @@ impl Tool for TaskGetTool {
     }
 
     async fn execute(&self, input: Value, _ctx: &ToolContext) -> ToolResult {
+        // ACL: inert — no external resource access
         let params: TaskGetInput = match serde_json::from_value(input) {
             Ok(p) => p,
             Err(e) => return ToolResult::error(format!("Invalid input: {}", e)),
@@ -265,6 +267,7 @@ impl Tool for TaskUpdateTool {
     }
 
     async fn execute(&self, input: Value, _ctx: &ToolContext) -> ToolResult {
+        // ACL: inert — no external resource access
         let params: TaskUpdateInput = match serde_json::from_value(input) {
             Ok(p) => p,
             Err(e) => return ToolResult::error(format!("Invalid input: {}", e)),
@@ -370,6 +373,7 @@ impl Tool for TaskListTool {
     }
 
     async fn execute(&self, input: Value, _ctx: &ToolContext) -> ToolResult {
+        // ACL: inert — no external resource access
         let include_completed = input
             .get("include_completed")
             .and_then(|v| v.as_bool())
@@ -421,6 +425,7 @@ impl Tool for TaskStopTool {
     }
 
     async fn execute(&self, input: Value, _ctx: &ToolContext) -> ToolResult {
+        // ACL: inert — no external resource access
         let params: TaskStopInput = match serde_json::from_value(input) {
             Ok(p) => p,
             Err(e) => return ToolResult::error(format!("Invalid input: {}", e)),
@@ -479,6 +484,7 @@ impl Tool for TaskOutputTool {
     }
 
     async fn execute(&self, input: Value, _ctx: &ToolContext) -> ToolResult {
+        // ACL: inert — no external resource access
         let params: TaskOutputInput = match serde_json::from_value(input) {
             Ok(p) => p,
             Err(e) => return ToolResult::error(format!("Invalid input: {}", e)),

@@ -91,6 +91,7 @@ impl Tool for SendMessageTool {
     }
 
     async fn execute(&self, input: Value, ctx: &ToolContext) -> ToolResult {
+        // ACL: inert — no external resource access
         let params: SendMessageInput = match serde_json::from_value(input) {
             Ok(p) => p,
             Err(e) => return ToolResult::error(format!("Invalid input: {}", e)),
