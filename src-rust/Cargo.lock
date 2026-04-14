@@ -3179,6 +3179,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "simon-acl"
+version = "0.0.9"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "chrono",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "tokio",
+ "tracing",
+ "url",
+]
+
+[[package]]
 name = "simon-api"
 version = "0.0.9"
 dependencies = [

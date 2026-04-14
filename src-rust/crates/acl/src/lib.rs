@@ -88,6 +88,23 @@ impl SimonPrincipal {
     pub fn is_expired(&self, now: DateTime<Utc>) -> bool {
         now >= self.expires_at
     }
+
+    /// Placeholder principal used before OIDC login wires the real one in.
+    /// Deliberately carries the lowest clearance so the harness is
+    /// fail-closed during the pre-login window.
+    pub fn anonymous() -> Self {
+        let now = chrono::Utc::now();
+        Self {
+            subject: "anonymous".into(),
+            display_name: "anonymous".into(),
+            email: "anonymous@simon.local".into(),
+            clearance: Clearance::Unofficial,
+            groups: vec![],
+            session_id: "pre-login".into(),
+            issued_at: now,
+            expires_at: now + chrono::Duration::hours(1),
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
