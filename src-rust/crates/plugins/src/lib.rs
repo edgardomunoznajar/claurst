@@ -9,7 +9,6 @@
 pub mod hooks;
 pub mod loader;
 pub mod manifest;
-pub mod marketplace;
 pub mod plugin;
 pub mod registry;
 

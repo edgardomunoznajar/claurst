@@ -348,11 +348,6 @@ async fn main() -> anyhow::Result<()> {
         return handle_auth_command(&raw_args[2..]).await;
     }
 
-    // Fast-path: `claude acp` — start the Agent Client Protocol stdio server.
-    if raw_args.get(1).map(|s| s.as_str()) == Some("acp") {
-        return claurst_acp::run_acp_server().await;
-    }
-
     // Fast-path: `claude models` — list all available providers and models.
     if raw_args.get(1).map(|s| s.as_str()) == Some("models") {
         let mut registry = claurst_api::ModelRegistry::new();
@@ -727,16 +722,7 @@ async fn main() -> anyhow::Result<()> {
         tools
     };
 
-    // Spawn the background cron scheduler (fires cron tasks at scheduled times).
-    // Cancelled automatically when the process exits since we use a shared token.
-    let cron_cancel = tokio_util::sync::CancellationToken::new();
-    claurst_query::start_cron_scheduler(
-        client.clone(),
-        tools.clone(),
-        tool_ctx.clone(),
-        query_config.clone(),
-        cron_cancel.clone(),
-    );
+    // Cron scheduler removed in Simon refactor.
 
     // --print mode (headless)
     let result = if is_headless {
@@ -772,7 +758,6 @@ async fn main() -> anyhow::Result<()> {
         .await
     };
 
-    cron_cancel.cancel();
     result
 }
 
@@ -1374,7 +1359,7 @@ async fn run_interactive(
         if !settings.has_completed_onboarding {
             app.onboarding_dialog.show();
         } else {
-            app.status_message = Some("No provider configured. Run /connect to set one up.".to_string());
+            app.status_message = Some("No provider configured. Set SIMON_ANTHROPIC_API_KEY and restart.".to_string());
         }
     } else if !settings.has_completed_onboarding {
         // User has credentials but hasn't formally completed onboarding — mark it done
@@ -1652,7 +1637,7 @@ async fn run_interactive(
                                 && matches!(
                                     cmd_name.as_str(),
                                     "model" | "theme" | "resume" | "session"
-                                        | "vim" | "vi" | "voice" | "fast" | "speed"
+                                        | "vim" | "vi" | "fast" | "speed"
                                 );
                             let handled_by_tui = if skip_tui_for_args {
                                 false
@@ -1815,7 +1800,7 @@ async fn run_interactive(
                                                     Some(refreshed.provider_registry),
                                                     refreshed.auth_store,
                                                     false,
-                                                    "Saved provider state cleared. Run /connect to reconnect."
+                                                    "Saved provider state cleared. Configure SIMON_ANTHROPIC_API_KEY and restart."
                                                         .to_string(),
                                                 );
                                             }

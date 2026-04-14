@@ -34,7 +34,6 @@ pub mod lsp_tool;
 pub mod mcp_resources;
 pub mod todo_write;
 pub mod notebook_edit;
-pub mod powershell;
 pub mod send_message;
 pub mod bundled_skills;
 pub mod skill_tool;
@@ -44,12 +43,10 @@ pub mod tool_search;
 pub mod web_fetch;
 pub mod web_search;
 pub mod worktree;
-pub mod computer_use;
 pub mod mcp_auth_tool;
 pub mod repl_tool;
 pub mod synthetic_output;
 pub mod team_tool;
-pub mod remote_trigger;
 pub mod formatter;
 pub mod monitor_tool;
 
@@ -74,7 +71,6 @@ pub use lsp_tool::LspTool;
 pub use mcp_resources::{ListMcpResourcesTool, ReadMcpResourceTool};
 pub use todo_write::TodoWriteTool;
 pub use notebook_edit::NotebookEditTool;
-pub use powershell::PowerShellTool;
 pub use send_message::{SendMessageTool, drain_inbox, peek_inbox};
 pub use skill_tool::SkillTool;
 pub use sleep::SleepTool;
@@ -83,12 +79,10 @@ pub use tool_search::ToolSearchTool;
 pub use web_fetch::WebFetchTool;
 pub use web_search::WebSearchTool;
 pub use worktree::{EnterWorktreeTool, ExitWorktreeTool};
-pub use computer_use::ComputerUseTool;
 pub use mcp_auth_tool::McpAuthTool;
 pub use repl_tool::ReplTool;
 pub use synthetic_output::SyntheticOutputTool;
 pub use team_tool::{TeamCreateTool, TeamDeleteTool, register_agent_runner, AgentRunFn};
-pub use remote_trigger::RemoteTriggerTool;
 pub use monitor_tool::MonitorTool;
 
 // ---------------------------------------------------------------------------
@@ -380,7 +374,6 @@ pub fn all_tools() -> Vec<Box<dyn Tool>> {
         Box::new(AskUserQuestionTool),
         Box::new(EnterPlanModeTool),
         Box::new(ExitPlanModeTool),
-        Box::new(PowerShellTool),
         Box::new(SleepTool),
         Box::new(CronCreateTool),
         Box::new(CronDeleteTool),
@@ -400,11 +393,7 @@ pub fn all_tools() -> Vec<Box<dyn Tool>> {
         Box::new(TeamDeleteTool),
         Box::new(SyntheticOutputTool),
         Box::new(McpAuthTool),
-        Box::new(RemoteTriggerTool),
         Box::new(MonitorTool),
-        // Computer Use is only available when compiled with the feature flag.
-        #[cfg(feature = "computer-use")]
-        Box::new(computer_use::ComputerUseTool),
     ]
 }
 

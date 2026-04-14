@@ -9,19 +9,14 @@
 // 6. Manages stop conditions (end_turn, max_turns, cancellation)
 
 pub mod agent_tool;
-pub mod auto_dream;
-pub mod away_summary;
 pub mod command_queue;
-pub mod managed_orchestrator;
 pub mod compact;
 pub mod context_analyzer;
 pub mod coordinator;
-pub mod cron_scheduler;
 pub mod session_memory;
 pub mod skill_prefetch;
 pub use agent_tool::{AgentTool, init_team_swarm_runner};
 pub use command_queue::{CommandPriority, CommandQueue, QueuedCommand, drain_command_queue};
-pub use cron_scheduler::start_cron_scheduler;
 pub use skill_prefetch::{
     SkillDefinition, SkillIndex, SharedSkillIndex, prefetch_skills, format_skill_listing,
 };
@@ -810,16 +805,7 @@ pub async fn run_query_loop(
                 }
             }
 
-            // If managed-agent mode is active, append orchestration instructions.
-            if let Some(ref ma_config) = config.managed_agents {
-                if ma_config.enabled {
-                    let ma_prompt = crate::managed_orchestrator::managed_agent_system_prompt(ma_config);
-                    patched.append_system_prompt = Some(match &patched.append_system_prompt {
-                        Some(existing) => format!("{}\n\n{}", existing, ma_prompt),
-                        None => ma_prompt,
-                    });
-                }
-            }
+            // Managed-agent orchestrator removed in Simon refactor.
 
             // Apply todo nudge on turns > 2.
             if turn > 2 {
@@ -1671,45 +1657,7 @@ pub async fn run_query_loop(
                     }
                 }
 
-                // Trigger AutoDream consolidation check (non-blocking, best-effort).
-                // maybe_trigger() checks gates + acquires lock. If it returns
-                // Some(task), we spawn a background subagent via AgentTool so
-                // the spawn doesn't call run_query_loop recursively from within
-                // its own future (which would make the future !Send).
-                {
-                    let memory_dir = dirs::home_dir().map(|h| h.join(".claurst").join("memory"));
-                    let conversations_dir =
-                        dirs::home_dir().map(|h| h.join(".claurst").join("conversations"));
-                    if let (Some(mem), Some(conv)) = (memory_dir, conversations_dir) {
-                        let dreamer = crate::auto_dream::AutoDream::new(mem, conv);
-                        if let Ok(Some(task)) = dreamer.maybe_trigger().await {
-                            // Run the consolidation subagent in a background Tokio
-                            // task. We use the AgentTool execute path (via
-                            // poll_background_agent / BACKGROUND_AGENTS) to avoid
-                            // re-entering run_query_loop from within the same
-                            // future graph.
-                            let agent_input = serde_json::json!({
-                                "description": "memory consolidation",
-                                "prompt": task.prompt,
-                                "max_turns": 20,
-                                "system_prompt": "You are performing automatic memory consolidation. Complete the task and return a brief summary.",
-                                "run_in_background": true,
-                                "isolation": null
-                            });
-                            let ctx_for_dream = tool_ctx.clone();
-                            tokio::spawn(async move {
-                                let agent = crate::agent_tool::AgentTool;
-                                let _result = claurst_tools::Tool::execute(
-                                    &agent,
-                                    agent_input,
-                                    &ctx_for_dream,
-                                )
-                                .await;
-                                crate::auto_dream::AutoDream::finish_consolidation(&task).await;
-                            });
-                        }
-                    }
-                }
+                // AutoDream consolidation removed in Simon refactor.
 
                 return QueryOutcome::EndTurn {
                     message: assistant_msg,

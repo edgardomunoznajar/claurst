@@ -4,9 +4,6 @@ version.workspace = true
 edition.workspace = true
 
 [features]
-# Enable real microphone capture for voice PTT mode.
-voice = ["claurst-core/voice", "dep:cpal", "dep:hound"]
-
 # UI & Interaction features (pass-through from cc-core)
 token_budget = ["claurst-core/token_budget"]
 ultraplan = ["claurst-core/ultraplan"]
@@ -75,9 +72,6 @@ dashmap = { workspace = true }
 icy_sixel = { workspace = true }
 image = { workspace = true }
 regex = { workspace = true }
-# Optional audio capture for voice PTT (gated behind the `voice` feature)
-cpal = { version = "0.15", optional = true }
-hound = { version = "3.5", optional = true }
 
 [dev-dependencies]
 tempfile = { workspace = true }

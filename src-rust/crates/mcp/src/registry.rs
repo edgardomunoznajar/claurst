@@ -171,63 +171,14 @@ fn normalize_url(url: &str) -> Option<String> {
     Some(s.trim_end_matches('/').to_string())
 }
 
-/// Fire-and-forget fetch of `https://api.anthropic.com/mcp-registry/v0/servers`.
-/// Populates `OFFICIAL_URLS` so that `is_official_mcp_url` works.
-///
-/// Skipped when `CLAURST_DISABLE_NONESSENTIAL_TRAFFIC` is set.
+/// Simon refactor: no live HTTP registry fetch. This function is now a no-op
+/// and leaves `OFFICIAL_URLS` uninitialized; `is_official_mcp_url` always
+/// returns `false`. Static `OFFICIAL_SERVERS` list remains the authoritative
+/// set.
 pub async fn prefetch_official_mcp_urls() {
-    if std::env::var("CLAURST_DISABLE_NONESSENTIAL_TRAFFIC").is_ok() {
-        return;
-    }
-
-    // Only fetch once.
-    if OFFICIAL_URLS.get().is_some() {
-        return;
-    }
-
-    let result: anyhow::Result<HashSet<String>> = async {
-        let client = reqwest::Client::builder()
-            .timeout(std::time::Duration::from_secs(5))
-            .build()?;
-        let resp: serde_json::Value = client
-            .get("https://api.anthropic.com/mcp-registry/v0/servers?version=latest&visibility=commercial")
-            .send()
-            .await?
-            .json()
-            .await?;
-
-        let mut urls = HashSet::new();
-        if let Some(servers) = resp.get("servers").and_then(|s| s.as_array()) {
-            for entry in servers {
-                if let Some(remotes) = entry
-                    .get("server")
-                    .and_then(|s| s.get("remotes"))
-                    .and_then(|r| r.as_array())
-                {
-                    for remote in remotes {
-                        if let Some(url) = remote.get("url").and_then(|u| u.as_str()) {
-                            if let Some(normalized) = normalize_url(url) {
-                                urls.insert(normalized);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        Ok(urls)
-    }
-    .await;
-
-    match result {
-        Ok(urls) => {
-            let count = urls.len();
-            let _ = OFFICIAL_URLS.set(urls);
-            tracing::debug!(count, "[mcp-registry] Loaded official MCP URLs");
-        }
-        Err(e) => {
-            tracing::debug!(error = %e, "[mcp-registry] Failed to fetch MCP registry");
-        }
-    }
+    // Intentionally empty. Populate an empty set so the OnceCell is initialised
+    // and callers don't repeatedly enter this function.
+    let _ = OFFICIAL_URLS.set(HashSet::new());
 }
 
 /// Returns `true` iff `normalized_url` appears in the official registry.

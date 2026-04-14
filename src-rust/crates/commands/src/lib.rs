@@ -252,7 +252,6 @@ pub struct AdvisorCommand;
 pub struct InstallSlackAppCommand;
 pub struct UndoCommand;
 pub struct ProvidersCommand;
-pub struct ConnectCommand;
 pub struct AgentCommand;
 pub struct SearchCommand;
 pub struct ForkCommand;
@@ -7548,22 +7547,6 @@ impl SlashCommand for ProvidersCommand {
     }
 }
 
-// ---- /connect -------------------------------------------------------------
-
-#[async_trait]
-impl SlashCommand for ConnectCommand {
-    fn name(&self) -> &str { "connect" }
-    fn description(&self) -> &str { "Connect an AI provider" }
-    fn help(&self) -> &str {
-        "Usage: /connect\n\nOpens the interactive provider picker dialog.\nSelect a provider to see setup instructions."
-    }
-
-    async fn execute(&self, _args: &str, _ctx: &mut CommandContext) -> CommandResult {
-        // This is handled by the TUI interceptor — opening the connect dialog.
-        CommandResult::Message("Use the connect dialog to set up a provider.".to_string())
-    }
-}
-
 // ---- /agent ---------------------------------------------------------------
 
 #[async_trait]
@@ -8105,7 +8088,6 @@ pub fn all_commands() -> Vec<Box<dyn SlashCommand>> {
         Box::new(UndoCommand),
         // Multi-provider support
         Box::new(ProvidersCommand),
-        Box::new(ConnectCommand),
         // Named agent system
         Box::new(AgentCommand),
         // Session search (SQLite)
