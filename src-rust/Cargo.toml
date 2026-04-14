@@ -11,6 +11,7 @@ members = [
     "crates/bridge",
     "crates/cli",
     "crates/plugins",
+    "crates/acl",
 ]
 
 [workspace.package]
@@ -108,3 +109,4 @@ simon-commands = { path = "crates/commands" }
 simon-mcp = { path = "crates/mcp" }
 simon-bridge = { path = "crates/bridge" }
 simon-plugins = { path = "crates/plugins" }
+simon-acl = { path = "crates/acl" }
