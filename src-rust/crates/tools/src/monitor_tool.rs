@@ -272,6 +272,7 @@ mod tests {
                 simon_acl::static_json::StaticPolicy::default(),
             )),
             principal: Arc::new(simon_acl::SimonPrincipal::anonymous()),
+            audit_sink: Arc::new(simon_acl::audit::NullSink),
         }
     }
 }

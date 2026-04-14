@@ -242,6 +242,11 @@ pub struct ToolContext {
     /// Authenticated principal for this session. Constructed once at login
     /// (or `SimonPrincipal::anonymous()` pre-login).
     pub principal: Arc<simon_acl::SimonPrincipal>,
+    /// Append-only audit sink. Every ACL decision is committed here before
+    /// the tool is allowed to act on it. If the sink returns an error the
+    /// tool MUST fail — this is how Simon stays fail-closed against an
+    /// attacker who DOSes the log pipeline.
+    pub audit_sink: simon_acl::audit::SharedAuditSink,
 }
 
 impl ToolContext {
@@ -308,33 +313,55 @@ impl ToolContext {
         }
     }
 
-    /// Run the deterministic ACL gate. Returns Err with a user-facing reason on
-    /// Deny. The returned error message is exactly what the LLM sees as the
-    /// tool result — it's safe to include ACL details because the LLM already
-    /// knows the user's identity (we put it in the system prompt).
+    /// Run the deterministic ACL gate. The sequence is:
+    ///
+    ///   1. Ask the enforcer for a decision.
+    ///   2. Write the decision (Allow or Deny) to the audit sink.
+    ///   3. If the sink write fails, the call fails — no tool action proceeds
+    ///      on an unaudited decision.
+    ///   4. If the decision is Deny, return a user-facing error; the LLM sees
+    ///      it as a tool result.
+    ///
+    /// The returned error message is exactly what the LLM sees; it's safe to
+    /// include ACL details because the LLM already knows the user's identity
+    /// (we put it in the system prompt).
     pub async fn acl_gate(
         &self,
         resource: &simon_acl::ResourceRef,
         op: simon_acl::Operation,
     ) -> Result<(), anyhow::Error> {
-        match self
+        let decision = self
             .acl_enforcer
             .check(&self.principal, resource, op)
             .await
-        {
-            Ok(simon_acl::AclDecision::Allow) => Ok(()),
-            Ok(simon_acl::AclDecision::Deny {
+            .map_err(|e| anyhow::anyhow!("ACL enforcer error (fail-closed): {e}"))?;
+
+        // Commit the decision to the audit sink before acting. A sink error
+        // is fatal — it forces the tool to fail even on an Allow, which is
+        // the fail-closed property we want.
+        let event = simon_acl::audit::AuditEvent::new(
+            &self.principal,
+            resource,
+            op,
+            decision.clone(),
+            self.acl_enforcer.backend_name(),
+        );
+        self.audit_sink
+            .write(&event)
+            .await
+            .map_err(|e| anyhow::anyhow!("audit commit failed (fail-closed): {e}"))?;
+
+        match decision {
+            simon_acl::AclDecision::Allow => Ok(()),
+            simon_acl::AclDecision::Deny {
                 reason,
                 required_clearance,
-            }) => {
+            } => {
                 let clr = required_clearance
                     .map(|c| format!(" (requires {})", c))
                     .unwrap_or_default();
                 Err(anyhow::anyhow!("ACL denied: {}{}", reason, clr))
             }
-            Err(e) => Err(anyhow::anyhow!(
-                "ACL enforcer error (fail-closed): {e}"
-            )),
         }
     }
 
@@ -586,6 +613,7 @@ mod tests {
                 simon_acl::static_json::StaticPolicy::default(),
             )),
             principal: Arc::new(simon_acl::SimonPrincipal::anonymous()),
+            audit_sink: Arc::new(simon_acl::audit::NullSink),
         };
 
         // Absolute paths pass through unchanged
@@ -620,6 +648,7 @@ mod tests {
                 simon_acl::static_json::StaticPolicy::default(),
             )),
             principal: Arc::new(simon_acl::SimonPrincipal::anonymous()),
+            audit_sink: Arc::new(simon_acl::audit::NullSink),
         };
 
         // Relative paths get joined with working_dir

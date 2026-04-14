@@ -627,14 +627,26 @@ async fn main() -> anyhow::Result<()> {
                 .map_err(|e| anyhow::anyhow!("failed to build NES enforcer: {e}"))?,
         )
     } else {
-        let policy = simon_acl::static_json::StaticPolicy {
-            default_file_min_clearance: Some(simon_acl::Clearance::Protected),
-            ..Default::default()
-        };
-        Arc::new(simon_acl::StaticJsonEnforcer::new(policy))
+        // No policy configured — use the fail-closed default. StaticPolicy's
+        // Default impl already sets default_file_min_clearance = Protected
+        // and shell_mode = Off.
+        Arc::new(simon_acl::StaticJsonEnforcer::new(
+            simon_acl::static_json::StaticPolicy::default(),
+        ))
     };
     // TODO(simon-login): replace placeholder principal + enforcer from OIDC flow
     let principal = Arc::new(simon_acl::SimonPrincipal::anonymous());
+
+    // Audit sink. Priority order:
+    //   1. $SIMON_AUDIT_FILE → append-only JSONL with fsync per write
+    //   2. default → TracingSink (host is expected to collect tracing output)
+    // Both are fail-closed: a write error aborts the tool call.
+    let audit_sink: simon_acl::audit::SharedAuditSink =
+        if let Ok(path) = std::env::var("SIMON_AUDIT_FILE") {
+            Arc::new(simon_acl::audit::FileJsonlSink::new(path))
+        } else {
+            Arc::new(simon_acl::audit::TracingSink)
+        };
 
     let tool_ctx = ToolContext {
         working_dir: cwd.clone(),
@@ -651,6 +663,7 @@ async fn main() -> anyhow::Result<()> {
         completion_notifier: None,
         acl_enforcer: acl_enforcer.clone(),
         principal: principal.clone(),
+        audit_sink: audit_sink.clone(),
     };
 
     // Register the cc-query-backed agent runner so TeamCreateTool can spawn real
