@@ -235,6 +235,13 @@ pub struct ToolContext {
     /// Optional notifier for injecting completion messages into the next agent turn.
     /// Set when the query loop has a command queue wired up.
     pub completion_notifier: Option<CompletionNotifier>,
+    /// Deterministic ACL enforcer. Runs before any syscall in tools that touch
+    /// files, URLs, or shell commands. A `Deny` cannot be overridden by the
+    /// user-approval prompt layer.
+    pub acl_enforcer: simon_acl::SharedEnforcer,
+    /// Authenticated principal for this session. Constructed once at login
+    /// (or `SimonPrincipal::anonymous()` pre-login).
+    pub principal: Arc<simon_acl::SimonPrincipal>,
 }
 
 impl ToolContext {
@@ -298,6 +305,36 @@ impl ToolContext {
                 "Permission denied for tool '{}': {}",
                 tool_name, details
             ))),
+        }
+    }
+
+    /// Run the deterministic ACL gate. Returns Err with a user-facing reason on
+    /// Deny. The returned error message is exactly what the LLM sees as the
+    /// tool result — it's safe to include ACL details because the LLM already
+    /// knows the user's identity (we put it in the system prompt).
+    pub async fn acl_gate(
+        &self,
+        resource: &simon_acl::ResourceRef,
+        op: simon_acl::Operation,
+    ) -> Result<(), anyhow::Error> {
+        match self
+            .acl_enforcer
+            .check(&self.principal, resource, op)
+            .await
+        {
+            Ok(simon_acl::AclDecision::Allow) => Ok(()),
+            Ok(simon_acl::AclDecision::Deny {
+                reason,
+                required_clearance,
+            }) => {
+                let clr = required_clearance
+                    .map(|c| format!(" (requires {})", c))
+                    .unwrap_or_default();
+                Err(anyhow::anyhow!("ACL denied: {}{}", reason, clr))
+            }
+            Err(e) => Err(anyhow::anyhow!(
+                "ACL enforcer error (fail-closed): {e}"
+            )),
         }
     }
 
@@ -545,6 +582,10 @@ mod tests {
             config: Config::default(),
             managed_agent_config: None,
             completion_notifier: None,
+            acl_enforcer: Arc::new(simon_acl::StaticJsonEnforcer::new(
+                simon_acl::static_json::StaticPolicy::default(),
+            )),
+            principal: Arc::new(simon_acl::SimonPrincipal::anonymous()),
         };
 
         // Absolute paths pass through unchanged
@@ -575,6 +616,10 @@ mod tests {
             config: Config::default(),
             managed_agent_config: None,
             completion_notifier: None,
+            acl_enforcer: Arc::new(simon_acl::StaticJsonEnforcer::new(
+                simon_acl::static_json::StaticPolicy::default(),
+            )),
+            principal: Arc::new(simon_acl::SimonPrincipal::anonymous()),
         };
 
         // Relative paths get joined with working_dir
