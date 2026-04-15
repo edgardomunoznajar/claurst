@@ -59,6 +59,12 @@ services:
       SIMON_OIDC_ISSUER: http://dex:5556/dex
       SIMON_OIDC_CLIENT_ID: simon
       SIMON_OIDC_CLIENT_SECRET: ZXhhbXBsZS1hcHAtc2VjcmV0
+      # The URL the browser sees. Simon binds on :8080 inside the
+      # container, but the user's browser talks to the PUBLISHED host port
+      # (default 8765). See deploy/README.md for the /etc/hosts entry
+      # needed so `dex` resolves on the host for interactive login.
+      SIMON_OIDC_REDIRECT_URL: http://localhost:${SIMON_OIDC_HOST_PORT:-8765}/callback
+      SIMON_OIDC_REDIRECT_PORT: "8080"
       SIMON_AUDIT_FILE: /var/simon/audit.jsonl
       # Passed through from the host. Set whichever provider you have a
       # key for; Simon picks the right provider based on the model name.
@@ -95,7 +101,12 @@ services:
       - ./deploy/dex/config.yaml:/etc/dex/config.yaml:ro
       - dex-state:/var/dex
     networks:
+      # `simon-internal` is flagged `internal: true`, which silently drops
+      # any `ports:` publish on services attached only to it. Dex needs to
+      # expose its auth endpoint to the host browser during interactive
+      # login, so it's also attached to `simon-egress` (non-internal).
       - simon-internal
+      - simon-egress
     # Port 5556 is exposed ONLY on the host loopback so the browser can
     # hit the Dex login page during the OIDC redirect dance. Remove this
     # line to keep Dex purely internal once the flow is wired through a

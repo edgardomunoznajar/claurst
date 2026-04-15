@@ -44,9 +44,12 @@ staticClients:
     name: "Simon"
     secret: ZXhhbXBsZS1hcHAtc2VjcmV0
     redirectURIs:
-      # Simon opens a loopback listener on the host and redirects the
-      # browser here after successful auth. The host (not the container)
-      # is what resolves localhost.
+      # Simon binds a loopback listener on port 8080 inside its container,
+      # which docker-compose publishes on the host as $SIMON_OIDC_HOST_PORT
+      # (default 8765). The host browser hits the PUBLISHED port.
+      - http://localhost:8765/callback
+      # Keep 8080 too in case the operator overrides SIMON_OIDC_HOST_PORT
+      # or runs simon directly on the host with default config.
       - http://localhost:8080/callback
 
 enablePasswordDB: true

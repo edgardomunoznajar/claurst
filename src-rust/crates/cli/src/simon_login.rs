@@ -44,7 +44,14 @@ pub struct OidcConfig {
     pub issuer: String,
     pub client_id: String,
     pub client_secret: String,
+    /// Port Simon binds the loopback listener on inside its own process.
     pub redirect_port: u16,
+    /// Full redirect URI given to the IdP and opened in the user's browser.
+    /// When Simon runs inside a container whose port is remapped (e.g.
+    /// container :8080 → host :8765), the IdP must hear about the HOST
+    /// port, not the container port. This env var overrides the default
+    /// `http://localhost:{redirect_port}/callback` so the two can differ.
+    pub redirect_url: String,
     pub scope: String,
 }
 
@@ -60,6 +67,8 @@ impl OidcConfig {
             .ok()
             .and_then(|s| s.parse().ok())
             .unwrap_or(8080);
+        let redirect_url = std::env::var("SIMON_OIDC_REDIRECT_URL")
+            .unwrap_or_else(|_| format!("http://localhost:{redirect_port}/callback"));
         let scope = std::env::var("SIMON_OIDC_SCOPE")
             .unwrap_or_else(|_| "openid email profile groups".to_string());
         Some(Self {
@@ -67,6 +76,7 @@ impl OidcConfig {
             client_id,
             client_secret,
             redirect_port,
+            redirect_url,
             scope,
         })
     }
@@ -174,11 +184,15 @@ pub async fn login(cfg: &OidcConfig) -> Result<SimonPrincipal> {
     let state = random_url_safe(24);
 
     // Bind the callback listener BEFORE opening the browser so we don't race.
-    let redirect_uri = format!("http://localhost:{}/callback", cfg.redirect_port);
-    let listener = TokioTcpListener::bind(("127.0.0.1", cfg.redirect_port))
+    // Note: the listener binds on cfg.redirect_port (the port Simon sees
+    // inside its own process), but the URL we advertise to the IdP is
+    // cfg.redirect_url — which may use a DIFFERENT port if Simon is
+    // running behind a docker port mapping.
+    let redirect_uri = cfg.redirect_url.clone();
+    let listener = TokioTcpListener::bind(("0.0.0.0", cfg.redirect_port))
         .await
         .with_context(|| {
-            format!("binding loopback port {} for OIDC callback", cfg.redirect_port)
+            format!("binding port {} for OIDC callback", cfg.redirect_port)
         })?;
 
     // Build the authorization URL.
