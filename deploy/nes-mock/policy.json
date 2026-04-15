@@ -1,0 +1,17 @@
+{
+  "file_rules": [
+    { "prefix": "/workspace/unofficial/",         "min_clearance": "unofficial" },
+    { "prefix": "/workspace/official/",           "min_clearance": "official" },
+    { "prefix": "/workspace/official-sensitive/", "min_clearance": "official-sensitive" },
+    { "prefix": "/workspace/protected/",          "min_clearance": "protected" }
+  ],
+  "url_rules": [
+    { "host": "api.anthropic.com", "min_clearance": "unofficial" }
+  ],
+  "shell_mode": {
+    "mode": "allowlist",
+    "programs": ["ls", "head", "tail", "wc", "cat", "grep"]
+  },
+  "default_file_min_clearance": "protected",
+  "default_url_min_clearance": "protected"
+}
