@@ -31,7 +31,7 @@ use std::time::Duration;
 use anyhow::{anyhow, bail, Context, Result};
 use base64::engine::general_purpose::URL_SAFE_NO_PAD;
 use base64::Engine;
-use chrono::{DateTime, TimeZone, Utc};
+use chrono::{TimeZone, Utc};
 use serde::Deserialize;
 use sha2::{Digest, Sha256};
 use simon_acl::{Clearance, SimonPrincipal};
@@ -89,8 +89,6 @@ struct TokenResponse {
     #[allow(dead_code)]
     #[serde(default)]
     refresh_token: Option<String>,
-    #[serde(default)]
-    expires_in: Option<i64>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -112,6 +110,29 @@ struct IdTokenClaims {
     /// encoding clearance into `sub`.
     #[serde(default)]
     clearance: Option<String>,
+}
+
+/// DEV-MODE SHORT-CIRCUIT: if `SIMON_OIDC_ID_TOKEN` is set, skip the browser
+/// dance entirely and construct a principal straight from the supplied token.
+/// Used by `scripts/smoke_test.sh` so the stack can be driven
+/// non-interactively in CI. Emits a loud warning; never use in production.
+///
+/// Returns `Ok(Some(p))` on a successful short-circuit, `Ok(None)` if the
+/// env var is unset (caller should run the real flow), or `Err` if a token
+/// was present but could not be parsed.
+pub fn login_from_token_env() -> Result<Option<SimonPrincipal>> {
+    let Ok(token) = std::env::var("SIMON_OIDC_ID_TOKEN") else {
+        return Ok(None);
+    };
+    tracing::warn!(
+        "SIMON_OIDC_ID_TOKEN is set — skipping interactive OIDC flow. \
+         This is a test-only path. Do not enable in production."
+    );
+    let claims = parse_id_token(&token)
+        .context("parsing SIMON_OIDC_ID_TOKEN as JWT")?;
+    let principal = principal_from_claims(claims)
+        .context("building principal from SIMON_OIDC_ID_TOKEN")?;
+    Ok(Some(principal))
 }
 
 /// Run the full login flow and return a populated [`SimonPrincipal`].
@@ -213,6 +234,21 @@ pub async fn login(cfg: &OidcConfig) -> Result<SimonPrincipal> {
     let claims = parse_id_token(&token_resp.id_token)
         .context("parsing ID token claims")?;
 
+    let principal = principal_from_claims(claims)
+        .context("building principal from token claims")?;
+
+    tracing::info!(
+        subject = %principal.subject,
+        clearance = %principal.clearance,
+        "simon: login succeeded"
+    );
+
+    Ok(principal)
+}
+
+/// Turn parsed ID token claims into a [`SimonPrincipal`]. Shared by the real
+/// flow and the [`login_from_token_env`] test path.
+fn principal_from_claims(claims: IdTokenClaims) -> Result<SimonPrincipal> {
     let clearance = clearance_from_claims(&claims)
         .ok_or_else(|| anyhow!("could not derive clearance from ID token claims"))?;
 
@@ -223,7 +259,7 @@ pub async fn login(cfg: &OidcConfig) -> Result<SimonPrincipal> {
     let expires_at = claims
         .exp
         .and_then(|t| Utc.timestamp_opt(t, 0).single())
-        .unwrap_or_else(|| fallback_expiry(token_resp.expires_in));
+        .unwrap_or_else(|| Utc::now() + chrono::Duration::hours(1));
 
     let display_name = claims
         .name
@@ -235,7 +271,7 @@ pub async fn login(cfg: &OidcConfig) -> Result<SimonPrincipal> {
         .clone()
         .unwrap_or_else(|| format!("{}@simon.local", claims.sub));
 
-    let principal = SimonPrincipal {
+    Ok(SimonPrincipal {
         subject: claims.sub,
         display_name,
         email,
@@ -244,15 +280,7 @@ pub async fn login(cfg: &OidcConfig) -> Result<SimonPrincipal> {
         session_id: random_url_safe(16),
         issued_at,
         expires_at,
-    };
-
-    tracing::info!(
-        subject = %principal.subject,
-        clearance = %principal.clearance,
-        "simon: login succeeded"
-    );
-
-    Ok(principal)
+    })
 }
 
 /// Derive clearance from the ID token. Priority order:
@@ -302,11 +330,6 @@ fn parse_id_token(jwt: &str) -> Result<IdTokenClaims> {
     let claims: IdTokenClaims =
         serde_json::from_slice(&bytes).context("json-parsing id_token payload")?;
     Ok(claims)
-}
-
-fn fallback_expiry(expires_in: Option<i64>) -> DateTime<Utc> {
-    let secs = expires_in.unwrap_or(3600);
-    Utc::now() + chrono::Duration::seconds(secs)
 }
 
 fn random_url_safe(len: usize) -> String {

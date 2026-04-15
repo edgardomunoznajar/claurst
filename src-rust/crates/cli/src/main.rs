@@ -635,34 +635,46 @@ async fn main() -> anyhow::Result<()> {
             simon_acl::static_json::StaticPolicy::default(),
         ))
     };
-    // OIDC login. If SIMON_OIDC_* env vars are set (they are, inside the
-    // demo container), run the full authorisation-code-with-PKCE flow
-    // against the configured issuer (Dex in the demo, a real gov IdP in
-    // production). On success, the returned SimonPrincipal carries a real
-    // clearance level from the ID token. If the flow fails or the env
-    // isn't configured, fall back to the anonymous principal — which, via
-    // the fail-closed StaticPolicy default, can't read anything above
-    // Unofficial and can't access untagged files at all.
-    let principal = Arc::new(match simon_login::OidcConfig::from_env() {
-        Some(cfg) => match simon_login::login(&cfg).await {
-            Ok(p) => {
-                eprintln!(
-                    "Simon: logged in as {} ({}) — clearance {}",
-                    p.display_name, p.email, p.clearance
+    // OIDC login. Priority order:
+    //   1. SIMON_OIDC_ID_TOKEN short-circuit (test-only; scripts/smoke_test.sh
+    //      uses this to drive the stack non-interactively).
+    //   2. SIMON_OIDC_* env vars → full authorisation-code + PKCE flow
+    //      against the configured issuer (Dex in the demo).
+    //   3. No env → anonymous principal, which via the fail-closed
+    //      StaticPolicy default can only read Unofficial-tagged content.
+    let principal = Arc::new(match simon_login::login_from_token_env() {
+        Ok(Some(p)) => {
+            eprintln!(
+                "Simon: logged in from SIMON_OIDC_ID_TOKEN (test-only path) as {} — clearance {}",
+                p.subject, p.clearance
+            );
+            p
+        }
+        Ok(None) => match simon_login::OidcConfig::from_env() {
+            Some(cfg) => match simon_login::login(&cfg).await {
+                Ok(p) => {
+                    eprintln!(
+                        "Simon: logged in as {} ({}) — clearance {}",
+                        p.display_name, p.email, p.clearance
+                    );
+                    p
+                }
+                Err(e) => {
+                    eprintln!("Simon: OIDC login failed: {e}. Falling back to anonymous.");
+                    simon_acl::SimonPrincipal::anonymous()
+                }
+            },
+            None => {
+                tracing::warn!(
+                    "SIMON_OIDC_* env vars not set — running with anonymous principal. \
+                     Tool surface will be restricted to Unofficial clearance."
                 );
-                p
-            }
-            Err(e) => {
-                eprintln!("Simon: OIDC login failed: {e}. Falling back to anonymous.");
                 simon_acl::SimonPrincipal::anonymous()
             }
         },
-        None => {
-            tracing::warn!(
-                "SIMON_OIDC_* env vars not set — running with anonymous principal. \
-                 Tool surface will be restricted to Unofficial clearance."
-            );
-            simon_acl::SimonPrincipal::anonymous()
+        Err(e) => {
+            eprintln!("Simon: SIMON_OIDC_ID_TOKEN could not be parsed: {e}");
+            std::process::exit(2);
         }
     });
 
