@@ -1,0 +1,141 @@
+# Simon demo stack — single `docker compose up --build` runs everything.
+#
+# SERVICES
+#   simon        Rust TUI agent (built from ./src-rust/)
+#   dex          CoreOS Dex OIDC provider (clearance-as-sub hack)
+#   nes-mock     FastAPI mock of NQRY's NES /acl endpoints
+#   corpus-init  One-shot seeder for the Hansard corpus named volume
+#
+# NETWORKS
+#   simon-internal  All four services; marked `internal: true` so nothing
+#                   on this network can talk to the host's default bridge
+#                   or the outside world.
+#   simon-egress    Simon ONLY. This is the single path from simon to the
+#                   internet, intended as the future attachment point for
+#                   an iptables allowlist that pins traffic to the LLM
+#                   provider's hostname.
+#
+# !!! Egress from simon is NOT restricted by this compose file. !!!
+#
+# For production, attach only the LLM provider endpoint hostname to an
+# egress iptables allowlist at the host network layer. Docker Desktop
+# cannot enforce this for you — the honest answer is "ask the host
+# firewall" and this file documents that boundary explicitly.
+
+version: "3.9"
+
+services:
+
+  # ---------- Simon (the Rust TUI agent) ----------
+  simon:
+    build:
+      context: .
+      dockerfile: deploy/simon/Dockerfile
+    image: simon-demo/simon:latest
+    container_name: simon
+    tty: true
+    stdin_open: true
+    depends_on:
+      dex:
+        condition: service_healthy
+      nes-mock:
+        condition: service_healthy
+      corpus-init:
+        condition: service_completed_successfully
+    environment:
+      SIMON_ACL_POLICY: /etc/simon/acl.json
+      SIMON_NES_URL: http://nes-mock:8000
+      SIMON_OIDC_ISSUER: http://dex:5556/dex
+      SIMON_OIDC_CLIENT_ID: simon
+      SIMON_OIDC_CLIENT_SECRET: ZXhhbXBsZS1hcHAtc2VjcmV0
+      SIMON_AUDIT_FILE: /var/simon/audit.jsonl
+      # Passed through from the host. The stack refuses to do anything
+      # interesting without it, but the container still starts.
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      RUST_LOG: ${RUST_LOG:-info}
+    volumes:
+      - ./deploy/simon/acl.json:/etc/simon/acl.json:ro
+      - corpus:/workspace:ro
+      - simon-state:/var/simon
+    networks:
+      - simon-internal
+      - simon-egress
+    # Simon's OIDC loopback redirect goes to http://localhost:8080/callback
+    # on the HOST — not inside the container. Expose the port so the
+    # browser can reach it during the auth handshake.
+    ports:
+      - "8080:8080"
+
+  # ---------- Dex OIDC provider ----------
+  dex:
+    image: ghcr.io/dexidp/dex:v2.40.0
+    container_name: simon-dex
+    command: ["dex", "serve", "/etc/dex/config.yaml"]
+    volumes:
+      - ./deploy/dex/config.yaml:/etc/dex/config.yaml:ro
+      - dex-state:/var/dex
+    networks:
+      - simon-internal
+    # Port 5556 is exposed ONLY on the host loopback so the browser can
+    # hit the Dex login page during the OIDC redirect dance. Remove this
+    # line to keep Dex purely internal once the flow is wired through a
+    # host bridge.
+    ports:
+      - "127.0.0.1:5556:5556"
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1:5556/dex/healthz"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+
+  # ---------- Mock NES ----------
+  nes-mock:
+    build:
+      context: ./deploy/nes-mock
+      dockerfile: Dockerfile
+    image: simon-demo/nes-mock:latest
+    container_name: simon-nes-mock
+    volumes:
+      - ./deploy/nes-mock/policy.json:/etc/nes/policy.json:ro
+    networks:
+      - simon-internal
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/healthz', timeout=2).status==200 else 1)"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+
+  # ---------- Corpus volume seeder ----------
+  corpus-init:
+    build:
+      context: ./deploy/corpus-init
+      dockerfile: Dockerfile
+    image: simon-demo/corpus-init:latest
+    container_name: simon-corpus-init
+    volumes:
+      - ./demo/corpus:/corpus-src:ro
+      - corpus:/data
+    networks:
+      - simon-internal
+    restart: "no"
+
+volumes:
+  corpus:
+  simon-state:
+  dex-state:
+
+networks:
+  simon-internal:
+    driver: bridge
+    # No direct egress to the outside world — all four services live
+    # here, and only simon is additionally attached to `simon-egress`.
+    internal: true
+  simon-egress:
+    driver: bridge
+    # Placeholder for host-level iptables rules. The demo does nothing
+    # clever here: any traffic simon sends out via this network is
+    # subject only to whatever the host firewall says.
+    driver_opts:
+      com.docker.network.bridge.enable_icc: "false"

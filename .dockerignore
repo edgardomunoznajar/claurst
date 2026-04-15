@@ -1,0 +1,59 @@
+# Keep Docker build contexts small and deterministic.
+#
+# Included (implicitly, by omission from this file):
+#   src-rust/        — Rust workspace, needed by deploy/simon/Dockerfile
+#   deploy/          — build contexts for all service Dockerfiles
+#   demo/corpus/     — bind-mounted into corpus-init at runtime
+#   scripts/         — corpus prep helpers referenced by demo/
+#   README.md        — shipped at repo root, referenced by runtime
+#
+# Excluded: everything below.
+
+# Build artefacts
+**/target/
+**/*.rs.bk
+**/Cargo.lock.tmp
+**/.cargo/
+**/node_modules/
+
+# VCS / CI
+.git/
+.github/
+.gitignore
+.gitattributes
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Devcontainer (separate from docker-compose flow)
+.devcontainer/
+
+# Docs and site — none of this is needed inside any image
+docs/
+public/
+index.html
+CNAME
+plan.md
+spec/
+
+# Stray markdown files at repo root, except the main README
+*.md
+!README.md
+!deploy/**/*.md
+!docs/simon/**/*.md
+
+# Local env / secrets
+.env
+.env.*
+*.pem
+*.key
+*.crt
+
+# Test outputs
+**/coverage/
+**/*.log
