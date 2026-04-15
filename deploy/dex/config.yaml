@@ -1,0 +1,67 @@
+# Dex OIDC provider configuration for the Simon demo stack.
+#
+# Demo hack — please read before changing:
+#
+# Dex v2.40 does NOT support per-user static `groups` in the
+# `staticPasswords` block. The cleanest workaround that avoids writing a
+# custom connector is to encode the user's clearance in the `userID`
+# field, which Dex emits verbatim as the OIDC `sub` claim. Simon's OIDC
+# client (wired in a parallel branch) parses `sub` on the form
+# `<name>-<clearance>` and maps the suffix to the Clearance enum
+# (unofficial | official | official-sensitive | protected).
+#
+# Yes, this is ugly. It exists purely so the demo runs on unmodified
+# upstream Dex without compiling a custom connector. For a real
+# deployment you would run Dex against an IdP that can emit a proper
+# `clearance` claim (or a `groups` list containing `clearance:*`) and
+# delete this comment along with the sub-splitting code in Simon.
+#
+# Password hashes: all three demo users share password `Password!1`,
+# hashed with bcrypt cost 10. The literal hash below was generated with
+# `htpasswd -bnBC 10 "" 'Password!1' | tr -d ':\n'`.
+
+issuer: http://dex:5556/dex
+
+storage:
+  type: sqlite3
+  config:
+    file: /var/dex/dex.db
+
+web:
+  http: 0.0.0.0:5556
+
+oauth2:
+  skipApprovalScreen: true
+  # Responses may include the sub claim, which is where we smuggle
+  # clearance for the demo. Default response types are fine.
+
+expiry:
+  idTokens: "1h"
+  signingKeys: "6h"
+
+staticClients:
+  - id: simon
+    name: "Simon"
+    secret: ZXhhbXBsZS1hcHAtc2VjcmV0
+    redirectURIs:
+      # Simon opens a loopback listener on the host and redirects the
+      # browser here after successful auth. The host (not the container)
+      # is what resolves localhost.
+      - http://localhost:8080/callback
+
+enablePasswordDB: true
+
+staticPasswords:
+  # userID is the OIDC `sub`. Format: <username>-<clearance>.
+  - email: "sarah@simon.demo"
+    hash: "$2a$10$2b2cU8CPhOTaGrs1HRQuAueS7JTT5ZHsHSzYiFPm1leZck7Mc8T4W"
+    username: "sarah"
+    userID: "sarah-unofficial"
+  - email: "bill@simon.demo"
+    hash: "$2a$10$2b2cU8CPhOTaGrs1HRQuAueS7JTT5ZHsHSzYiFPm1leZck7Mc8T4W"
+    username: "bill"
+    userID: "bill-official"
+  - email: "alice@simon.demo"
+    hash: "$2a$10$2b2cU8CPhOTaGrs1HRQuAueS7JTT5ZHsHSzYiFPm1leZck7Mc8T4W"
+    username: "alice"
+    userID: "alice-protected"
