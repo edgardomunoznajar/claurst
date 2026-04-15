@@ -1,6 +1,11 @@
 # Rust
 src-rust/target/
 
+# Local env / secrets — never commit
+.env
+.env.*
+!.env.example
+
 # OS
 .DS_Store
 

@@ -60,9 +60,12 @@ services:
       SIMON_OIDC_CLIENT_ID: simon
       SIMON_OIDC_CLIENT_SECRET: ZXhhbXBsZS1hcHAtc2VjcmV0
       SIMON_AUDIT_FILE: /var/simon/audit.jsonl
-      # Passed through from the host. The stack refuses to do anything
-      # interesting without it, but the container still starts.
+      # Passed through from the host. Set whichever provider you have a
+      # key for; Simon picks the right provider based on the model name.
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      # GOOGLE_API_KEY falls back to GEMINI_API_KEY for compatibility
+      # with the oblique-lawyer .env shape.
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY:-${GEMINI_API_KEY:-}}
       RUST_LOG: ${RUST_LOG:-info}
     volumes:
       - ./deploy/simon/acl.json:/etc/simon/acl.json:ro

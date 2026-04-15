@@ -136,20 +136,31 @@ print(json.dumps(doc, separators=(",", ":")), end="")
 }
 
 run_as_user() {
-  # $1 = sub ("sarah-unofficial"), $2 = query text. Writes stdout/stderr
-  # from simon to the named log file so assertions can read it.
+  # $1 = sub ("sarah-unofficial"), $2 = query text, $3 = logfile.
+  # Writes stdout/stderr from simon to the named log file so assertions
+  # can read it. A real LLM call is required for tool use — the gate only
+  # fires once the model decides to call a file-reading tool. We pick the
+  # cheapest available provider based on which key is set on the host
+  # (GOOGLE_API_KEY / GEMINI_API_KEY preferred for cost; ANTHROPIC_API_KEY
+  # used as fallback). If neither is set, the run will fail at the LLM
+  # auth step and the test will report "zero audit events".
   local sub="$1" query="$2" logfile="$3"
   local token
   token=$(mock_token "$sub" "${sub%-*}@simon.demo" "${sub%-*}")
-  log "running simon as $sub"
-  # We don't actually need the LLM to respond meaningfully — we care about
-  # whether the ACL gate allowed or denied the request. Run with a dummy
-  # provider and a short prompt that invites a file read of a protected
-  # document. The audit log is the source of truth.
+
+  local provider_args=()
+  if [[ -n "${GOOGLE_API_KEY:-${GEMINI_API_KEY:-}}" ]]; then
+    provider_args=(--provider google -m gemini-2.5-flash)
+  elif [[ -n "${ANTHROPIC_API_KEY:-}" ]]; then
+    provider_args=(--provider anthropic)
+  fi
+
+  log "running simon as $sub (${provider_args[*]:-default})"
   docker compose exec -T \
     -e SIMON_OIDC_ID_TOKEN="$token" \
-    -e ANTHROPIC_API_KEY="${ANTHROPIC_API_KEY:-test-placeholder}" \
-    simon /usr/local/bin/simon -p "Please read /workspace/protected/ and summarise any cabinet memo you find." \
+    -e ANTHROPIC_API_KEY="${ANTHROPIC_API_KEY:-}" \
+    -e GOOGLE_API_KEY="${GOOGLE_API_KEY:-${GEMINI_API_KEY:-}}" \
+    simon /usr/local/bin/simon "${provider_args[@]}" -p "$query" \
     >"$logfile" 2>&1 || true
 }
 
@@ -162,9 +173,10 @@ sarah_log="$tmpdir/sarah.log"
 bill_log="$tmpdir/bill.log"
 alice_log="$tmpdir/alice.log"
 
-run_as_user "sarah-unofficial" "read protected" "$sarah_log"
-run_as_user "bill-official"    "read protected" "$bill_log"
-run_as_user "alice-protected"  "read protected" "$alice_log"
+QUERY='Use the file_read tool to read one of the files in /workspace/protected/ and summarise it in one sentence. Do not ask me questions, just call the tool.'
+run_as_user "sarah-unofficial" "$QUERY" "$sarah_log"
+run_as_user "bill-official"    "$QUERY" "$bill_log"
+run_as_user "alice-protected"  "$QUERY" "$alice_log"
 
 # -----------------------------------------------------------------------------
 # 5. Tail audit log and assert
@@ -187,9 +199,12 @@ count_for() {
   # $1 = subject, $2 = decision ("allow" or "deny"), $3 = path prefix
   python3 -c '
 import json, sys
-subject, decision, prefix = sys.argv[1:]
+subject = sys.argv[1]
+decision = sys.argv[2]
+prefix = sys.argv[3]
+path = sys.argv[4]
 n = 0
-for line in open(sys.argv[4]):
+for line in open(path):
     line = line.strip()
     if not line: continue
     try:
@@ -202,7 +217,10 @@ for line in open(sys.argv[4]):
         if d.get("decision") != decision: continue
     elif d != decision:
         continue
-    if ev.get("resource", {}).get("uri", "").startswith(prefix):
+    uri = ev.get("resource", {}).get("uri", "")
+    # Accept both /workspace/protected and /workspace/protected/ —
+    # a denial on the parent directory counts as a gate-on-protected hit.
+    if uri == prefix.rstrip("/") or uri.startswith(prefix):
         n += 1
 print(n)
 ' "$1" "$2" "$3" "$audit_dump"
