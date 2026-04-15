@@ -27,12 +27,23 @@ version: "3.9"
 services:
 
   # ---------- Simon (the Rust TUI agent) ----------
+  #
+  # PID 1 is a long-lived idle process (`tini sleep infinity`). Real Simon
+  # invocations run via `docker compose exec simon simon [args]`, which
+  # spawns a new Simon process in the container with the exec-time
+  # environment (crucially, SIMON_OIDC_ID_TOKEN for the smoke test, or an
+  # interactive TTY for the browser-login demo). This is the same model the
+  # scripts/smoke_test.sh and deploy/README.md describe.
   simon:
     build:
       context: .
       dockerfile: deploy/simon/Dockerfile
     image: simon-demo/simon:latest
     container_name: simon
+    # Override the image entrypoint so PID 1 never exits. Demo invocations
+    # use `docker compose exec simon simon ...`.
+    entrypoint: ["/usr/bin/tini", "--"]
+    command: ["sleep", "infinity"]
     tty: true
     stdin_open: true
     depends_on:
@@ -60,11 +71,17 @@ services:
     networks:
       - simon-internal
       - simon-egress
-    # Simon's OIDC loopback redirect goes to http://localhost:8080/callback
+    # Simon's OIDC loopback redirect goes to http://localhost:${SIMON_OIDC_HOST_PORT:-8765}/callback
     # on the HOST — not inside the container. Expose the port so the
     # browser can reach it during the auth handshake.
+    #
+    # The default host port is 8765 rather than 8080 so the stack coexists
+    # with any other dev service on 8080. Override with:
+    #   SIMON_OIDC_HOST_PORT=9090 docker compose up
+    # If you ONLY run the scripted smoke test (SIMON_OIDC_ID_TOKEN path),
+    # no port publication is required at all.
     ports:
-      - "8080:8080"
+      - "${SIMON_OIDC_HOST_PORT:-8765}:8080"
 
   # ---------- Dex OIDC provider ----------
   dex:

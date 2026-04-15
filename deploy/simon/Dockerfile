@@ -37,7 +37,13 @@ WORKDIR /app/src-rust
 RUN cargo build --release --package simon --no-default-features
 
 # ---------- Stage 2: runtime ----------
-FROM debian:bookworm-slim
+#
+# IMPORTANT: must match the builder's glibc + libssl soname. The builder
+# runs on rust:1-bullseye (Debian 11, libssl1.1). Using bookworm-slim
+# (libssl3) here produces a binary that fails to start with "libssl.so.1.1:
+# cannot open shared object file". Keep both on bullseye, or upgrade the
+# builder to rust:1-bookworm and this to debian:bookworm-slim together.
+FROM debian:bullseye-slim
 
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
