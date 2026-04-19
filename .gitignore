@@ -23,3 +23,15 @@ refs/
 .vscode/
 .claurst/
 
+# Aider session artifacts
+.aider.chat.history.md
+.aider.input.history
+.aider.tags.cache.v*
+.aider.llm.history
+
+# Next.js UI
+ui/node_modules/
+ui/.next/
+ui/out/
+ui/.env.local
+

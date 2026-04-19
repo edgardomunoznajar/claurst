@@ -1,0 +1,41 @@
+# docker-compose.override.yml — local-dev override for routing simon's LLM
+# calls at the host-side llama-server (Gemma 4 26B A4B MoE, UD-IQ2_XXS).
+#
+# Created 2026-04-19 during the "can Gemma 4 26B drive simon?" experiment.
+# docs/local-llm-backend.md documents the host endpoint.
+#
+# Resolution path:
+#   simon container -> host.docker.internal:8000/v1 (mapped via host-gateway)
+#
+# This file overrides ONLY the `simon` service environment; all other
+# services in docker-compose.yml are unchanged.
+
+services:
+  simon:
+    environment:
+      # Select simon's llama.cpp provider. Provider id options: "llamacpp",
+      # "llama-cpp", "llama-server" (see crates/api/src/registry.rs).
+      SIMON_PROVIDER: "llamacpp"
+      # Point the provider at the host-side llama-server. host.docker.internal
+      # resolves to the docker host thanks to the extra_hosts entry below.
+      SIMON_API_BASE: "http://host.docker.internal:8000/v1"
+      # llama-server is started with --api-key local (see
+      # docs/local-llm-backend.md). Propagate that to the OpenAI-compat
+      # provider via CUSTOM_OPENAI_API_KEY (also honoured by the llama_cpp
+      # builder) and via LLAMA_CPP_HOST fallback.
+      CUSTOM_OPENAI_API_KEY: "local"
+      LLAMA_CPP_HOST: "http://host.docker.internal:8000"
+      # Gemma 4 26B MoE is served under this alias (see llama-server
+      # --alias gemma-4-26b flag in docs/local-llm-backend.md).
+      # Note: CLI accepts model via `-m` flag too; this env is only
+      # advisory. The smoke-test / interactive invocation passes -m.
+      SIMON_MODEL: "gemma-4-26b"
+      # Make the paid-provider envs explicitly empty so simon doesn't
+      # silently route to Anthropic / Google when the local provider
+      # returns an error.
+      ANTHROPIC_API_KEY: ""
+      GOOGLE_API_KEY: ""
+    # Linux: map host.docker.internal to the docker host gateway so the
+    # container can reach the host's llama-server on 127.0.0.1:8000.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
