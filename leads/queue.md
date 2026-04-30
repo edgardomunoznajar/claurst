@@ -1,0 +1,288 @@
+# Simon — AU gov AI-procurement leads
+
+Captured by `scripts/lead_oneshot.py`. One-shot snapshots, deduped via `seen.json`.
+
+## 2026-04-30T13-15-34  (52 new — 9 gov, 43 other)
+
+### 🏛 Government roles / agencies
+
+- **[seek]** 🏛 gov [AI Governance Specialist](https://www.seek.com.au/job/91624399)
+  - _Aurec_ · Sydney NSW(Hybrid) · Information & Communication Technology
+  - q: `AI government, machine learning government`
+  - Listed nine days ago AI Governance Specialist at Aurec This is a Contract/Temp job Sydney NSW(Hybrid) Daily: Up to $1,200 + Super | 50% CBD & 50% WFH AI Governance Specialist required for large NSW Government department. Must have previous data governance experience and recent AI
+- **[seek]** 🏛 gov [Lead Data Scientist](https://www.seek.com.au/job/91526079)
+  - _Australian Digital Health Agency_ · Sydney NSW(Hybrid) · Science & Technology
+  - q: `data scientist government`
+  - Listed fifteen days ago Lead Data Scientist at Australian Digital Health Agency This is a Full time job Sydney NSW(Hybrid) Located in Bris, Syd or Canberra with an attractive working from home policy. Discover a range of exciting benefits – Click the ad to find out more! 15.4% su
+- **[seek]** 🏛 gov [Lead Data Scientist](https://www.seek.com.au/job/91526031)
+  - _Australian Digital Health Agency_ · Brisbane QLD(Hybrid) · Science & Technology
+  - q: `data scientist government`
+  - Listed fifteen days ago Lead Data Scientist at Australian Digital Health Agency This is a Full time job Brisbane QLD(Hybrid) Located in Bris, Syd or Canberra with an attractive working from home policy. Discover a range of exciting benefits – Click the ad to find out more! 15.4% 
+- **[seek]** 🏛 gov [Research Scientist (AI and Scientific System Infrastructure)](https://www.seek.com.au/job/91827819)
+  - _Australian Institute of Marine Science_ · Townsville, Northern QLD(Hybrid) · Information & Communication Technology
+  - q: `/artificial-intelligence-jobs/in-All-Australia, AI government`
+  - Listed one hour ago Research Scientist (AI and Scientific System Infrastructure) at Australian Institute of Marine Science Be an early applicant This is a Full time job Townsville, Northern QLD(Hybrid) $146,063 to $164,591 per annum plus 15.4% super 9-day fortnight, enjoy a long 
+- **[seek]** 🏛 gov [Research Scientist (AI and Scientific System Infrastructure)](https://www.seek.com.au/job/91827800)
+  - _Australian Institute of Marine Science_ · Canberra ACT(Hybrid) · Information & Communication Technology
+  - q: `/artificial-intelligence-jobs/in-All-Australia, AI government`
+  - Listed one hour ago Research Scientist (AI and Scientific System Infrastructure) at Australian Institute of Marine Science Be an early applicant This is a Full time job Canberra ACT(Hybrid) $146,063 to $164,591 per annum plus 15.4% super 9-day fortnight, enjoy a long weekend each
+- **[seek]** 🏛 gov [ASD EL1 Machine Learning Engineers](https://www.seek.com.au/job/91684964)
+  - _Australian Signals Directorate_ · Canberra ACT · Government & Defence
+  - q: `/machine-learning-jobs/in-All-Australia, machine learning government`
+  - Listed seven days ago ASD EL1 Machine Learning Engineers at Australian Signals Directorate This is a Full time job Canberra ACT Salary Package: $126,857 - $143,093 (plus super)” Contributing to REDSPICE, the blue print for growing ASD’s capabilities 4% Allowance on top of Substan
+- **[seek]** 🏛 gov [Sovereign Generative and Agentic AI](https://www.seek.com.au/job/91601595)
+  - _Eccoi Pty Ltd_ · Canberra ACT(Hybrid) · Information & Communication Technology
+  - q: `AI government, machine learning government`
+  - Listed eleven days ago Sovereign Generative and Agentic AI at Eccoi Pty Ltd This is a Contract/Temp job Canberra ACT(Hybrid) $115 – $170 per hour Sovereign Generative AI/ ML and Agentic AI for Australian Government and Industry subClassification: Consultants Consultants classific
+- **[seek]** 🏛 gov [Lead AI Engineer](https://www.seek.com.au/job/91807158)
+  - _Reserve Bank of Australia_ · Sydney NSW(Hybrid) · Information & Communication Technology
+  - q: `AI government`
+  - Listed twenty three hours ago Lead AI Engineer at Reserve Bank of Australia This is a Contract/Temp job Sydney NSW(Hybrid) Fixed‑term contract, in a highly visible Innovation Lab role, until 31 Aug 2027 Location: Chifley Square, Sydney Lead hands‑on AI engineering and shape how A
+- **[seek]** 🏛 gov [Machine Learning Engineer](https://www.seek.com.au/job/91629598)
+  - _Zurich Financial Services Australia_ · North Sydney, Sydney NSW(Hybrid) · Information & Communication Technology
+  - q: `/machine-learning-jobs/in-All-Australia`
+  - Listed nine days ago Machine Learning Engineer at Zurich Financial Services Australia This is a Full time job North Sydney, Sydney NSW(Hybrid) As a Machine Learning Engineer (Agentic AI), you’ll play a key role in building and running LLM-powered applications and intelligent agen
+
+### Private sector
+
+- **[seek]** · [AI Automation Engineer](https://www.seek.com.au/job/91361386)
+  - _Real Time_ · Brisbane QLD(Hybrid) · Information & Communication Technology
+  - q: `AI government`
+  - Listed twenty three days ago AI Automation Engineer at Real Time Expiring soon This is a Full time job Brisbane QLD(Hybrid) $1200 - $1500 per day✨ Work directly with Founders and have complete control and autonomy Design & Build the future of automated workflows with a great team
+- **[seek]** · [AI Data Scientist](https://www.seek.com.au/job/91572633)
+  - _SALT SEARCH PTY LTD_ · SALT SEARCH PTY LTD · Information & Communication Technology
+  - q: `/artificial-intelligence-jobs/in-All-Australia, /machine-learning-jobs/in-All-Australia`
+  - Listed thirteen days ago AI Data Scientist at SALT SEARCH PTY LTD This is a Full time job Melbourne VIC $175k - $230k p.a. + bonus One of Australia's Big 4 Banks Influence How AI is Governed at Scale New Enterprise AI Function Join one of Australia's Big 4 Banks as an AI data Sci
+- **[seek]** · [AI Data Scientist](https://www.seek.com.au/job/91580251)
+  - _SALT SEARCH PTY LTD_ · SALT SEARCH PTY LTD · Information & Communication Technology
+  - q: `/artificial-intelligence-jobs/in-All-Australia, /machine-learning-jobs/in-All-Australia`
+  - Listed twelve days ago AI Data Scientist at SALT SEARCH PTY LTD This is a Full time job Sydney NSW(Hybrid) bonus Design, build and deploy machine learning and AI models Join a growing data and AI function Programming skills in Python, with experience using ML frameworks Looking f
+- **[seek]** · [AI Engineer](https://www.seek.com.au/job/91831158)
+  - _Orion Group_ · Norwest, Sydney NSW(Hybrid) · Information & Communication Technology
+  - q: `/artificial-intelligence-jobs/in-All-Australia, AI government, AI cleared`
+  - This is a featured job AI Engineer at Orion Group Be an early applicant This is a Full time job Norwest, Sydney NSW(Hybrid) Orion Group is a dynamic multi-disciplinary land development company that has become known for providing exceptional value to our clients. subClassification
+- **[seek]** · [AI Engineer](https://www.seek.com.au/job/91634398)
+  - _Horizontal Talent Australia Pty Ltd_ · Melbourne VIC(Hybrid) · Information & Communication Technology
+  - q: `/artificial-intelligence-jobs/in-All-Australia, /machine-learning-jobs/in-All-Australia`
+  - Listed nine days ago AI Engineer at Horizontal Talent Australia Pty Ltd This is a Full time job Melbourne VIC(Hybrid) $130,000 – $150,000 per year Opportunity to work with cutting edge AI tools Experiment with LLMs and RAG Collaborative, inclusive, and high-performing team cultur
+- **[seek]** · [AI Engineer](https://www.seek.com.au/job/91772063)
+  - _Arkadia Talent_ · Sydney NSW(Hybrid) · Information & Communication Technology
+  - q: `/artificial-intelligence-jobs/in-All-Australia, AI government`
+  - Listed two days ago AI Engineer at Arkadia Talent This is a Full time job Sydney NSW(Hybrid) Attractive Salary Package + Bonus + Equity If you're looking to move beyond building features and want to work on systems that fundamentally change how industries operate, this is the rol
+- **[seek]** · [AI Engineer](https://www.seek.com.au/job/91463725)
+  - _Trans Traffic Survey_ · Melbourne VIC(Hybrid) · Information & Communication Technology
+  - q: `/artificial-intelligence-jobs/in-All-Australia, /machine-learning-jobs/in-All-Australia`
+  - Listed seventeen days ago AI Engineer at Trans Traffic Survey This is a Full time job Melbourne VIC(Hybrid) $155,000 – $180,000 per year This is a unique opportunity to apply your computer vision and LLMs expertise in a high-impact environment, working on complex challenges. subC
+- **[seek]** · [AI Engineer](https://www.seek.com.au/job/91767616)
+  - _Skilledfield_ · Melbourne VIC · Information & Communication Technology
+  - q: `/artificial-intelligence-jobs/in-All-Australia, /machine-learning-jobs/in-All-Australia, AI cleared`
+  - Listed two days ago AI Engineer at Skilledfield This is a Contract/Temp job Melbourne VIC We’re seeking an AI Engineer with a passion for experimentation and innovation to join our growing team. In this role, you’ll work on AI use cases... subClassification: Architects Architects
+- **[seek]** · [AI Engineer](https://www.seek.com.au/job/91824561)
+  - _Compare the Market_ · Brisbane QLD(Hybrid) · Information & Communication Technology
+  - q: `/artificial-intelligence-jobs/in-All-Australia, AI cleared`
+  - Listed three hours ago AI Engineer at Compare the Market This is a Full time job Brisbane QLD(Hybrid) Flexible work options available including 9-day fortnight and work from home. Additional leave days! "ME" leave and "Volunteer Day" leave! Excellent and supportive team culture t
+- **[seek]** · [AI Engineer](https://www.seek.com.au/job/91532094)
+  - _Emanate Technology Pty Ltd_ · Brisbane QLD(Hybrid) · Information & Communication Technology
+  - q: `/artificial-intelligence-jobs/in-All-Australia`
+  - Listed fourteen days ago AI Engineer at Emanate Technology Pty Ltd This is a Full time job Brisbane QLD(Hybrid) AUD 160000 - 180000 per annum, Greenfield AI Build the AI capability from zero. First hire, greenfield environment, real ownership. Highly regulated industry, Brisbane 
+- **[seek]** · [AI Engineer](https://www.seek.com.au/job/91621614)
+  - _Emanate Technology Pty Ltd_ · Melbourne VIC · Information & Communication Technology
+  - q: `/artificial-intelligence-jobs/in-All-Australia`
+  - Listed nine days ago AI Engineer at Emanate Technology Pty Ltd This is a Contract/Temp job Melbourne VIC AI Engineer Power BI platform Data Azure subClassification: Engineering - Software Engineering - Software classification: Information & Communication Technology (Information &
+- **[seek]** · [AI Governance Specialist](https://www.seek.com.au/job/91632643)
+  - _Randstad Digital_ · Sydney NSW(Hybrid) · Information & Communication Technology
+  - q: `AI government, machine learning government`
+  - Listed nine days ago AI Governance Specialist at Randstad Digital This is a Full time job Sydney NSW(Hybrid) $1k - $1200 p.d. + + super Join a major government agency and help shape the future of innovation as an AI Governance Specialist subClassification: Other Other classificat
+- **[seek]** · [Ai Governance Specialist](https://www.seek.com.au/job/91635461)
+  - _Morgan McKinley_ · Sydney NSW(Hybrid) · Government & Defence
+  - q: `AI government`
+  - Listed nine days ago Ai Governance Specialist at Morgan McKinley This is a Contract/Temp job Sydney NSW(Hybrid) $1k - $1200 p.d. This role is advisory and assurance-focused, influencing outcomes across the business subClassification: Government - State Government - State classifi
+- **[seek]** · [Artificial Intelligence (AI) Capability Lead](https://www.seek.com.au/job/91583216)
+  - _Gladstone Area Water Board_ · South Brisbane, Brisbane QLD · Information & Communication Technology
+  - q: `AI government`
+  - Listed twelve days ago Artificial Intelligence (AI) Capability Lead at Gladstone Area Water Board Immediate start This is a Full time job South Brisbane, Brisbane QLD Work as part of a dedicated team 12 month maximum term Work life balance The role will identify, redesign, and mo
+- **[seek]** · [Associate Data Scientist](https://www.seek.com.au/job/91718406)
+  - _Suncorp_ · Sydney NSW(Hybrid) · Insurance & Superannuation
+  - q: `data scientist government`
+  - Listed five days ago Associate Data Scientist at Suncorp This is a Full time job Sydney NSW(Hybrid) Turn complex data into meaningful outcomes while growing your data science career in a team focused on innovation, impact, and responsible AI. subClassification: Other Other classi
+- **[seek]** · [Azure AI & Machine Learning Data Engineer](https://www.seek.com.au/job/91750524)
+  - _XO Sports_ · Melbourne VIC(Hybrid) · Information & Communication Technology
+  - q: `/artificial-intelligence-jobs/in-All-Australia, /machine-learning-jobs/in-All-Australia, AI cleared`
+  - Listed three days ago Azure AI & Machine Learning Data Engineer at XO Sports This is a Full time job Melbourne VIC(Hybrid) Azure Data Scientist, AI & Machine Learning Engineer with excellent technical delivery skills in Microsoft Azure. subClassification: Developers/Programmers D
+- **[seek]** · [Computer Vision / Machine Learning Engineer](https://www.seek.com.au/job/91599467)
+  - _AEY & Associates_ · Sydney NSW · Information & Communication Technology
+  - q: `/artificial-intelligence-jobs/in-All-Australia, /machine-learning-jobs/in-All-Australia`
+  - Listed eleven days ago Computer Vision / Machine Learning Engineer at AEY & Associates This is a Full time job Sydney NSW $100k to $140k + super Real sensor data → real-world deployment Strong maths + algorithms focus (not just ML wrappers) Build real-world 3D vision systems — no
+- **[seek]** · [Data Analytics - Financial Crime](https://www.seek.com.au/job/91694294)
+  - _TalentWeb Consulting_ · Sydney NSW(Hybrid) · Banking & Financial Services
+  - q: `/machine-learning-jobs/in-All-Australia, machine learning government`
+  - Listed six days ago Data Analytics - Financial Crime at TalentWeb Consulting This is a Full time job Sydney NSW(Hybrid) AML - Data Science Financial Crime - Data Analytics Data Analytics - Financial Crime - Data Science Recruited by Christina Graham subClassification: Compliance 
+- **[seek]** · [Data Engineer](https://www.seek.com.au/job/91782725)
+  - _Gold Coast Hospital & Health Service_ · Southport, Gold Coast QLD · Information & Communication Technology
+  - q: `machine learning government, data scientist government`
+  - Listed one day ago Data Engineer at Gold Coast Hospital & Health Service This is a Contract/Temp job Southport, Gold Coast QLD $5370.60 - $5763.70 per f.n. + 12.75% super Be apart of the largest employer on the Gold Coast Challenging and unique work assignments Inclusive and proa
+- **[seek]** · [Data Engineer - AI Projects](https://www.seek.com.au/job/91364893)
+  - _Talent – Specialists in tech, transformation & beyond_ · Carseldine, Brisbane QLD(Hybrid) · Information & Communication Technology
+  - q: `machine learning government`
+  - Listed twenty two days ago Data Engineer - AI Projects at Talent – Specialists in tech, transformation & beyond This is a Contract/Temp job Carseldine, Brisbane QLD(Hybrid) $900 - $1k p.d. + INC Super Hybrid WFH Flexibility Strong Possibility for contract extension Ground Breakin
+- **[seek]** · [Data Science Specialist](https://www.seek.com.au/job/91617873)
+  - _TAC_ · Geelong, South West Coast VIC(Hybrid) · Science & Technology
+  - q: `data scientist government`
+  - Listed nine days ago Data Science Specialist at TAC This is a Contract/Temp job Geelong, South West Coast VIC(Hybrid) Full time, fixed term role until 18 December 2026. Geelong office location, with flexible hybrid working JG5 Offering a competitive starting base salary of $129,7
+- **[seek]** · [Data Scientist](https://www.seek.com.au/job/91785677)
+  - _DNX Solutions_ · Barangaroo, Sydney NSW(Hybrid) · Information & Communication Technology
+  - q: `/machine-learning-jobs/in-All-Australia, machine learning government, data scientist government`
+  - Listed one day ago Data Scientist at DNX Solutions This is a Full time job Barangaroo, Sydney NSW(Hybrid) $130,000 – $160,000 per year Join our Data team at DNX and help design, build, and optimize data pipelines and architectures in the cloud. subClassification: Engineering - So
+- **[seek]** · [Data Scientist](https://www.seek.com.au/job/91695904)
+  - _WorkCover Queensland_ · Brisbane QLD(Hybrid) · Science & Technology
+  - q: `data scientist government`
+  - Listed six days ago Data Scientist at WorkCover Queensland This is a Full time job Brisbane QLD(Hybrid) Partner with the business to deliver insights and performance dashboards Support WorkCover QLD’s 2030 transformation through data-driven decisions Build analytics capability wh
+- **[seek]** · [Data Scientist](https://www.seek.com.au/job/91513847)
+  - _HBF Health Limited_ · Perth WA(Hybrid) · Science & Technology
+  - q: `data scientist government`
+  - Listed fifteen days ago Data Scientist at HBF Health Limited This is a Full time job Perth WA(Hybrid) Salary from 100-110 + Super + Gold Health Cover Gold health cover for you and your family Hybrid role with flexible hours within national health insurance provider Central Perth 
+- **[seek]** · [Data Scientist](https://www.seek.com.au/job/91390212)
+  - _Randstad Digital_ · Brisbane QLD(Hybrid) · Information & Communication Technology
+  - q: `data scientist government`
+  - Listed twenty one days ago Data Scientist at Randstad Digital This is a Contract/Temp job Brisbane QLD(Hybrid) $850 - $950 p.d. inclusive superannuation As a Specialist Data Scientist, you will leverage cutting-edge big data technologies to predict future outcomes. subClassificat
+- **[seek]** · [Data Scientist](https://www.seek.com.au/job/91781965)
+  - _Optus_ · Macquarie Park, Sydney NSW(Hybrid) · Science & Technology
+  - q: `data scientist government`
+  - Listed one day ago Data Scientist at Optus This is a Contract/Temp job Macquarie Park, Sydney NSW(Hybrid) Design and deploy AI and machine learning solutions Shape Optus' AI roadmap and deliver real business impact Work with cutting‑edge cloud, ML, and agentic AI technologies Bui
+- **[seek]** · [Data Scientist](https://www.seek.com.au/job/91304350)
+  - _Michael Page_ · Brisbane QLD · Information & Communication Technology
+  - q: `data scientist government`
+  - Listed twenty eight days ago Data Scientist at Michael Page Expiring soon This is a Full time job Brisbane QLD We are seeking a motivated and detail-oriented Data Scientist to join a forward-thinking team within the Energy & Natural Resources industry. subClassification: Database
+- **[seek]** · [Digital Coordination Centre Data Scientist](https://www.seek.com.au/job/91674636)
+  - _The Royal Melbourne Hospital_ · Parkville, Melbourne VIC · Science & Technology
+  - q: `data scientist government`
+  - Listed seven days ago Digital Coordination Centre Data Scientist at The Royal Melbourne Hospital This is a Contract/Temp job Parkville, Melbourne VIC Full Time fixed term position for 6 months. Ongoing learning and professional development opportunities. Salary Packaging | Monthl
+- **[seek]** · [Health Data Engineer](https://www.seek.com.au/job/91630846)
+  - _SA Health - Dept for Health and Wellbeing_ · SA Health - Dept for Health and Wellbeing · Government & Defence
+  - q: `data scientist government`
+  - Listed nine days ago Health Data Engineer at SA Health - Dept for Health and Wellbeing Expiring soon This is a Full time job Adelaide SA The Health Data Engineer builds and maintains PHSA's data infrastructure health datasets and analytics to support preventive health planning. s
+- **[seek]** · [Lead Data Scientist](https://www.seek.com.au/job/91644242)
+  - _Correlate Resources_ · Sydney NSW(Hybrid) · Science & Technology
+  - q: `data scientist government`
+  - Listed eight days ago Lead Data Scientist at Correlate Resources This is a Full time job Sydney NSW(Hybrid) Lead development and production of ML and GenAI solutions Set standards for experimentation, model quality, and engineering practices Guide teams and stakeholders to align 
+- **[seek]** · [Lead Data Scientist](https://www.seek.com.au/job/91476949)
+  - _Hays | Technology_ · Canberra ACT(Hybrid) · Information & Communication Technology
+  - q: `data scientist government`
+  - Listed sixteen days ago Lead Data Scientist at Hays | Technology This is a Contract/Temp job Canberra ACT(Hybrid) Competive Hourly Rates Competitive Hourly rates Flexible working arrangements High‑impact, technically challenging work Specialist data scientist building data pipeli
+- **[seek]** · [Lead Machine Learning Engineer / AI Engineer](https://www.seek.com.au/job/91723720)
+  - _Correlate Resources_ · Sydney NSW(Hybrid) · Information & Communication Technology
+  - q: `/machine-learning-jobs/in-All-Australia`
+  - Listed five days ago Lead Machine Learning Engineer / AI Engineer at Correlate Resources This is a Full time job Sydney NSW(Hybrid) Own architecture and delivery of scalable ML, GenAI, and AI platforms. Lead MLOps, CI/CD, monitoring, and engineering best practices. Mentor teams a
+- **[seek]** · [Machine Learning Engineer](https://www.seek.com.au/job/91368341)
+  - _Micromine Australia Pty Ltd_ · Brisbane QLD · Information & Communication Technology
+  - q: `/machine-learning-jobs/in-All-Australia`
+  - Listed twenty two days ago Machine Learning Engineer at Micromine Australia Pty Ltd Expiring soon This is a Full time job Brisbane QLD An established business, operating for nearly 40 years, with offices globally. An enjoyable team culture, work from home (WFH) options, and great
+- **[seek]** · [Machine Learning Operations Lead](https://www.seek.com.au/job/91825194)
+  - _GRIT Talent Consulting_ · Brisbane QLD(Hybrid) · Information & Communication Technology
+  - q: `/machine-learning-jobs/in-All-Australia`
+  - Listed three hours ago Machine Learning Operations Lead at GRIT Talent Consulting Be an early applicant This is a Full time job Brisbane QLD(Hybrid) Permanent position | Hybrid (1 day per week in office) Hands-on leadership with mentoring responsibilities Hands-on leader with tea
+- **[seek]** · [Machine Learning Ops Engineer](https://www.seek.com.au/job/91749932)
+  - _Horizontal Talent Australia Pty Ltd_ · Sydney NSW(Hybrid) · Information & Communication Technology
+  - q: `/machine-learning-jobs/in-All-Australia`
+  - Listed three days ago Machine Learning Ops Engineer at Horizontal Talent Australia Pty Ltd This is a Contract/Temp job Sydney NSW(Hybrid) $90 – $100 per hour Work on real world AI problems Be the champion who guides the team through the ML journey Build cutting-edge AI and machin
+- **[seek]** · [Senior Data Scientist](https://www.seek.com.au/job/91570918)
+  - _AusNet Services_ · Melbourne VIC · Mining, Resources & Energy
+  - q: `/machine-learning-jobs/in-All-Australia, data scientist government`
+  - Listed thirteen days ago Senior Data Scientist at AusNet Services This is a Full time job Melbourne VIC Great rem & real development opportunities Influence data driven asset decisions through advanced analytics and AI Work closely with engineers on real‑world network challenges 
+- **[seek]** · [Senior Data Scientist](https://www.seek.com.au/job/91643893)
+  - _Correlate Resources_ · Sydney NSW(Hybrid) · Science & Technology
+  - q: `data scientist government`
+  - Listed eight days ago Senior Data Scientist at Correlate Resources This is a Full time job Sydney NSW(Hybrid) Build and productionise ML and GenAI models Design experiments to measure performance and impact Develop scalable pipelines using modern ML engineering practices High-imp
+- **[seek]** · [Senior Machine Learning Developer](https://www.seek.com.au/job/91688757)
+  - _Correlate Resources_ · Sydney NSW(Hybrid) · Information & Communication Technology
+  - q: `/machine-learning-jobs/in-All-Australia`
+  - Listed seven days ago Senior Machine Learning Developer at Correlate Resources This is a Full time job Sydney NSW(Hybrid) BRAND NEW ROLE - SYSTEMS INTEGRATION SPECIALIST EXCITING PIPELINE OF PROJECTS AWESOME CAREER DEVELOPMENT Join a fantastic team within a challenging environmen
+- **[seek]** · [Senior Machine Learning Engineer](https://www.seek.com.au/job/91661225)
+  - _Just Digital People_ · Melbourne VIC(Hybrid) · Information & Communication Technology
+  - q: `/machine-learning-jobs/in-All-Australia`
+  - Listed eight days ago Senior Machine Learning Engineer at Just Digital People This is a Full time job Melbourne VIC(Hybrid) $190,000 - 215,000 + Super + benefits Established product company | 2 days in office | Building real AI products, not theatre subClassification: Developers/
+- **[seek]** · [Senior Machine Learning Engineer](https://www.seek.com.au/job/91809371)
+  - _Davidson_ · Brisbane QLD · Information & Communication Technology
+  - q: `/machine-learning-jobs/in-All-Australia`
+  - Listed twenty one hours ago Senior Machine Learning Engineer at Davidson Be an early applicant This is a Full time job Brisbane QLD Senior Machine Learning Engineer (Team Lead) Delivering production grade ML or AI systems with proven commercial impact Building AI agents, RAG syst
+- **[seek]** · [Senior Machine Learning Engineer / AI Engineer](https://www.seek.com.au/job/91723425)
+  - _Correlate Resources_ · Sydney NSW(Hybrid) · Information & Communication Technology
+  - q: `/machine-learning-jobs/in-All-Australia, AI government`
+  - Listed five days ago Senior Machine Learning Engineer / AI Engineer at Correlate Resources This is a Full time job Sydney NSW(Hybrid) Build and productionise ML models, pipelines, and AI systems at scale. Deploy solutions in cloud environments using MLOps, CI/CD, and monitoring b
+- **[seek]** · [Staff AI Engineer - Data Scientist](https://www.seek.com.au/job/91570767)
+  - _Future Secure AI Pty Ltd_ · Sydney NSW(Hybrid) · Information & Communication Technology
+  - q: `/artificial-intelligence-jobs/in-All-Australia, /machine-learning-jobs/in-All-Australia, machine learning government`
+  - Listed thirteen days ago Staff AI Engineer - Data Scientist at Future Secure AI Pty Ltd This is a Full time job Sydney NSW(Hybrid) AI tech startup, building world-leading AI products Fast paced, less red tape environment that delivers compelling products Great career opportunity 
+- **[seek]** · [Staff Data Scientist - AI & NLP](https://www.seek.com.au/job/91798898)
+  - _Correlate Resources_ · Sydney NSW(Hybrid) · Science & Technology
+  - q: `/artificial-intelligence-jobs/in-All-Australia, /machine-learning-jobs/in-All-Australia, AI government, machine learning government, data scientist government, AI cleared`
+  - Listed one day ago Staff Data Scientist - AI & NLP at Correlate Resources This is a Full time job Sydney NSW(Hybrid) Improve and deploy NLP models, focusing on LLM outputs Lead MLOps implementation for quality and compliance. Utilise Python, Advanced SQL, and NLP expertise. Lead 
+
+## 2026-04-30T15-14-53  (15 new — 2 gov, 13 other)
+
+### 🏛 Government roles / agencies
+
+- **[seek]** 🏛 gov [Lead Data Scientist](https://www.seek.com.au/job/91526078)
+  - _Australian Digital Health Agency_ · Canberra ACT(Hybrid) · Science & Technology
+  - q: `data scientist government`
+  - Listed fifteen days ago Lead Data Scientist at Australian Digital Health Agency This is a Full time job Canberra ACT(Hybrid) Located in Bris, Syd or Canberra with an attractive working from home policy. Discover a range of exciting benefits – Click the ad to find out more! 15.4% 
+- **[seek]** 🏛 gov · 🛡 cleared [Conversational AI Engineer – Contact Centre](https://www.seek.com.au/job/91646271)
+  - _UpperGround by Hudson_ · East Ryde, Sydney NSW · Information & Communication Technology
+  - q: `/artificial-intelligence-jobs/in-All-Australia`
+  - Listed eight days ago Conversational AI Engineer – Contact Centre at UpperGround by Hudson This is a Full time job East Ryde, Sydney NSW AUD 160000 - 180000 per annum $170 - $180K Package + Bonus North Sydney, on site, Aus Citizen in order to obtain security clearance Omilia / NL
+
+### Private sector
+
+- **[seek]** · [AI Engineer](https://www.seek.com.au/job/91592053)
+  - _Plenti_ · Sydney NSW · Information & Communication Technology
+  - q: `/artificial-intelligence-jobs/in-All-Australia`
+  - Listed twelve days ago AI Engineer at Plenti This is a Full time job Sydney NSW We’re looking for an AI Engineer to join our newly formed, specialised AI team and help drive the next phase of innovation across our business. In... subClassification: Developers/Programmers Develope
+- **[seek]** · [Data & AI Governance Specialist](https://www.seek.com.au/job/91578319)
+  - _Capricorn_ · Perth WA · Information & Communication Technology
+  - q: `AI government`
+  - Listed thirteen days ago Data & AI Governance Specialist at Capricorn This is a Full time job Perth WA Make a real difference in the lives of our Members. Work with a dynamic team to drive change, at an important time for Capricorn. Access flexible working arrangements allowing u
+- **[seek]** · [Data Engineer & Analytics Specialist](https://www.seek.com.au/job/91783836)
+  - _The Kitchenary Pty Ltd_ · Arndell Park, Sydney NSW(Hybrid) · Information & Communication Technology
+  - q: `data scientist government`
+  - Listed one day ago Data Engineer & Analytics Specialist at The Kitchenary Pty Ltd This is a Full time job Arndell Park, Sydney NSW(Hybrid) $130,000 – $140,000 per year 100% Woolworths-owned - great benefits! Hybrid working opportunities Arndell Park Location Drive data-driven dec
+- **[seek]** · [Data Scientist](https://www.seek.com.au/job/91353086)
+  - _RPMGlobal_ · Brisbane QLD · Information & Communication Technology
+  - q: `data scientist government`
+  - Listed twenty three days ago Data Scientist at RPMGlobal This is a Full time job Brisbane QLD Work across data science and data engineering designing scalable data pipelines, optimising SQL-based systems, and building intelligent solutions. subClassification: Other Other classifi
+- **[seek]** · [Director Consulting Expert - Artificial Intelligence](https://www.seek.com.au/job/91642549)
+  - _CGI_ · Melbourne VIC(Hybrid) · Information & Communication Technology
+  - q: `AI government`
+  - Listed nine days ago Director Consulting Expert - Artificial Intelligence at CGI This is a Full time job Melbourne VIC(Hybrid) Hybrid & Flexible Work Model Employee Ownership & Recognition Shape data & AI strategies, lead client delivery, and drive value with modern platforms in 
+- **[seek]** · [Machine Learning Engineer - Deep Learning Specialist (Computer Vision)](https://www.seek.com.au/job/91633751)
+  - _Nearmap Australia Pty Ltd_ · Barangaroo, Sydney NSW(Hybrid) · Information & Communication Technology
+  - q: `/machine-learning-jobs/in-All-Australia`
+  - Listed nine days ago Machine Learning Engineer - Deep Learning Specialist (Computer Vision) at Nearmap Australia Pty Ltd This is a Full time job Barangaroo, Sydney NSW(Hybrid) We are recruiting a hands-on Machine Learning Engineer with a passion for R&D and strong expertise in ap
+- **[seek]** · [R&D Lead - AI Security & Developer Tooling.](https://www.seek.com.au/job/91819088)
+  - _The Onset_ · Sydney NSW · Information & Communication Technology
+  - q: `AI cleared`
+  - Listed eighteen hours ago R&D Lead - AI Security & Developer Tooling. at The Onset This is a Full time job Sydney NSW US Style Share Package Sydney, Melbourne, Brisbane - Hybrid role First of it's kind R&D role in AI Security Awesome opportunity for truly exceptional AI Engineers
+- **[seek]** · [Senior Data Scientist](https://www.seek.com.au/job/91685256)
+  - _Just Digital People_ · Melbourne VIC(Hybrid) · Information & Communication Technology
+  - q: `/machine-learning-jobs/in-All-Australia`
+  - Listed seven days ago Senior Data Scientist at Just Digital People This is a Full time job Melbourne VIC(Hybrid) $180,000 - $195,000 + super Senior Data Scientist | Melbourne, Hybrid subClassification: Database Development & Administration Database Development & Administration cl
+- **[seek]** · [Senior Data Scientist](https://www.seek.com.au/job/91521209)
+  - _Future Secure AI Pty Ltd_ · Sydney NSW(Hybrid) · Science & Technology
+  - q: `AI cleared`
+  - Listed fifteen days ago Senior Data Scientist at Future Secure AI Pty Ltd This is a Full time job Sydney NSW(Hybrid) High performance culture, with great career development opportunities Experience world-class leadership and work with the best in the industry Work with cutting ed
+- **[seek]** · [Senior Machine Learning Engineer](https://www.seek.com.au/job/91628934)
+  - _CleanCo Queensland_ · Brisbane QLD(Hybrid) · Information & Communication Technology
+  - q: `machine learning government`
+  - Listed nine days ago Senior Machine Learning Engineer at CleanCo Queensland This is a Full time job Brisbane QLD(Hybrid) As a Senior Machine Learning Engineer, you will provide technical and analytical leadership to transform CleanCo’s growing portfolio of models into... subClass
+- **[seek]** · [ServiceNow (AI / Generative AI) Developer](https://www.seek.com.au/job/91682683)
+  - _INSIGHTURE_ · Melbourne VIC(Hybrid) · Information & Communication Technology
+  - q: `/artificial-intelligence-jobs/in-All-Australia`
+  - Listed seven days ago ServiceNow (AI / Generative AI) Developer at INSIGHTURE This is a Contract/Temp job Melbourne VIC(Hybrid) $11,000 – $12,000 per month We are seeking a highly experienced ServiceNow (AI / Generative AI) Developer with 8+ years of hands‑on ServiceNow developme
+- **[seek]** · [Software Lead (Workflow Systems & AI Agents)](https://www.seek.com.au/job/91722703)
+  - _Sintelix Pty Ltd_ · Fullarton, Adelaide SA(Hybrid) · Information & Communication Technology
+  - q: `AI cleared`
+  - Listed five days ago Software Lead (Workflow Systems & AI Agents) at Sintelix Pty Ltd This is a Full time job Fullarton, Adelaide SA(Hybrid) $150,000 – $200,000 per year Build revolutionary game-changing workflow systems and AI agents—lead hands-on in Java, deliver real impact, a
+- **[seek]** · [Staff Machine Learning Engineer - Product Insight Enablement (AU remote)](https://www.seek.com.au/job/91792169)
+  - _Canva_ · Sydney NSW(Remote) · Information & Communication Technology
+  - q: `/machine-learning-jobs/in-All-Australia`
+  - Listed one day ago Staff Machine Learning Engineer - Product Insight Enablement (AU remote) at Canva This is a Full time job Sydney NSW(Remote) As a Staff Machine Learning Engineer, you’ll bring deep technical expertise to design and scale AI/machine learning systems that power p
+

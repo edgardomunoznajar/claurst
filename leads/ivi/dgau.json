@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&amp;l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-TKL39FN4');
+</script>
+<meta name="Generator" content="Drupal 11 (https://www.drupal.org)" />
+<meta name="MobileOptimized" content="width" />
+<meta name="HandheldFriendly" content="true" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+<meta http-equiv="x-ua-compatible" content="ie=edge" />
+<link rel="icon" href="/themes/custom/dga/favicon.ico" type="image/vnd.microsoft.icon" />
+<link rel="canonical" href="https://data.gov.au/404" />
+<link rel="shortlink" href="https://data.gov.au/node/27" />
+
+    <title>404 Page Not Found | Data.gov.au</title>
+    <link rel="stylesheet" media="all" href="/sites/default/files/css/css_9B97KOXSDc32zhIbjSJO-ugnmp1w5i02BtxCiuJ7eq8.css?delta=0&amp;language=en&amp;theme=dga&amp;include=eJyNi0sOwyAMBS8E4UjIgEuR_ImwaZXbV82mUrrJZhZv5hVVN5-w5wJzDk0PnRzKdWU0g46WafSn_3vRhqHqxFSVdxUUt-1axcgo62aWq9Jisbs5w5DQOqROWoCi-UFDejjl7zOqSvrCgh3myKmAYXgNfFs6ubG2RfgBhsZvFg" />
+<link rel="stylesheet" media="all" href="//cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.min.css" crossorigin="anonymous" />
+<link rel="stylesheet" media="all" href="/sites/default/files/css/css_TA7AB7hKjhiwEAPRRI7-lC28nYL2951TtHIuSuvc4uA.css?delta=2&amp;language=en&amp;theme=dga&amp;include=eJyNi0sOwyAMBS8E4UjIgEuR_ImwaZXbV82mUrrJZhZv5hVVN5-w5wJzDk0PnRzKdWU0g46WafSn_3vRhqHqxFSVdxUUt-1axcgo62aWq9Jisbs5w5DQOqROWoCi-UFDejjl7zOqSvrCgh3myKmAYXgNfFs6ubG2RfgBhsZvFg" />
+
+    <script src="https://use.fontawesome.com/releases/v6.4.0/js/all.js" defer crossorigin="anonymous"></script>
+<script src="https://use.fontawesome.com/releases/v6.4.0/js/v4-shims.js" defer crossorigin="anonymous"></script>
+
+  </head>
+  <body class="layout-no-sidebars has-featured-top path-api node--type-page">
+    <a href="#main-content" class="visually-hidden-focusable">
+      Skip to main content
+    </a>
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TKL39FN4" height="0" width="0" style="display:none;visibility:hidden;"></iframe>
+</noscript>
+      <div class="dialog-off-canvas-main-canvas" data-off-canvas-main-canvas>
+    
+<div id="page-wrapper">
+  <div id="page">
+    <header id="header" class="header" role="banner" aria-label="Site header">
+                        <nav class="navbar navbar-dark bg-secondary" id="navbar-top">
+                    <div class="container">
+                        
+                <section class="row region region-top-header">
+    <div class="clearfix nav flex-row block block-dga-main block-ckan-login-block" data-component-id="bootstrap_barrio:menu_columns" id="block-dga-ckanloginblock">
+  
+    
+      <div class="content">
+      <ul class="clearfix nav flex-row" data-component-id="bootstrap_barrio:menu_columns"><li class="nav-item"><a href="/data/user/login" class="nav-link nav-link--user-login text-decoration-none">Log in</a></li></ul>
+    </div>
+  </div>
+
+  </section>
+
+                                  </div>
+                    </nav>
+                          <nav class="navbar navbar-dark bg-primary navbar-expand-lg" id="navbar-main">
+                        <div class="container">
+                          
+    <a href="/" title="Home" rel="home" class="navbar-brand">
+          <img src="/themes/custom/dga/logo.svg" alt="Home" class="img-fluid d-inline-block align-top" />
+        <span class="site-name-delimiter"></span>
+    <span class="site-name site-beta">Data.gov.au</span>
+  </a>
+
+  <button class="navbar-toggler collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#navbarScroll" aria-controls="navbarScroll" aria-expanded="true" aria-label="Toggle navigation" data-once="bind-click-event">
+    <span class="navbar-toggler-icon d-lg-none"></span>
+  </button>
+  <div class="navbar-nav-search collapse navbar-collapse" id="navbarScroll">
+    <nav role="navigation" aria-labelledby="block-dga-main-menu-menu" id="block-dga-main-menu" class="block block-menu navigation menu--main">
+            
+  <h6 class="visually-hidden" id="block-dga-main-menu-menu">Main navigation</h6>
+  
+
+        
+              <ul class="clearfix nav navbar-nav" data-component-id="bootstrap_barrio:menu_main">
+                    <li class="nav-item">
+                          <a href="/data/dataset" class="nav-link nav-link--data-dataset">Datasets</a>
+              </li>
+                <li class="nav-item">
+                          <a href="/data/organization" class="nav-link nav-link--data-organization">Organisations</a>
+              </li>
+                <li class="nav-item">
+                          <a href="/about" class="nav-link nav-link--about" data-drupal-link-system-path="node/5">About</a>
+              </li>
+        </ul>
+  
+
+
+
+  </nav>
+
+    <div class="d-block d-lg-flex">
+    <div class="views-exposed-form block block-dga-main block-ckan-search-block" data-drupal-selector="views-exposed-form-dga-database-search-page-search" id="block-dga-ckansearchblock">
+  
+    
+      <div class="content">
+      <div class="ckan-search-form">
+<form action="/search" method="get" id="views-exposed-form-dga-database-search-page-search" accept-charset="UTF-8">
+  <div class="d-flex flex-wrap">
+  <div class="col-12">
+
+
+
+
+
+          <div class="js-form-item js-form-type-textfield form-type-textfield js-form-item-key form-item-key mb-3">
+          <label for="edit-key">Search</label>
+                    <input placeholder="Search" class="lh-lg border-dga-light-blue form-control" data-drupal-selector="edit-key" type="text" id="edit-key" name="key" value="" size="30" maxlength="128" />
+
+                      </div>
+</div><div data-drupal-selector="edit-actions" class="form-actions js-form-wrapper form-wrapper mb-3" id="edit-actions">
+
+<button data-drupal-selector="edit-submit-dga-database-search" type="submit" id="edit-submit-dga-database-search" value="Search" class="button js-form-submit form-submit btn btn-primary" aria-label="Search">
+  <i class="fa fa-search"></i>
+  <span class="visually-hidden">Search</span>
+</button>
+
+</div>
+
+</div>
+
+</form>
+</div>
+    </div>
+  </div>
+
+    </div>
+  </div>
+
+                                                    </div>
+                      </nav>
+                  </header>
+                      <div class="featured-top">
+          <aside class="featured-top__inner section container clearfix" role="complementary">
+              <section class="row region region-featured-top">
+    <div data-drupal-messages-fallback class="hidden"></div>
+
+  </section>
+
+          </aside>
+        </div>
+              <div id="main-wrapper" class="layout-main-wrapper clearfix">
+              <div id="main" class="container  pb-5 pt-3">
+          
+      <div id="block-dga-breadcrumbs" class="block block-system block-system-breadcrumb-block">
+  
+    
+      <div class="content">
+      
+  <nav role="navigation" aria-label="breadcrumb" style="">
+  <ol class="breadcrumb mb-5">
+            <li class="breadcrumb-item">
+        <a href="/">Home</a>
+      </li>
+                <li class="breadcrumb-item active">
+        404 Page not found
+      </li>
+        </ol>
+</nav>
+
+    </div>
+  </div>
+
+  
+          <div class="row row-offcanvas row-offcanvas-left clearfix">
+              <main class="main-content col" id="content" role="main">
+                <section class="section">
+                  <a href="#main-content" id="main-content" tabindex="-1"></a>
+                  
+      <div id="block-dga-content" class="block block-system block-system-main-block">
+  
+    
+      <div class="content">
+      
+
+
+<article data-history-node-id="27" class="node node--type-page node--view-mode-full clearfix">
+  <div class="node__content clearfix">
+            
+        <h1 class="title">
+            <span><span class="field field--name-title field--type-string field--label-hidden">404 Page Not Found</span>
+</span>
+        </h1>
+        
+        
+            <div class="clearfix text-formatted field field--name-body field--type-text-with-summary field--label-hidden field__item"><p>The page you're looking for couldn't be found, it may have been removed, renamed, or it's temporarily unavailable.</p><p>You can try searching using the site's search tool.</p></div>
+      
+              </div>
+</article>
+
+    </div>
+  </div>
+<nav role="navigation" aria-labelledby="block-dga-404menu-menu" id="block-dga-404menu" class="block block-menu navigation menu--_04-menu">
+      
+  <h6 id="block-dga-404menu-menu" class="mb-2">Here are a few links that may be helpful:</h6>
+  
+
+        
+<ul class="nav flex-column">
+      <li class="nav-item p-0">
+      <a href="/" class="nav-link px-0 py-2">
+        Home
+      </a>
+          </li>
+      <li class="nav-item p-0">
+      <a href="/data/user/login" class="nav-link px-0 py-2">
+        Login
+      </a>
+          </li>
+      <li class="nav-item p-0">
+      <a href="/data/user/logout" class="nav-link px-0 py-2">
+        Logout
+      </a>
+          </li>
+      <li class="nav-item p-0">
+      <a href="/data/dataset" class="nav-link px-0 py-2">
+        Search Datasets
+      </a>
+          </li>
+      <li class="nav-item p-0">
+      <a href="/data/organization" class="nav-link px-0 py-2">
+        Search Organisations
+      </a>
+          </li>
+  </ul>
+
+  </nav>
+
+  
+                </section>
+              </main>
+                                  </div>
+        </div>
+          </div>
+          <div class="featured-bottom py-5">
+        <aside class="container clearfix" role="complementary">
+            <section class="row region region-featured-bottom-first">
+    <div class="views-element-container block block-views block-views-blockcustodians-block-block-1" id="block-dga-views-block-custodians-block-block-1">
+  
+    
+      <div class="content">
+      <div><div class="view view-custodians-block view-id-custodians_block view-display-id-block_1 js-view-dom-id-b2d608f659f8c2370af996ace71d8df0b4e90c2f361b1f183a3712714cba02c0">
+  
+    
+      
+      <div class="view-content row">
+          <div class="views-row">
+    
+            <div class="clearfix text-formatted field field--name-body field--type-text-with-summary field--label-hidden field__item"><p class="mb-0">We acknowledge the Traditional Custodians of Country throughout Australia and their connections to land, seas, skies and community. We pay our respect to their Elders past and present, and extend that respect to all Aboriginal and Torres Strait Islander people.</p></div>
+      
+  </div>
+
+    </div>
+  
+          </div>
+</div>
+
+    </div>
+  </div>
+
+  </section>
+
+          
+          
+        </aside>
+      </div>
+        <footer class="site-footer">
+              <div class="container">
+                      <div class="site-footer__top row clearfix">
+              <div class="col col-md-3 col-sm-12">
+                  <section class="row region region-footer-first">
+    <nav role="navigation" aria-labelledby="block-dga-site-menu" id="block-dga-site" class="block block-menu navigation menu--site">
+      
+  <h6 id="block-dga-site-menu">Data.gov.au</h6>
+  
+
+        
+                  <ul class="clearfix nav" data-component-id="bootstrap_barrio:menu">
+                    <li class="nav-item">
+                <a href="/about" class="nav-link nav-link--about" data-drupal-link-system-path="node/5">About</a>
+              </li>
+                <li class="nav-item">
+                <a href="/privacy-policy" class="nav-link nav-link--privacy-policy" data-drupal-link-system-path="node/17">Privacy Policy</a>
+              </li>
+                <li class="nav-item">
+                <a href="/recent-developments" class="nav-link nav-link--recent-developments" data-drupal-link-system-path="node/18">Recent Developments</a>
+              </li>
+                <li class="nav-item">
+                <a href="mailto:support@data.gov.au" class="nav-link nav-link-mailtosupportdatagovau">Contact us</a>
+              </li>
+        </ul>
+  
+
+
+
+  </nav>
+
+  </section>
+
+              </div>
+              <div class="col col-md-3 col-sm-12">
+                  <section class="row region region-footer-second">
+    <nav role="navigation" aria-labelledby="block-dga-publishers-menu" id="block-dga-publishers" class="block block-menu navigation menu--publishers">
+      
+  <h6 id="block-dga-publishers-menu">Publishers</h6>
+  
+
+        
+                  <ul class="clearfix nav" data-component-id="bootstrap_barrio:menu">
+                    <li class="nav-item">
+                <a href="/data/user/login" class="nav-link nav-link--data-user-login">Login</a>
+              </li>
+                <li class="nav-item">
+                <a href="/user-guide" class="nav-link nav-link--user-guide" data-drupal-link-system-path="node/20">User guide</a>
+              </li>
+        </ul>
+  
+
+
+
+  </nav>
+
+  </section>
+
+              </div>
+              <div class="col col-md-3 col-sm-12">
+                  <section class="row region region-footer-third">
+    <nav role="navigation" aria-labelledby="block-dga-developers-menu" id="block-dga-developers" class="block block-menu navigation menu--developers">
+      
+  <h6 id="block-dga-developers-menu">Developers</h6>
+  
+
+        
+                  <ul class="clearfix nav" data-component-id="bootstrap_barrio:menu">
+                    <li class="nav-item">
+                <a href="https://docs.ckan.org/en/2.11/api/index.html" class="nav-link nav-link-https--docsckanorg-en-211-api-indexhtml">CKAN Documentation</a>
+              </li>
+        </ul>
+  
+
+
+
+  </nav>
+
+  </section>
+
+              </div>
+              <div class="col col-md-3 col-sm-12">
+                
+              </div>
+            </div>
+                                <div class="site-footer__bottom">
+                <section class="row region region-footer-fifth">
+    <nav role="navigation" aria-labelledby="block-dga-footer-menu" id="block-dga-footer" class="block block-menu navigation menu--footer">
+            
+  <h6 class="visually-hidden" id="block-dga-footer-menu">Footer</h6>
+  
+
+        
+              <ul class="clearfix nav flex-row" data-component-id="bootstrap_barrio:menu_columns">
+                    <li class="nav-item">
+                <a href="/accessibility" class="nav-link nav-link--accessibility" data-drupal-link-system-path="node/26">Accessibility</a>
+              </li>
+                <li class="nav-item">
+                <a href="/about#terms-of-use" class="nav-link nav-link--aboutterms-of-use" data-drupal-link-system-path="node/5">Copyright</a>
+              </li>
+                <li class="nav-item">
+                <a href="/about#terms-of-use" class="nav-link nav-link--aboutterms-of-use" data-drupal-link-system-path="node/5">Disclaimers</a>
+              </li>
+        </ul>
+  
+
+
+
+  </nav>
+<div id="block-dga-copyright" class="block-content-basic block block-block-content block-block-content40e36bee-6316-4d2f-8366-368b6e656e4e">
+  
+    
+      <div class="content">
+      
+            <div class="clearfix text-formatted field field--name-body field--type-text-with-summary field--label-hidden field__item"><p>© Commonwealth of Australia. With the exception of the Commonwealth Coat of Arms and where otherwise noted, this work is licensed under the CC BY 4.0 license.</p></div>
+      
+    </div>
+  </div>
+
+  </section>
+
+            </div>
+                  </div>
+          </footer>
+  </div>
+
+  <button type="button" id="btn-back-to-top" class="btn btn-danger btn-floating btn-lg rounded-circle border border-white" aria-label="Back to Top">
+    <i class="fas fa-chevron-up"></i>
+    <span class="visually-hidden">Back to Top</span>
+  </button>
+
+</div>
+
+  </div>
+
+    
+    <script type="application/json" data-drupal-selector="drupal-settings-json">{"path":{"baseUrl":"\/","pathPrefix":"","currentPath":"","currentPathIsAdmin":false,"isFront":false,"currentLanguage":"en","currentQuery":{"q":"artificial intelligence vacancies","rows":"10"}},"pluralDelimiter":"\u0003","suppressDeprecationErrors":true,"ajaxTrustedUrl":{"\/search":true},"user":{"uid":0,"permissionsHash":"70187a429a3783abda8ffd3b3184fb79dec8e4757442b95b17f3225c3beca666"}}</script>
+<script src="/sites/default/files/js/js_ElFOMOviV832dpC64AkqoKV5ZoRE1n1LFSPRzPR3-_k.js?scope=footer&amp;delta=0&amp;language=en&amp;theme=dga&amp;include=eJx9yUEOgCAMAMEPAX0SqVCRhLbGVo2_l6Mnb7uZ2hBqw8jYxVEKhXnQhi44ovkzurSw6rSbTJng08muX0u2dQ5McuZF1c0P3HMvKlCqvCFAL08"></script>
+<script src="/core/assets/vendor/jquery/jquery.min.js?v=4.0.0-rc.1"></script>
+<script src="/sites/default/files/js/js_dpm_hAnuk3FDGa-3vVmJbwE_7qSa-cQae2TKlBAOE5s.js?scope=footer&amp;delta=2&amp;language=en&amp;theme=dga&amp;include=eJx9yUEOgCAMAMEPAX0SqVCRhLbGVo2_l6Mnb7uZ2hBqw8jYxVEKhXnQhi44ovkzurSw6rSbTJng08muX0u2dQ5McuZF1c0P3HMvKlCqvCFAL08"></script>
+<script src="//cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://data.gov.au/data/dataset/2b491307-2db1-4d1b-a9f9-ba021c3fe2e0/resource/9fa99c8c-7b43-48ed-a2e1-b5a7d6bf8c51/download/banner.js" crossorigin="anonymous"></script>
+<script src="/sites/default/files/js/js_EFqqmWJT86nXL0EKPxfixoh1noVKzH_YHln77KyRFdA.js?scope=footer&amp;delta=5&amp;language=en&amp;theme=dga&amp;include=eJx9yUEOgCAMAMEPAX0SqVCRhLbGVo2_l6Mnb7uZ2hBqw8jYxVEKhXnQhi44ovkzurSw6rSbTJng08muX0u2dQ5McuZF1c0P3HMvKlCqvCFAL08"></script>
+
+    
+    <!-- Start of datagovau Zendesk Widget script --> 
+      <script id="ze-snippet" src="https://static.zdassets.com/ekr/snippet.js?key=b6aac038-b1c4-490b-ba64-ecede8e77ac7"> </script> 
+    <!-- End of datagovau Zendesk Widget script -->
+  </body>
+</html>
