@@ -478,7 +478,7 @@ def fetch_apsjobs(ctx: BrowserContext) -> list[dict]:
         try:
             page.goto("https://www.apsjobs.gov.au/s/job-search",
                       wait_until="domcontentloaded", timeout=45_000)
-        except PWTimeout as e:
+        except Exception as e:
             print(f"[apsjobs] initial nav {q!r}: {e}", file=sys.stderr)
             page.close()
             continue
@@ -498,7 +498,7 @@ def main() -> int:
 
     all_leads: list[dict] = []
     with sync_playwright() as pw:
-        browser = pw.chromium.launch(headless=True)
+        browser = pw.chromium.launch(headless=True, args=["--ignore-certificate-errors"])
         ctx = browser.new_context(
             user_agent=UA,
             viewport={"width": 1366, "height": 900},
