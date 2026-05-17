@@ -498,7 +498,11 @@ def main() -> int:
 
     all_leads: list[dict] = []
     with sync_playwright() as pw:
-        browser = pw.chromium.launch(headless=True, args=["--ignore-certificate-errors"])
+        _chrome = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome"
+        import os as _os
+        _exe = _chrome if _os.path.exists(_chrome) else None
+        browser = pw.chromium.launch(headless=True, args=["--ignore-certificate-errors"],
+                                     **({} if _exe is None else {"executable_path": _exe}))
         ctx = browser.new_context(
             user_agent=UA,
             viewport={"width": 1366, "height": 900},
